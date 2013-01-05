@@ -26,7 +26,7 @@ class TransitionCountsTransformerTests {
     assertEquals(None, result(Some('B)).get(None))
     assertDouble(6., result(None)(Some('e)))
     assertDouble(7., result(None)(Some('f)))
-    assertDouble(0., result(None)(None))
+    assertDouble(0.0, result(None)(None))
   }
 
   @Test
@@ -46,7 +46,7 @@ class TransitionCountsTransformerTests {
     assertEquals(None, result(Some('B)).get(None))
     assertDouble(6., result(None)(Some('e)))
     assertDouble(7., result(None)(Some('f)))
-    assertDouble(0., result(None)(None))
+    assertDouble(0.0, result(None)(None))
   }
 
   private def assertDouble(expected: Double, actual: Double) {

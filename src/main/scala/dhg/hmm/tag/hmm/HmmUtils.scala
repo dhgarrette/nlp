@@ -43,7 +43,7 @@ object HmmUtils {
    */
   def uniformTransitionDist[Tag](tagset: Set[Tag]) = {
     val allTags: Set[Option[Tag]] = tagset.map(Some(_))
-    CondFreqDist(allTags.mapToVal((allTags + None).mapToVal(1.).toMap).toMap + (None -> allTags.mapToVal(1.).toMap))
+    CondFreqDist(allTags.mapToVal((allTags + None).mapToVal(1.0).toMap).toMap + (None -> allTags.mapToVal(1.0).toMap))
   }
 
   def addDistributionsToRawSequences[Sym, Tag](

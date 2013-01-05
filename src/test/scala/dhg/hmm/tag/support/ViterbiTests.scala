@@ -49,13 +49,13 @@ class ViterbiTests {
     val edgeScorer = new TagEdgeScorer[Sym, Tag] {
       override def apply(prevSym: Option[Sym], prevTag: Option[Tag], currSym: Option[Sym], currTag: Option[Tag]) = {
         (prevTag, currTag) match {
-          case (None, Some('D)) => LogNum(1.)
+          case (None, Some('D)) => LogNum(1.0)
           case (Some('D), Some('A)) => LogNum(.25)
           case (Some('D), Some('N)) => LogNum(.75)
-          case (Some('A), Some('N)) => LogNum(1.)
+          case (Some('A), Some('N)) => LogNum(1.0)
           case (Some('N), Some('N)) => LogNum(.45)
           case (Some('N), Some('V)) => LogNum(.55)
-          case (Some('V), None) => LogNum(1.)
+          case (Some('V), None) => LogNum(1.0)
           case _ => LogNum.zero
         }
       }

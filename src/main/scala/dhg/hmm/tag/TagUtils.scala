@@ -5,7 +5,7 @@ import scala.collection.generic.CanBuildFrom
 
 object TagUtils {
 
-  class Enriched_ended_Seq[A, Repr](self: SeqLike[A, Repr]) {
+  implicit class Enriched_ended_Seq[A, Repr](self: SeqLike[A, Repr]) {
     def ended[That](implicit bf: CanBuildFrom[Repr, Option[A], That]): That = {
       val b = bf(self.asInstanceOf[Repr])
       b.sizeHint(self.size)
@@ -15,6 +15,5 @@ object TagUtils {
       b.result
     }
   }
-  implicit def enriched_ended_Seq[A, Repr](self: SeqLike[A, Repr]) = new Enriched_ended_Seq(self)
 
 }

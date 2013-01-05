@@ -13,7 +13,7 @@ class TransitionCountsTransformer[Tag](delegate: CondCountsTransformer[Option[Ta
       delegate(counts).counts.map {
         case (tag, dfc @ DefaultedFreqCounts(c, t, d)) =>
           tag -> (tag match {
-            case None => DefaultedFreqCounts(c + (None -> 0.), t, d)
+            case None => DefaultedFreqCounts(c + (None -> 0.0), t, d)
             case _ => dfc
           })
       })

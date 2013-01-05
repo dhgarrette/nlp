@@ -46,12 +46,12 @@ class CondCountsTransformerTests {
         zeroDefaults = true,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.), 0., 0.),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.), 0., 0.))),
+            'A' -> DefaultedFreqCounts(Map('a -> 27.), 0.0, 0.0),
+            'C' -> DefaultedFreqCounts(Map('b -> 29.), 0.0, 0.0))),
           DefaultedCondFreqCounts(Map(
             'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
             'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.)))))
+            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
 
     /*
      * Starting counts:
@@ -92,11 +92,11 @@ class CondCountsTransformerTests {
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(5. / 11.), d('A')('a))
-    assertEqualsProb(LogNum(4. / 11.), d('A')('b))
-    assertEqualsProb(LogNum(0. / 11.), d('A')('c))
-    assertEqualsProb(LogNum(2. / 11.), d('A')('d))
-    assertEqualsProb(LogNum(0. / 11.), d('A')('def))
+    assertEqualsProb(LogNum(5. / 11.0), d('A')('a))
+    assertEqualsProb(LogNum(4. / 11.0), d('A')('b))
+    assertEqualsProb(LogNum(0. / 11.0), d('A')('c))
+    assertEqualsProb(LogNum(2. / 11.0), d('A')('d))
+    assertEqualsProb(LogNum(0. / 11.0), d('A')('def))
     assertEqualsProb(LogNum(6. / 9.), d('B')('a))
     assertEqualsProb(LogNum(3. / 9.), d('B')('b))
     assertEqualsProb(LogNum(0. / 9.), d('B')('c))
@@ -112,11 +112,11 @@ class CondCountsTransformerTests {
     assertEqualsProb(LogNum.zero, d('D')('c))
     assertEqualsProb(LogNum.zero, d('D')('d))
     assertEqualsProb(LogNum.zero, d('D')('def))
-    assertEqualsProb(LogNum(11. / 20.), d('Z')('a))
-    assertEqualsProb(LogNum(7. / 20.), d('Z')('b))
-    assertEqualsProb(LogNum(0. / 20.), d('Z')('c))
-    assertEqualsProb(LogNum(2. / 20.), d('Z')('d))
-    assertEqualsProb(LogNum(0. / 20.), d('Z')('def))
+    assertEqualsProb(LogNum(11. / 20.0), d('Z')('a))
+    assertEqualsProb(LogNum(7. / 20.0), d('Z')('b))
+    assertEqualsProb(LogNum(0. / 20.0), d('Z')('c))
+    assertEqualsProb(LogNum(2. / 20.0), d('Z')('d))
+    assertEqualsProb(LogNum(0. / 20.0), d('Z')('def))
   }
 
   @Test
@@ -132,7 +132,7 @@ class CondCountsTransformerTests {
           DefaultedCondFreqCounts(Map(
             'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
             'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.)))))
+            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
 
     /*
      * Starting counts:
@@ -173,11 +173,11 @@ class CondCountsTransformerTests {
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(5. / 11.), d('A')('a))
-    assertEqualsProb(LogNum(4. / 11.), d('A')('b))
-    assertEqualsProb(LogNum(0. / 11.), d('A')('c))
-    assertEqualsProb(LogNum(2. / 11.), d('A')('d))
-    assertEqualsProb(LogNum(0. / 11.), d('A')('def))
+    assertEqualsProb(LogNum(5. / 11.0), d('A')('a))
+    assertEqualsProb(LogNum(4. / 11.0), d('A')('b))
+    assertEqualsProb(LogNum(0. / 11.0), d('A')('c))
+    assertEqualsProb(LogNum(2. / 11.0), d('A')('d))
+    assertEqualsProb(LogNum(0. / 11.0), d('A')('def))
     assertEqualsProb(LogNum(6. / 9.), d('B')('a))
     assertEqualsProb(LogNum(3. / 9.), d('B')('b))
     assertEqualsProb(LogNum(0. / 9.), d('B')('c))
@@ -193,11 +193,11 @@ class CondCountsTransformerTests {
     assertEqualsProb(LogNum.zero, d('D')('c))
     assertEqualsProb(LogNum.zero, d('D')('d))
     assertEqualsProb(LogNum.zero, d('D')('def))
-    assertEqualsProb(LogNum(11. / 20.), d('Z')('a))
-    assertEqualsProb(LogNum(7. / 20.), d('Z')('b))
-    assertEqualsProb(LogNum(0. / 20.), d('Z')('c))
-    assertEqualsProb(LogNum(2. / 20.), d('Z')('d))
-    assertEqualsProb(LogNum(0. / 20.), d('Z')('def))
+    assertEqualsProb(LogNum(11. / 20.0), d('Z')('a))
+    assertEqualsProb(LogNum(7. / 20.0), d('Z')('b))
+    assertEqualsProb(LogNum(0. / 20.0), d('Z')('c))
+    assertEqualsProb(LogNum(2. / 20.0), d('Z')('d))
+    assertEqualsProb(LogNum(0. / 20.0), d('Z')('def))
   }
 
   @Test
@@ -214,7 +214,7 @@ class CondCountsTransformerTests {
           DefaultedCondFreqCounts(Map(
             'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 4., 2.),
             'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 3., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.)))))
+            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
 
     /*
      * Starting counts:
@@ -255,11 +255,11 @@ class CondCountsTransformerTests {
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(5. / 20.), d('A')('a))
-    assertEqualsProb(LogNum(4. / 20.), d('A')('b))
-    assertEqualsProb(LogNum(7. / 20.), d('A')('c))
-    assertEqualsProb(LogNum(2. / 20.), d('A')('d))
-    assertEqualsProb(LogNum(2. / 20.), d('A')('def))
+    assertEqualsProb(LogNum(5. / 20.0), d('A')('a))
+    assertEqualsProb(LogNum(4. / 20.0), d('A')('b))
+    assertEqualsProb(LogNum(7. / 20.0), d('A')('c))
+    assertEqualsProb(LogNum(2. / 20.0), d('A')('d))
+    assertEqualsProb(LogNum(2. / 20.0), d('A')('def))
     assertEqualsProb(LogNum(6. / 18.), d('B')('a))
     assertEqualsProb(LogNum(3. / 18.), d('B')('b))
     assertEqualsProb(LogNum(9. / 18.), d('B')('c))
@@ -293,7 +293,7 @@ class CondCountsTransformerTests {
           DefaultedCondFreqCounts(Map(
             'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
             'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.)))))
+            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
 
     /*
      * Starting counts:
@@ -374,7 +374,7 @@ class CondCountsTransformerTests {
             DefaultedCondFreqCounts(Map(
               'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
               'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-              'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.))))))
+              'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0))))))
 
     /*
      * Starting counts:
@@ -468,7 +468,7 @@ class CondCountsTransformerTests {
             DefaultedCondFreqCounts(Map(
               'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
               'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-              'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.))))))
+              'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0))))))
 
     /*
      * Starting counts:
@@ -560,9 +560,9 @@ class CondCountsTransformerTests {
             'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
             'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7., 'x -> 1., 'y -> 1., 'z -> 1.), 3., 2.),
-            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9., 'x -> 1., 'y -> 1.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.)))))
+            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7., 'x -> 1., 'y -> 1., 'z -> 1.0), 3., 2.),
+            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9., 'x -> 1., 'y -> 1.0), 4., 3.),
+            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
 
     /*
      * Starting counts:

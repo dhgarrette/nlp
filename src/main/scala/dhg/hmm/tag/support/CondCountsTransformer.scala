@@ -112,7 +112,7 @@ case class ConstrainingCondCountsTransformer[A, B](validEntries: Map[A, Set[B]],
     if (zeroDefaults) {
       val zeroCountAs = DefaultedCondFreqCounts.fromMap(validEntries.mapVals(_ => Map[B, Double]())) // a count for every A in validEntries
       val allBs = (validEntries.values.flatten ++ resultCounts.values.flatMap(_.counts.keySet)).toSet
-      val zeroCountBs = allBs.mapToVal(0.)
+      val zeroCountBs = allBs.mapToVal(0.0)
       DefaultedCondFreqCounts.fromMap(
         resultCounts.map {
           case (a, DefaultedFreqCounts(aCounts, aTotalAddition, aDefaultCount)) =>
@@ -136,7 +136,7 @@ case class ConstrainingCondCountsTransformer[A, B](validEntries: Map[A, Set[B]],
                 case Some(validBs) => (constrainedBs -- validBs)
                 case None => constrainedBs
               }
-            val filtered = aCounts ++ zeros.mapToVal(0.)
+            val filtered = aCounts ++ zeros.mapToVal(0.0)
             a -> DefaultedFreqCounts(filtered, aTotalAddition, aDefaultCount)
         })
     }
@@ -225,7 +225,7 @@ object EisnerSmoothingCondCountsTransformer {
   def apply[A, B](lambda: Double): EisnerSmoothingCondCountsTransformer[A, B] =
     EisnerSmoothingCondCountsTransformer(lambda, PassthroughCountsTransformer[B]())
   def apply[A, B](): EisnerSmoothingCondCountsTransformer[A, B] =
-    EisnerSmoothingCondCountsTransformer(1.)
+    EisnerSmoothingCondCountsTransformer(1.0)
 }
 
 //////////////////////////////////////

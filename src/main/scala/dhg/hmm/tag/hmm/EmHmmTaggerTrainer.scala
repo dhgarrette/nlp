@@ -215,7 +215,7 @@ class EmHmmTaggerTrainer[Sym, Tag](
             val (estTrCounts, estEmCounts, seqProb) = estimateCountsForSequence(sequence)
             (estTrCounts, estEmCounts, seqProb.logValue, 1) // number of sentences == 1
         }
-        .fold((CondFreqCounts[OTag, OTag, Double](), CondFreqCounts[OTag, OSym, Double](), 0., 0)) {
+        .fold((CondFreqCounts[OTag, OTag, Double](), CondFreqCounts[OTag, OSym, Double](), 0.0, 0)) {
           case ((aTC, aEC, aP, aN), (bTC, bEC, bP, bN)) => (aTC ++ bTC, aEC ++ bEC, aP + bP, aN + bN) // sum up all the components
         }
 

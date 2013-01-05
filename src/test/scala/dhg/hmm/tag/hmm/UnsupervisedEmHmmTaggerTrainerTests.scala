@@ -57,7 +57,7 @@ class UnsupervisedEmHmmTaggerTrainerTests {
 
     // Create the initial distributions
     val allTags = tagDict.allTags.map(Option(_)) + None
-    val initialTransitions = CondFreqDist(DefaultedCondFreqCounts.fromMap(allTags.mapToVal(allTags.mapToVal(1.).toMap).toMap))
+    val initialTransitions = CondFreqDist(DefaultedCondFreqCounts.fromMap(allTags.mapToVal(allTags.mapToVal(1.0).toMap).toMap))
     val initialEmissions =
       new EstimatedRawCountUnsupervisedEmissionDistFactory(
         new PassthroughCountsTransformer(),
@@ -126,10 +126,10 @@ class UnsupervisedEmHmmTaggerTrainerTests {
       new EmHmmTaggerTrainer(
         transitionCountsTransformer =
           new TransitionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1.)),
+            EisnerSmoothingCondCountsTransformer(1.0)),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.))),
+            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.0))),
         hmmTaggerFactory = new HardTagDictConstraintHmmTaggerFactory(OptionalTagDict(tagDict)),
         maxIterations = 1,
         minAvgLogProbChangeForEM = 0.00001)
@@ -167,10 +167,10 @@ class UnsupervisedEmHmmTaggerTrainerTests {
       new EmHmmTaggerTrainer(
         transitionCountsTransformer =
           new TransitionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1.)),
+            EisnerSmoothingCondCountsTransformer(1.0)),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.))),
+            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.0))),
         hmmTaggerFactory = new HardTagDictConstraintHmmTaggerFactory(OptionalTagDict(tagDict)),
         maxIterations = 20,
         minAvgLogProbChangeForEM = 0.00001)
@@ -245,10 +245,10 @@ class UnsupervisedEmHmmTaggerTrainerTests {
       new EmHmmTaggerTrainer[String, String](
         transitionCountsTransformer =
           new TransitionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1.)),
+            EisnerSmoothingCondCountsTransformer(1.0)),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.))),
+            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.0))),
         hmmTaggerFactory = new HardTagDictConstraintHmmTaggerFactory(OptionalTagDict(tagDict)),
         maxIterations = 20,
         minAvgLogProbChangeForEM = 0.00001)
