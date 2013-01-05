@@ -236,23 +236,6 @@ object CollectionUtils {
     new Enriched_groupBy_Iterator(self)
 
   //////////////////////////////////////////////////////
-  // counts(): Map[A, Int]
-  //   - Map each distinct item in the collection to the number of times it appears.
-  //////////////////////////////////////////////////////
-
-  class Enriched_counts_GenTraversableOnce[A](self: GenTraversableOnce[A]) {
-    /**
-     * Map each distinct item in the collection to the number of times it appears.
-     *
-     * @return Map from items to their counts
-     */
-    def counts(): Map[A, Int] =
-      self.toIterator.groupBy(identity).mapVals(_.size)
-  }
-  implicit def enrich_counts_GenTraversableOnce[A](self: GenTraversableOnce[A]): Enriched_counts_GenTraversableOnce[A] =
-    new Enriched_counts_GenTraversableOnce(self)
-
-  //////////////////////////////////////////////////////
   // groupByKey(): Map[T,Repr[U]]
   //   - For a collection of pairs, group by the first item in the pair.
   //////////////////////////////////////////////////////
