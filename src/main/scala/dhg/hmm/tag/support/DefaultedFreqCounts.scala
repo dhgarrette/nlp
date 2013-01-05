@@ -1,0 +1,63 @@
+package dhg.hmm.tag.support
+
+import dhg.hmm.util.CollectionUtils._
+import dhg.util.CollectionUtil._
+import dhg.util.LogNum
+
+/**
+ * This class stores a map of items and their counts along with a "default"
+ * count (for not-yet-seen items) and a "total addition" value that is added
+ * to the total count to account for the count mass of any possibly unseen
+ * items.
+ *
+ * @tparam B	the item being counted
+ * @tparam N	the Numeric type of the count
+ */
+case class DefaultedFreqCounts[B, N](counts: Map[B, N], totalAddition: N, defaultCount: N)(implicit num: Numeric[N]) {
+  def +++(that: DefaultedFreqCounts[B, N]) = {
+    val countSum = counts +++ that.counts
+
+    if (totalAddition == num.zero && defaultCount == num.zero)
+      new DefaultedFreqCounts(countSum, that.totalAddition, that.defaultCount)
+
+    else if (that.totalAddition == num.zero && that.defaultCount == num.zero)
+      new DefaultedFreqCounts(countSum, totalAddition, defaultCount)
+
+    else {
+      assert(totalAddition == that.totalAddition)
+      assert(defaultCount == that.defaultCount)
+      new DefaultedFreqCounts(countSum, totalAddition, defaultCount)
+    }
+  }
+
+  def simpleCounts = counts
+
+  def total = num.plus(counts.values.sum, totalAddition)
+}
+
+object DefaultedFreqCounts {
+  def apply[B, N: Numeric](counts: Map[B, N]) =
+    new DefaultedFreqCounts(counts, implicitly[Numeric[N]].zero, implicitly[Numeric[N]].zero)
+}
+
+/**
+ * This class stores a map of items and their counts along with a "default"
+ * count (for not-yet-seen items) and a "total addition" value that is added
+ * to the total count to account for the count mass of any possibly unseen
+ * items.
+ *
+ * @tparam A	the conditioning item being counted; P(B|A).
+ * @tparam B	the conditioned item being counted; P(B|A).
+ * @tparam N	the Numeric type of the count
+ */
+case class DefaultedCondFreqCounts[A, B, N: Numeric](counts: Map[A, DefaultedFreqCounts[B, N]]) {
+  def +++(that: DefaultedCondFreqCounts[A, B, N]): DefaultedCondFreqCounts[A, B, N] =
+    DefaultedCondFreqCounts((counts.iterator ++ that.counts).groupByKey.mapVals(_.reduce(_ +++ _)))
+
+  def simpleCounts = counts.mapVals(_.simpleCounts)
+}
+
+object DefaultedCondFreqCounts {
+  def fromMap[A, B, N: Numeric](counts: Map[A, Map[B, N]]): DefaultedCondFreqCounts[A, B, N] =
+    DefaultedCondFreqCounts(counts.mapVals(c => DefaultedFreqCounts(c)))
+}
