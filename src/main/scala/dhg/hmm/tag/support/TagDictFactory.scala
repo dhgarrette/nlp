@@ -3,11 +3,10 @@ package dhg.hmm.tag.support
 import dhg.hmm.tag.SimpleTagDict
 import dhg.hmm.tag.SimpleWeightedTagDict
 import dhg.hmm.tag.TagDict
-import dhg.hmm.tag.TagDict._
 import dhg.hmm.util.CollectionUtils._
+import dhg.util.CollectionUtil._
 import dhg.util.FileUtils._
 import dhg.util.LogNum._
-import dhg.util.CollectionUtil._
 
 /**
  * Factory for creating a tag dictionary (mapping from symbols to valid tags)

@@ -1,10 +1,7 @@
 package dhg.hmm.tag.hmm
 
-import org.apache.commons.logging.LogFactory
-
 import dhg.hmm.tag.SupervisedTaggerTrainer
 import dhg.hmm.tag.support.CondFreqDist
-import dhg.util.CollectionUtil._
 
 /**
  * Factory for training a Hidden Markov Model tagger directly from labeled data.
@@ -21,8 +18,6 @@ class SupervisedHmmTaggerTrainer[Sym, Tag](
   val emissionCountsTransformer: EmissionCountsTransformer[Tag, Sym],
   val hmmTaggerFactory: HmmTaggerFactory[Sym, Tag])
   extends SupervisedTaggerTrainer[Sym, Tag] {
-
-  private val LOG = LogFactory.getLog(classOf[SupervisedHmmTaggerTrainer[Sym, Tag]])
 
   /**
    * @inheritdoc

@@ -1,27 +1,17 @@
 package dhg.hmm.tag.hmm
 
 import org.junit.Assert._
-import org.junit._
-import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
-import scala.io.Source
-import dhg.hmm.tag.SupervisedTaggerTrainer
-import dhg.hmm.tag.Tagger
-import dhg.hmm.tag.hmm.support._
-import dhg.hmm.tag.support._
-import dhg.hmm.tag.TaggerEvaluator
-import dhg.hmm.tag.ScoreResults
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
-import org.apache.commons.logging.LogFactory
-import dhg.hmm.tag.OptionalTagDict
-import dhg.hmm.tag.TagDict
-import dhg.util.LogNum
-import dhg.util.FileUtils
-import dhg.util.CollectionUtil._
+import org.junit.BeforeClass
+import org.junit.Test
 
-class SupervisedHmmTaggerTrainerTests {
-  val LOG = LogFactory.getLog(classOf[SupervisedHmmTaggerTrainerTests])
+import com.typesafe.scalalogging.log4j.Logging
+
+import dhg.hmm.tag._
+import dhg.hmm.tag.support._
+import dhg.util.CollectionUtil._
+import dhg.util.FileUtils
+
+class SupervisedHmmTaggerTrainerTests extends Logging {
 
   @Test
   def tiny_noSmoothing() {
@@ -130,9 +120,9 @@ class SupervisedHmmTaggerTrainerTests {
     val gold = TaggedFile("data/postag/english/entest")
     //val gold = Vector(Vector(("The", "D"), ("<unknown>", "N"), ("runs", "V"), (".", ".")))
 
-    LOG.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
-    LOG.debug("labeledTrain.size = " + train.size)
-    LOG.debug("rawTrain.size     = " + 0)
+    logger.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
+    logger.debug("labeledTrain.size = " + train.size)
+    logger.debug("rawTrain.size     = " + 0)
 
     val trainer =
       new SupervisedHmmTaggerTrainer[String, String](
@@ -173,9 +163,9 @@ class SupervisedHmmTaggerTrainerTests {
     val gold = TaggedFile("data/postag/english/entest")
     //val gold = Vector(Vector(("The", "D"), ("<unknown>", "N"), ("runs", "V"), (".", ".")))
 
-    LOG.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
-    LOG.debug("labeledTrain.size = " + train.size)
-    LOG.debug("rawTrain.size     = " + 0)
+    logger.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
+    logger.debug("labeledTrain.size = " + train.size)
+    logger.debug("rawTrain.size     = " + 0)
 
     val trainer =
       new SupervisedHmmTaggerTrainer[String, String](
@@ -212,9 +202,9 @@ class SupervisedHmmTaggerTrainerTests {
     val gold = TaggedFile("data/postag/english/entest")
     //val gold = Vector(Vector(("The", "D"), ("<unknown>", "N"), ("runs", "V"), (".", ".")))
 
-    LOG.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
-    LOG.debug("labeledTrain.size = " + train.size)
-    LOG.debug("rawTrain.size     = " + 0)
+    logger.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
+    logger.debug("labeledTrain.size = " + train.size)
+    logger.debug("rawTrain.size     = " + 0)
 
     val trainer =
       new SupervisedHmmTaggerTrainer[String, String](
@@ -250,9 +240,9 @@ class SupervisedHmmTaggerTrainerTests {
     val gold = TaggedFile("data/postag/english/entest")
     //val gold = Vector(Vector(("The", "D"), ("<unknown>", "N"), ("runs", "V"), (".", ".")))
 
-    LOG.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
-    LOG.debug("labeledTrain.size = " + train.size)
-    LOG.debug("rawTrain.size     = " + 0)
+    logger.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
+    logger.debug("labeledTrain.size = " + train.size)
+    logger.debug("rawTrain.size     = " + 0)
 
     val trainer =
       new SupervisedHmmTaggerTrainer[String, String](
@@ -307,7 +297,7 @@ class SupervisedHmmTaggerTrainerTests {
 object SupervisedHmmTaggerTrainerTests {
 
   @BeforeClass def turnOffLogging() {
-    Logger.getRootLogger.setLevel(Level.OFF)
+    //Logger.getRootLogger.setLevel(Level.OFF)
   }
 
 }

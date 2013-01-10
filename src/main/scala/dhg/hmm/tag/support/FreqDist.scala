@@ -1,7 +1,5 @@
 package dhg.hmm.tag.support
 
-import org.apache.commons.logging.LogFactory
-
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 import dhg.util.LogNum
@@ -74,8 +72,6 @@ class CondFreqDist[A, B](val dists: Map[A, MultinomialFreqDist[B]], val default:
  * to probabilities: P(B|A).
  */
 object CondFreqDist {
-  private val LOG = LogFactory.getLog(CondFreqDist.getClass)
-
   /**
    * Return an "empty" frequency distribution: a function that maps
    * everything to the zero-probability.  P(B|A) = 0 for all A,B.

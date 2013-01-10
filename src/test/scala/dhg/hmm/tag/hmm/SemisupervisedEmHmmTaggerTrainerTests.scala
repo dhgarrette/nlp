@@ -1,26 +1,19 @@
 package dhg.hmm.tag.hmm
 
+import scala.Array.canBuildFrom
+
 import org.junit.Assert._
-import org.junit._
-import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
-import scala.io.Source
+import org.junit.BeforeClass
+import org.junit.Test
+
+import com.typesafe.scalalogging.log4j.Logging
+
 import dhg.hmm.tag._
 import dhg.hmm.tag.support._
-import dhg.hmm.tag.hmm.support._
-import dhg.hmm.tag.TaggerEvaluator
-import dhg.hmm.tag.ScoreResults
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
-import org.apache.log4j.PropertyConfigurator
-import org.apache.log4j.BasicConfigurator
-import org.apache.commons.logging.LogFactory
-import dhg.util.FileUtils
 import dhg.util.CollectionUtil._
+import dhg.util.FileUtils
 
-class SemisupervisedEmHmmTaggerTrainerTests {
-  val LOG = LogFactory.getLog(classOf[SemisupervisedEmHmmTaggerTrainerTests])
-
+class SemisupervisedEmHmmTaggerTrainerTests extends Logging {
   @Test
   def en_smallTagDict() {
     val (tagDictTrain, labeledTrain) = TaggedFile("data/postag/english/entrain").splitAt(3000)
@@ -60,9 +53,9 @@ class SemisupervisedEmHmmTaggerTrainerTests {
     val trainRaw = RawFile("data/postag/english/enraw20k")
     val gold = TaggedFile("data/postag/english/entest")
 
-    LOG.info("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
-    LOG.info("labeledTrain.size = " + trainLab.size)
-    LOG.info("rawTrain.size     = " + trainRaw.size)
+    logger.info("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
+    logger.info("labeledTrain.size = " + trainLab.size)
+    logger.info("rawTrain.size     = " + trainRaw.size)
 
     val trainer: TypesupervisedTaggerTrainer[String, String] =
       new EmHmmTaggerTrainer(

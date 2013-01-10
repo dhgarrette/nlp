@@ -1,11 +1,9 @@
 package dhg.hmm.tag.hmm
 
 import org.junit.Assert._
-import org.junit._
-import dhg.hmm.tag._
-import dhg.hmm.tag.hmm._
-import dhg.hmm.tag.support.DefaultedCondFreqCounts
-import dhg.hmm.tag.support.PassthroughCondCountsTransformer
+import org.junit.Test
+
+import dhg.hmm.tag.support._
 
 class TransitionCountsTransformerTests {
 
@@ -18,14 +16,14 @@ class TransitionCountsTransformerTests {
         Some('B) -> Map(Some('c) -> 4, Some('d) -> 5),
         None -> Map(Some('e) -> 6, Some('f) -> 7, None -> 8)))
     val result = t(counts).simpleCounts
-    assertDouble(1., result(Some('A))(Some('a)))
-    assertDouble(2., result(Some('A))(Some('b)))
-    assertDouble(3., result(Some('A))(None))
-    assertDouble(4., result(Some('B))(Some('c)))
-    assertDouble(5., result(Some('B))(Some('d)))
+    assertDouble(1.0, result(Some('A))(Some('a)))
+    assertDouble(2.0, result(Some('A))(Some('b)))
+    assertDouble(3.0, result(Some('A))(None))
+    assertDouble(4.0, result(Some('B))(Some('c)))
+    assertDouble(5.0, result(Some('B))(Some('d)))
     assertEquals(None, result(Some('B)).get(None))
-    assertDouble(6., result(None)(Some('e)))
-    assertDouble(7., result(None)(Some('f)))
+    assertDouble(6.0, result(None)(Some('e)))
+    assertDouble(7.0, result(None)(Some('f)))
     assertDouble(0.0, result(None)(None))
   }
 
@@ -38,14 +36,14 @@ class TransitionCountsTransformerTests {
         Some('B) -> Map(Some('c) -> 4, Some('d) -> 5),
         None -> Map(Some('e) -> 6, Some('f) -> 7)))
     val result = t(counts).simpleCounts
-    assertDouble(1., result(Some('A))(Some('a)))
-    assertDouble(2., result(Some('A))(Some('b)))
-    assertDouble(3., result(Some('A))(None))
-    assertDouble(4., result(Some('B))(Some('c)))
-    assertDouble(5., result(Some('B))(Some('d)))
+    assertDouble(1.0, result(Some('A))(Some('a)))
+    assertDouble(2.0, result(Some('A))(Some('b)))
+    assertDouble(3.0, result(Some('A))(None))
+    assertDouble(4.0, result(Some('B))(Some('c)))
+    assertDouble(5.0, result(Some('B))(Some('d)))
     assertEquals(None, result(Some('B)).get(None))
-    assertDouble(6., result(None)(Some('e)))
-    assertDouble(7., result(None)(Some('f)))
+    assertDouble(6.0, result(None)(Some('e)))
+    assertDouble(7.0, result(None)(Some('f)))
     assertDouble(0.0, result(None)(None))
   }
 

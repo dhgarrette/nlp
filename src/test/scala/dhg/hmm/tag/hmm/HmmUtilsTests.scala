@@ -1,23 +1,10 @@
 package dhg.hmm.tag.hmm
 
-import org.junit.Assert._
-import org.junit._
-import dhg.hmm.util.CollectionUtils._
-import dhg.util.FileUtils._
-import scala.io.Source
+import org.junit.Test
+
 import dhg.hmm.tag._
-import dhg.hmm.tag.TagUtils._
-import dhg.hmm.tag.support._
-import dhg.hmm.tag.hmm.support._
-import dhg.hmm.tag.TaggerEvaluator
-import dhg.hmm.tag.ScoreResults
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
-import org.apache.log4j.PropertyConfigurator
-import org.apache.log4j.BasicConfigurator
-import org.apache.commons.logging.LogFactory
-import dhg.util.FileUtils
 import dhg.util.CollectionUtil._
+import dhg.util.FileUtils._
 import dhg.util.LogNum
 
 class HmmUtilsTests {

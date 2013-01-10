@@ -1,11 +1,11 @@
 package dhg.hmm.tag.support
 
 import scala.annotation.tailrec
+
 import dhg.hmm.tag.OptionalTagDict
 import dhg.hmm.tag.SimpleTagDict
-import dhg.hmm.tag.TagDict._
+import dhg.hmm.tag.TagDict.OptionalTagDict
 import dhg.hmm.tag.Tagger
-import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 import dhg.util.LogNum
 import dhg.util.Pattern

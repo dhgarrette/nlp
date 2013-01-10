@@ -70,21 +70,21 @@ class TagDictFactoryTests {
 
     // WeightedTagDict methods
 
-    assertEqualsSmart(Map('D -> LogNum(5 / 12.), 'N -> LogNum(4 / 12.), 'V -> LogNum(3 / 12.)), td.default)
+    assertEqualsSmart(Map('D -> LogNum(5 / 12.0), 'N -> LogNum(4 / 12.0), 'V -> LogNum(3 / 12.0)), td.default)
 
-    assertEqualsSmart(Some(Map('D -> LogNum(5 / 5.))), td.doGetMap("the"))
-    assertEqualsSmart(Some(Map('N -> LogNum(3 / 3.))), td.doGetMap("dog"))
-    assertEqualsSmart(Some(Map('V -> LogNum(3 / 4.), 'N -> LogNum(1 / 4.))), td.doGetMap("walks"))
+    assertEqualsSmart(Some(Map('D -> LogNum(5 / 5.0))), td.doGetMap("the"))
+    assertEqualsSmart(Some(Map('N -> LogNum(3 / 3.0))), td.doGetMap("dog"))
+    assertEqualsSmart(Some(Map('V -> LogNum(3 / 4.0), 'N -> LogNum(1 / 4.0))), td.doGetMap("walks"))
     assertEqualsSmart(None, td.doGetMap("aardvark"))
 
     val iterator: Iterator[(String, Map[Symbol, LogNum])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
-    assertEqualsSmart(Vector("dog" -> Map('N -> LogNum(3 / 3.)), "the" -> Map('D -> LogNum(5 / 5.)), "walks" -> Map('V -> LogNum(3 / 4.), 'N -> LogNum(1 / 4.))), iteratorSorted)
+    assertEqualsSmart(Vector("dog" -> Map('N -> LogNum(3 / 3.0)), "the" -> Map('D -> LogNum(5 / 5.0)), "walks" -> Map('V -> LogNum(3 / 4.0), 'N -> LogNum(1 / 4.0))), iteratorSorted)
 
-    assertEqualsSmart(Map('D -> LogNum(5 / 5.)), td.weights("the"))
-    assertEqualsSmart(Map('N -> LogNum(3 / 3.)), td.weights("dog"))
-    assertEqualsSmart(Map('V -> LogNum(3 / 4.), 'N -> LogNum(1 / 4.)), td.weights("walks"))
-    assertEqualsSmart(Map('D -> LogNum(5 / 12.), 'N -> LogNum(4 / 12.), 'V -> LogNum(3 / 12.)), td.weights("aardvark"))
+    assertEqualsSmart(Map('D -> LogNum(5 / 5.0)), td.weights("the"))
+    assertEqualsSmart(Map('N -> LogNum(3 / 3.0)), td.weights("dog"))
+    assertEqualsSmart(Map('V -> LogNum(3 / 4.0), 'N -> LogNum(1 / 4.0)), td.weights("walks"))
+    assertEqualsSmart(Map('D -> LogNum(5 / 12.0), 'N -> LogNum(4 / 12.0), 'V -> LogNum(3 / 12.0)), td.weights("aardvark"))
   }
 
   @Test
@@ -146,24 +146,24 @@ class TagDictFactoryTests {
 
     // WeightedTagDict methods
 
-    assertEqualsSmart(Map('D -> LogNum(8 / 24.), 'N -> LogNum(7 / 24.), 'V -> LogNum(6 / 24.)), td.default)
+    assertEqualsSmart(Map('D -> LogNum(8 / 24.0), 'N -> LogNum(7 / 24.0), 'V -> LogNum(6 / 24.0)), td.default)
 
-    assertEqualsSmart(Some(Map('D -> LogNum(6 / 9.), 'N -> LogNum(1 / 9.), 'V -> LogNum(1 / 9.))), td.doGetMap("the"))
-    assertEqualsSmart(Some(Map('D -> LogNum(1 / 7.), 'N -> LogNum(4 / 7.), 'V -> LogNum(1 / 7.))), td.doGetMap("dog"))
-    assertEqualsSmart(Some(Map('D -> LogNum(1 / 8.), 'N -> LogNum(2 / 8.), 'V -> LogNum(4 / 8.))), td.doGetMap("walks"))
+    assertEqualsSmart(Some(Map('D -> LogNum(6 / 9.0), 'N -> LogNum(1 / 9.0), 'V -> LogNum(1 / 9.0))), td.doGetMap("the"))
+    assertEqualsSmart(Some(Map('D -> LogNum(1 / 7.0), 'N -> LogNum(4 / 7.0), 'V -> LogNum(1 / 7.0))), td.doGetMap("dog"))
+    assertEqualsSmart(Some(Map('D -> LogNum(1 / 8.0), 'N -> LogNum(2 / 8.0), 'V -> LogNum(4 / 8.0))), td.doGetMap("walks"))
     assertEqualsSmart(None, td.doGetMap("aardvark"))
 
     val iterator: Iterator[(String, Map[Symbol, LogNum])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
     assertEqualsSmart(Vector(
-      "dog" -> Map('D -> LogNum(1 / 7.), 'N -> LogNum(4 / 7.), 'V -> LogNum(1 / 7.)),
-      "the" -> Map('D -> LogNum(6 / 9.), 'N -> LogNum(1 / 9.), 'V -> LogNum(1 / 9.)),
-      "walks" -> Map('D -> LogNum(1 / 8.), 'N -> LogNum(2 / 8.), 'V -> LogNum(4 / 8.))), iteratorSorted)
+      "dog" -> Map('D -> LogNum(1 / 7.0), 'N -> LogNum(4 / 7.0), 'V -> LogNum(1 / 7.0)),
+      "the" -> Map('D -> LogNum(6 / 9.0), 'N -> LogNum(1 / 9.0), 'V -> LogNum(1 / 9.0)),
+      "walks" -> Map('D -> LogNum(1 / 8.0), 'N -> LogNum(2 / 8.0), 'V -> LogNum(4 / 8.0))), iteratorSorted)
 
-    assertEqualsSmart(Map('D -> LogNum(6 / 9.), 'N -> LogNum(1 / 9.), 'V -> LogNum(1 / 9.)), td.weights("the"))
-    assertEqualsSmart(Map('D -> LogNum(1 / 7.), 'N -> LogNum(4 / 7.), 'V -> LogNum(1 / 7.)), td.weights("dog"))
-    assertEqualsSmart(Map('D -> LogNum(1 / 8.), 'N -> LogNum(2 / 8.), 'V -> LogNum(4 / 8.)), td.weights("walks"))
-    assertEqualsSmart(Map('D -> LogNum(8 / 24.), 'N -> LogNum(7 / 24.), 'V -> LogNum(6 / 24.)), td.weights("aardvark"))
+    assertEqualsSmart(Map('D -> LogNum(6 / 9.0), 'N -> LogNum(1 / 9.0), 'V -> LogNum(1 / 9.0)), td.weights("the"))
+    assertEqualsSmart(Map('D -> LogNum(1 / 7.0), 'N -> LogNum(4 / 7.0), 'V -> LogNum(1 / 7.0)), td.weights("dog"))
+    assertEqualsSmart(Map('D -> LogNum(1 / 8.0), 'N -> LogNum(2 / 8.0), 'V -> LogNum(4 / 8.0)), td.weights("walks"))
+    assertEqualsSmart(Map('D -> LogNum(8 / 24.0), 'N -> LogNum(7 / 24.0), 'V -> LogNum(6 / 24.0)), td.weights("aardvark"))
   }
 
   def assertEqualsSmart[A](expected: Map[A, LogNum], actual: Map[A, LogNum]) {

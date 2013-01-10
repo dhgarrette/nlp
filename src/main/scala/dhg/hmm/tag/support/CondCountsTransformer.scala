@@ -3,11 +3,8 @@ package dhg.hmm.tag.support
 import scala.collection.{ Map => CMap }
 import scala.util.Random
 
-import org.apache.commons.logging.LogFactory
-
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 
 /**
  * A builder for conditional frequency distributions.  Stores counts (in a mutable
@@ -184,8 +181,6 @@ object AddLambdaSmoothingCondCountsTransformer {
  * @param backoffCountsTransformer	used to compute the backoff probability
  */
 class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTransformer: CountsTransformer[B], delegate: CondCountsTransformer[A, B]) extends CondCountsTransformer[A, B] {
-  private val LOG = LogFactory.getLog(classOf[EisnerSmoothingCondCountsTransformer[A, B]])
-
   override def apply(counts: DefaultedCondFreqCounts[A, B, Double]) = {
     val DefaultedCondFreqCounts(resultCounts) = delegate(counts)
 

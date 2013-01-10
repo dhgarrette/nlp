@@ -1,10 +1,10 @@
 package dhg.hmm.tag.hmm
 
-import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
-import dhg.hmm.tag.support.CondFreqDist
-import dhg.hmm.tag.TagUtils._
 import dhg.hmm.tag.TagDict.OptionalTagDict
+import dhg.hmm.tag.TagUtils._
+import dhg.hmm.tag.support.CondFreqDist
+import dhg.hmm.util.CollectionUtils._
+import dhg.util.CollectionUtil._
 import dhg.util.LogNum
 
 object HmmUtils {

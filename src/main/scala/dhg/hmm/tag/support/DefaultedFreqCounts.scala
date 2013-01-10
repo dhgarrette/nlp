@@ -2,7 +2,6 @@ package dhg.hmm.tag.support
 
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 
 /**
  * This class stores a map of items and their counts along with a "default"

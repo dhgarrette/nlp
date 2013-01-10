@@ -7,8 +7,6 @@ import dhg.util.LogNum._
 import dhg.util.Pattern.{ -> }
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
 
 class CondCountsTransformerTests {
 
@@ -17,25 +15,25 @@ class CondCountsTransformerTests {
     val transformer = new PassthroughCondCountsTransformer[Char, Symbol]()
 
     val counts = Map(
-      'A' -> Map('a -> 1., 'b -> 4.),
-      'B' -> Map('a -> 5., 'b -> 3.),
-      'C' -> Map('a -> 2.))
+      'A' -> Map('a -> 1.0, 'b -> 4.0),
+      'B' -> Map('a -> 5.0, 'b -> 3.0),
+      'C' -> Map('a -> 2.0))
 
     val r = transformer(counts)
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(1. / 5.), d('A')('a))
-    assertEqualsProb(LogNum(4. / 5.), d('A')('b))
+    assertEqualsProb(LogNum(1.0 / 5.0), d('A')('a))
+    assertEqualsProb(LogNum(4.0 / 5.0), d('A')('b))
     assertEqualsProb(LogNum.zero, d('A')('def))
-    assertEqualsProb(LogNum(5. / 8.), d('B')('a))
-    assertEqualsProb(LogNum(3. / 8.), d('B')('b))
+    assertEqualsProb(LogNum(5.0 / 8.0), d('B')('a))
+    assertEqualsProb(LogNum(3.0 / 8.0), d('B')('b))
     assertEqualsProb(LogNum.zero, d('B')('def))
     assertEqualsProb(LogNum.one, d('C')('a))
     assertEqualsProb(LogNum.zero, d('C')('b))
     assertEqualsProb(LogNum.zero, d('C')('def))
-    assertEqualsProb(LogNum(8. / 15.), d('Z')('a))
-    assertEqualsProb(LogNum(7. / 15.), d('Z')('b))
+    assertEqualsProb(LogNum(8.0 / 15.0), d('Z')('a))
+    assertEqualsProb(LogNum(7.0 / 15.0), d('Z')('b))
     assertEqualsProb(LogNum.zero, d('Z')('def))
   }
 
@@ -46,12 +44,12 @@ class CondCountsTransformerTests {
         zeroDefaults = true,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.), 0.0, 0.0),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.), 0.0, 0.0))),
+            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 0.0, 0.0),
+            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 0.0, 0.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
-            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
+            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
+            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
+            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
 
     /*
      * Starting counts:
@@ -92,16 +90,16 @@ class CondCountsTransformerTests {
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(5. / 11.0), d('A')('a))
-    assertEqualsProb(LogNum(4. / 11.0), d('A')('b))
-    assertEqualsProb(LogNum(0. / 11.0), d('A')('c))
-    assertEqualsProb(LogNum(2. / 11.0), d('A')('d))
-    assertEqualsProb(LogNum(0. / 11.0), d('A')('def))
-    assertEqualsProb(LogNum(6. / 9.), d('B')('a))
-    assertEqualsProb(LogNum(3. / 9.), d('B')('b))
-    assertEqualsProb(LogNum(0. / 9.), d('B')('c))
-    assertEqualsProb(LogNum(0. / 9.), d('B')('d))
-    assertEqualsProb(LogNum(0. / 9.), d('B')('def))
+    assertEqualsProb(LogNum(5.0 / 11.0), d('A')('a))
+    assertEqualsProb(LogNum(4.0 / 11.0), d('A')('b))
+    assertEqualsProb(LogNum(0.0 / 11.0), d('A')('c))
+    assertEqualsProb(LogNum(2.0 / 11.0), d('A')('d))
+    assertEqualsProb(LogNum(0.0 / 11.0), d('A')('def))
+    assertEqualsProb(LogNum(6.0 / 9.0), d('B')('a))
+    assertEqualsProb(LogNum(3.0 / 9.0), d('B')('b))
+    assertEqualsProb(LogNum(0.0 / 9.0), d('B')('c))
+    assertEqualsProb(LogNum(0.0 / 9.0), d('B')('d))
+    assertEqualsProb(LogNum(0.0 / 9.0), d('B')('def))
     assertEqualsProb(LogNum.zero, d('C')('a))
     assertEqualsProb(LogNum.zero, d('C')('b))
     assertEqualsProb(LogNum.zero, d('C')('c))
@@ -112,11 +110,11 @@ class CondCountsTransformerTests {
     assertEqualsProb(LogNum.zero, d('D')('c))
     assertEqualsProb(LogNum.zero, d('D')('d))
     assertEqualsProb(LogNum.zero, d('D')('def))
-    assertEqualsProb(LogNum(11. / 20.0), d('Z')('a))
-    assertEqualsProb(LogNum(7. / 20.0), d('Z')('b))
-    assertEqualsProb(LogNum(0. / 20.0), d('Z')('c))
-    assertEqualsProb(LogNum(2. / 20.0), d('Z')('d))
-    assertEqualsProb(LogNum(0. / 20.0), d('Z')('def))
+    assertEqualsProb(LogNum(11.0 / 20.0), d('Z')('a))
+    assertEqualsProb(LogNum(7.0 / 20.0), d('Z')('b))
+    assertEqualsProb(LogNum(0.0 / 20.0), d('Z')('c))
+    assertEqualsProb(LogNum(2.0 / 20.0), d('Z')('d))
+    assertEqualsProb(LogNum(0.0 / 20.0), d('Z')('def))
   }
 
   @Test
@@ -127,12 +125,12 @@ class CondCountsTransformerTests {
         zeroDefaults = true,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
+            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
-            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
+            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
+            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
+            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
 
     /*
      * Starting counts:
@@ -166,23 +164,23 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.)))
+      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(5. / 11.0), d('A')('a))
-    assertEqualsProb(LogNum(4. / 11.0), d('A')('b))
-    assertEqualsProb(LogNum(0. / 11.0), d('A')('c))
-    assertEqualsProb(LogNum(2. / 11.0), d('A')('d))
-    assertEqualsProb(LogNum(0. / 11.0), d('A')('def))
-    assertEqualsProb(LogNum(6. / 9.), d('B')('a))
-    assertEqualsProb(LogNum(3. / 9.), d('B')('b))
-    assertEqualsProb(LogNum(0. / 9.), d('B')('c))
-    assertEqualsProb(LogNum(0. / 9.), d('B')('d))
-    assertEqualsProb(LogNum(0. / 9.), d('B')('def))
+    assertEqualsProb(LogNum(5.0 / 11.0), d('A')('a))
+    assertEqualsProb(LogNum(4.0 / 11.0), d('A')('b))
+    assertEqualsProb(LogNum(0.0 / 11.0), d('A')('c))
+    assertEqualsProb(LogNum(2.0 / 11.0), d('A')('d))
+    assertEqualsProb(LogNum(0.0 / 11.0), d('A')('def))
+    assertEqualsProb(LogNum(6.0 / 9.0), d('B')('a))
+    assertEqualsProb(LogNum(3.0 / 9.0), d('B')('b))
+    assertEqualsProb(LogNum(0.0 / 9.0), d('B')('c))
+    assertEqualsProb(LogNum(0.0 / 9.0), d('B')('d))
+    assertEqualsProb(LogNum(0.0 / 9.0), d('B')('def))
     assertEqualsProb(LogNum.zero, d('C')('a))
     assertEqualsProb(LogNum.zero, d('C')('b))
     assertEqualsProb(LogNum.zero, d('C')('c))
@@ -193,11 +191,11 @@ class CondCountsTransformerTests {
     assertEqualsProb(LogNum.zero, d('D')('c))
     assertEqualsProb(LogNum.zero, d('D')('d))
     assertEqualsProb(LogNum.zero, d('D')('def))
-    assertEqualsProb(LogNum(11. / 20.0), d('Z')('a))
-    assertEqualsProb(LogNum(7. / 20.0), d('Z')('b))
-    assertEqualsProb(LogNum(0. / 20.0), d('Z')('c))
-    assertEqualsProb(LogNum(2. / 20.0), d('Z')('d))
-    assertEqualsProb(LogNum(0. / 20.0), d('Z')('def))
+    assertEqualsProb(LogNum(11.0 / 20.0), d('Z')('a))
+    assertEqualsProb(LogNum(7.0 / 20.0), d('Z')('b))
+    assertEqualsProb(LogNum(0.0 / 20.0), d('Z')('c))
+    assertEqualsProb(LogNum(2.0 / 20.0), d('Z')('d))
+    assertEqualsProb(LogNum(0.0 / 20.0), d('Z')('def))
   }
 
   @Test
@@ -209,12 +207,12 @@ class CondCountsTransformerTests {
         zeroDefaults = false,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
+            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 4., 2.),
-            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 3., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
+            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 4.0, 2.0),
+            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 3.0, 3.0),
+            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
 
     /*
      * Starting counts:
@@ -248,38 +246,38 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.)))
+      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
 
     val d = CondFreqDist(r)
-    assertEqualsProb(LogNum(5. / 20.0), d('A')('a))
-    assertEqualsProb(LogNum(4. / 20.0), d('A')('b))
-    assertEqualsProb(LogNum(7. / 20.0), d('A')('c))
-    assertEqualsProb(LogNum(2. / 20.0), d('A')('d))
-    assertEqualsProb(LogNum(2. / 20.0), d('A')('def))
-    assertEqualsProb(LogNum(6. / 18.), d('B')('a))
-    assertEqualsProb(LogNum(3. / 18.), d('B')('b))
-    assertEqualsProb(LogNum(9. / 18.), d('B')('c))
-    assertEqualsProb(LogNum(0. / 18.), d('B')('d))
-    assertEqualsProb(LogNum(3. / 18.), d('B')('def))
-    assertEqualsProb(LogNum(0. / 5.), d('C')('a))
-    assertEqualsProb(LogNum(0. / 5.), d('C')('b))
-    assertEqualsProb(LogNum(1. / 5.), d('C')('c))
-    assertEqualsProb(LogNum(0. / 5.), d('C')('d))
-    assertEqualsProb(LogNum(1. / 5.), d('C')('def))
-    assertEqualsProb(LogNum(11 / 43.), d('D')('a))
-    assertEqualsProb(LogNum(4 / 43.), d('D')('b))
-    assertEqualsProb(LogNum(16 / 43.), d('D')('c))
-    assertEqualsProb(LogNum(0 / 43.), d('D')('d))
-    assertEqualsProb(LogNum(6 / 43.), d('D')('def))
-    assertEqualsProb(LogNum(11 / 43.), d('Z')('a))
-    assertEqualsProb(LogNum(4 / 43.), d('Z')('b))
-    assertEqualsProb(LogNum(16 / 43.), d('Z')('c))
-    assertEqualsProb(LogNum(0 / 43.), d('Z')('d))
-    assertEqualsProb(LogNum(6 / 43.), d('Z')('def))
+    assertEqualsProb(LogNum(5.0 / 20.0), d('A')('a))
+    assertEqualsProb(LogNum(4.0 / 20.0), d('A')('b))
+    assertEqualsProb(LogNum(7.0 / 20.0), d('A')('c))
+    assertEqualsProb(LogNum(2.0 / 20.0), d('A')('d))
+    assertEqualsProb(LogNum(2.0 / 20.0), d('A')('def))
+    assertEqualsProb(LogNum(6.0 / 18.0), d('B')('a))
+    assertEqualsProb(LogNum(3.0 / 18.0), d('B')('b))
+    assertEqualsProb(LogNum(9.0 / 18.0), d('B')('c))
+    assertEqualsProb(LogNum(0.0 / 18.0), d('B')('d))
+    assertEqualsProb(LogNum(3.0 / 18.0), d('B')('def))
+    assertEqualsProb(LogNum(0.0 / 5.0), d('C')('a))
+    assertEqualsProb(LogNum(0.0 / 5.0), d('C')('b))
+    assertEqualsProb(LogNum(1.0 / 5.0), d('C')('c))
+    assertEqualsProb(LogNum(0.0 / 5.0), d('C')('d))
+    assertEqualsProb(LogNum(1.0 / 5.0), d('C')('def))
+    assertEqualsProb(LogNum(11 / 43.0), d('D')('a))
+    assertEqualsProb(LogNum(4 / 43.0), d('D')('b))
+    assertEqualsProb(LogNum(16 / 43.0), d('D')('c))
+    assertEqualsProb(LogNum(0 / 43.0), d('D')('d))
+    assertEqualsProb(LogNum(6 / 43.0), d('D')('def))
+    assertEqualsProb(LogNum(11 / 43.0), d('Z')('a))
+    assertEqualsProb(LogNum(4 / 43.0), d('Z')('b))
+    assertEqualsProb(LogNum(16 / 43.0), d('Z')('c))
+    assertEqualsProb(LogNum(0 / 43.0), d('Z')('d))
+    assertEqualsProb(LogNum(6 / 43.0), d('Z')('def))
   }
 
   @Test
@@ -288,12 +286,12 @@ class CondCountsTransformerTests {
       AddLambdaSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.1,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
+            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
-            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
+            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
+            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
+            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
 
     /*
      * Starting counts:
@@ -326,8 +324,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.)))
+      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -369,12 +367,12 @@ class CondCountsTransformerTests {
           zeroDefaults = true,
           delegate = MockCondCountsTransformer(
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-              'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
+              'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+              'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
-              'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-              'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0))))))
+              'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
+              'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
+              'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0))))))
 
     /*
      * Starting counts:
@@ -421,8 +419,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.)))
+      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -463,12 +461,12 @@ class CondCountsTransformerTests {
         AddLambdaSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.1,
           delegate = MockCondCountsTransformer(
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-              'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
+              'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+              'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7.), 3., 2.),
-              'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9.), 4., 3.),
-              'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0))))))
+              'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
+              'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
+              'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0))))))
 
     /*
      * Starting counts:
@@ -516,8 +514,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.)))
+      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -557,12 +555,12 @@ class CondCountsTransformerTests {
       new EisnerSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.2, backoffCountsTransformer = AddLambdaSmoothingCountsTransformer(lambda = 0.1),
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.))),
+            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5., 'b -> 4., 'c -> 7., 'x -> 1., 'y -> 1., 'z -> 1.0), 3., 2.),
-            'B' -> DefaultedFreqCounts(Map('a -> 6., 'c -> 9., 'x -> 1., 'y -> 1.0), 4., 3.),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.), 5., 1.0)))))
+            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0, 'x -> 1.0, 'y -> 1.0, 'z -> 1.0), 3.0, 2.0),
+            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0, 'x -> 1.0, 'y -> 1.0), 4.0, 3.0),
+            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
 
     /*
      * Starting counts:
@@ -618,8 +616,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.), 21., 22.),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.), 25., 26.)))
+      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
+      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -686,7 +684,7 @@ class CondCountsTransformerTests {
 object CondCountsTransformerTests {
 
   @BeforeClass def turnOffLogging() {
-    Logger.getRootLogger.setLevel(Level.OFF)
+    //Logger.getRootLogger.setLevel(Level.OFF)
   }
 
 }

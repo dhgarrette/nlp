@@ -1,8 +1,7 @@
 package dhg.hmm.tag.support
 
-import scala.collection.{Map => CMap}
+import scala.collection.{ Map => CMap }
 
-import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 
 /**

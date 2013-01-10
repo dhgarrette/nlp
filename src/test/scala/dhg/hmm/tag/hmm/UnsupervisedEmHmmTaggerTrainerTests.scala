@@ -1,23 +1,18 @@
 package dhg.hmm.tag.hmm
 
-import scala.Array.canBuildFrom
-import scala.io.Source
-import org.apache.commons.logging.LogFactory
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
 import org.junit.Assert._
 import org.junit.BeforeClass
 import org.junit.Test
-import dhg.hmm.tag.hmm._
+
+import com.typesafe.scalalogging.log4j.Logging
+
+import dhg.hmm.tag._
 import dhg.hmm.tag.hmm.support._
 import dhg.hmm.tag.support._
-import dhg.hmm.tag._
 import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
 import dhg.util.FileUtils
 
-class UnsupervisedEmHmmTaggerTrainerTests {
-  val LOG = LogFactory.getLog(classOf[UnsupervisedEmHmmTaggerTrainerTests])
+class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
 
   @Test
   def tiny_beforeEM() {
@@ -129,7 +124,7 @@ class UnsupervisedEmHmmTaggerTrainerTests {
             EisnerSmoothingCondCountsTransformer(1.0)),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.0))),
+            EisnerSmoothingCondCountsTransformer(1.0, AddLambdaSmoothingCountsTransformer(1.0))),
         hmmTaggerFactory = new HardTagDictConstraintHmmTaggerFactory(OptionalTagDict(tagDict)),
         maxIterations = 1,
         minAvgLogProbChangeForEM = 0.00001)
@@ -170,7 +165,7 @@ class UnsupervisedEmHmmTaggerTrainerTests {
             EisnerSmoothingCondCountsTransformer(1.0)),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.0))),
+            EisnerSmoothingCondCountsTransformer(1.0, AddLambdaSmoothingCountsTransformer(1.0))),
         hmmTaggerFactory = new HardTagDictConstraintHmmTaggerFactory(OptionalTagDict(tagDict)),
         maxIterations = 20,
         minAvgLogProbChangeForEM = 0.00001)
@@ -229,9 +224,9 @@ class UnsupervisedEmHmmTaggerTrainerTests {
     val trainRaw = RawFile("data/postag/english/enraw20k")
     val gold = TaggedFile("data/postag/english/entest")
 
-    LOG.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
-    LOG.debug("labeledTrain.size = " + 0)
-    LOG.debug("rawTrain.size     = " + trainRaw.size)
+    logger.debug("tagDictTrain.size = " + tagDict.setIterator.ungroup.size)
+    logger.debug("labeledTrain.size = " + 0)
+    logger.debug("rawTrain.size     = " + trainRaw.size)
 
     val initialHmm = HmmTagger(
       HmmUtils.uniformTransitionDist(tagDict.allTags),
@@ -241,14 +236,14 @@ class UnsupervisedEmHmmTaggerTrainerTests {
         trainRaw).make(),
       tagDict.opt)
 
-    val unsupervisedTrainer: TypesupervisedHmmTaggerTrainer[String,String] =
+    val unsupervisedTrainer: TypesupervisedHmmTaggerTrainer[String, String] =
       new EmHmmTaggerTrainer[String, String](
         transitionCountsTransformer =
           new TransitionCountsTransformer(
             EisnerSmoothingCondCountsTransformer(1.0)),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(1., AddLambdaSmoothingCountsTransformer(1.0))),
+            EisnerSmoothingCondCountsTransformer(1.0, AddLambdaSmoothingCountsTransformer(1.0))),
         hmmTaggerFactory = new HardTagDictConstraintHmmTaggerFactory(OptionalTagDict(tagDict)),
         maxIterations = 20,
         minAvgLogProbChangeForEM = 0.00001)
@@ -293,7 +288,7 @@ class UnsupervisedEmHmmTaggerTrainerTests {
 object UnsupervisedEmHmmTaggerTrainerTests {
 
   @BeforeClass def turnOffLogging() {
-    Logger.getRootLogger.setLevel(Level.OFF)
+    //Logger.getRootLogger.setLevel(Level.OFF)
   }
 
 }

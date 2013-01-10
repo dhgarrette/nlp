@@ -5,7 +5,6 @@ import scala.collection.GenIterableLike
 import scala.collection.GenTraversable
 import scala.collection.GenTraversableLike
 import scala.collection.GenTraversableOnce
-import scala.collection.IterableLike
 import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable

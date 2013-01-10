@@ -1,14 +1,12 @@
 package dhg.hmm.tag.support
 
 import scala.util.Random
-import org.apache.commons.logging.LogFactory
-import dhg.hmm.util.CollectionUtils._
+
+import dhg.util.CollectionUtil._
 import dhg.util.LogNum
 import dhg.util.LogNum._
-import dhg.util.CollectionUtil._
 
 class MultinomialFreqDist[T](val distValues: Iterable[(T, LogNum)], default: LogNum = LogNum.zero) extends DiscreteDistribution[T] {
-  private val LOG = LogFactory.getLog(MultinomialFreqDist.getClass)
   val rand = new Random
 
   val dist = distValues.toMap

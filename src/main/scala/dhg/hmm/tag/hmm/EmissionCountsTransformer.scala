@@ -7,7 +7,6 @@ import dhg.hmm.tag.support.ConstrainingCondCountsTransformer
 import dhg.hmm.tag.support.DefaultedCondFreqCounts
 import dhg.hmm.tag.support.DefaultedFreqCounts
 import dhg.hmm.tag.support.PassthroughCondCountsTransformer
-import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 
 /**

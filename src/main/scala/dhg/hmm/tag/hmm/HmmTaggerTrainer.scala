@@ -1,9 +1,9 @@
 package dhg.hmm.tag.hmm
 
+import dhg.hmm.tag.TagDict
+import dhg.hmm.tag.Tagger
+import dhg.hmm.tag.TypesupervisedTaggerTrainer
 import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
-import dhg.hmm.tag._
-import dhg.hmm.tag.support._
 
 /**
  * Factory for training an HmmTagger from unlabeled data.

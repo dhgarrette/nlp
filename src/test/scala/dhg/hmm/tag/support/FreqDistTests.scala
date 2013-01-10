@@ -55,15 +55,15 @@ class FreqDistTests {
         'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 1.0), 0.0, 0.0),
         'B' -> DefaultedFreqCounts(Map('a -> 3.0, 'b -> 6.0), 0.0, 0.0))))
 
-    assertEqualsProb(LogNum(5 / 6.), x('A')('a))
-    assertEqualsProb(LogNum(1 / 6.), x('A')('b))
-    assertEqualsProb(LogNum(0 / 6.), x('A')('z))
-    assertEqualsProb(LogNum(3 / 9.), x('B')('a))
-    assertEqualsProb(LogNum(6 / 9.), x('B')('b))
-    assertEqualsProb(LogNum(0 / 9.), x('B')('z))
-    assertEqualsProb(LogNum(8 / 15.), x('Z')('a))
-    assertEqualsProb(LogNum(7 / 15.), x('Z')('b))
-    assertEqualsProb(LogNum(0 / 15.), x('Z')('z))
+    assertEqualsProb(LogNum(5 / 6.0), x('A')('a))
+    assertEqualsProb(LogNum(1 / 6.0), x('A')('b))
+    assertEqualsProb(LogNum(0 / 6.0), x('A')('z))
+    assertEqualsProb(LogNum(3 / 9.0), x('B')('a))
+    assertEqualsProb(LogNum(6 / 9.0), x('B')('b))
+    assertEqualsProb(LogNum(0 / 9.0), x('B')('z))
+    assertEqualsProb(LogNum(8 / 15.0), x('Z')('a))
+    assertEqualsProb(LogNum(7 / 15.0), x('Z')('b))
+    assertEqualsProb(LogNum(0 / 15.0), x('Z')('z))
   }
 
   @Test

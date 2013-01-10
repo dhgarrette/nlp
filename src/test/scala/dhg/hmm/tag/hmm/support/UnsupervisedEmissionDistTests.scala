@@ -1,15 +1,12 @@
 package dhg.hmm.tag.hmm.support
 
-import dhg.hmm.util.CollectionUtils._
-import dhg.util.LogNum
-import dhg.hmm.tag.support._
-import org.apache.commons.logging.LogFactory
-import org.junit.BeforeClass
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
-import org.junit.Test
 import org.junit.Assert._
-import dhg.hmm.tag.SimpleTagDict
+import org.junit.BeforeClass
+import org.junit.Test
+
+import dhg.hmm.tag._
+import dhg.hmm.tag.support._
+import dhg.util.LogNum
 
 class UnsupervisedEmissionDistTests {
 
@@ -54,7 +51,7 @@ class UnsupervisedEmissionDistTests {
     println(d(Some('N))(Some("aardvark")) / d(Some('V))(Some("aardvark")))
     println(d(Some('N))(Some("meanders")) / d(Some('V))(Some("meanders")))
 
-    assertEqualsProb(LogNum(1. / 5.), d(Some('N))(Some("bird")))
+    assertEqualsProb(LogNum(1.0 / 5.0), d(Some('N))(Some("bird")))
   }
 
   def assertEqualsProb(a: LogNum, b: LogNum) {
@@ -70,7 +67,7 @@ class UnsupervisedEmissionDistTests {
 object UnsupervisedEmissionDistTests {
 
   @BeforeClass def turnOffLogging() {
-    Logger.getRootLogger.setLevel(Level.OFF)
+    //Logger.getRootLogger.setLevel(Level.OFF)
   }
 
 }

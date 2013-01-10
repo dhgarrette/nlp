@@ -1,8 +1,7 @@
 package dhg.hmm.tag
 
-import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
 import dhg.hmm.tag.hmm.HmmUtils
+import dhg.util.CollectionUtil._
 
 /**
  * Tag sequences of symbols.

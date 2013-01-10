@@ -1,22 +1,19 @@
 package dhg.hmm.tag.hmm
 
 import scala.annotation.tailrec
-import org.apache.commons.logging.LogFactory
-import dhg.hmm.tag.OptionalTagDict
+
+import com.typesafe.scalalogging.log4j.Logging
+
 import dhg.hmm.tag.TagDict
 import dhg.hmm.tag.TagDict._
-import dhg.hmm.tag.Tagger
 import dhg.hmm.tag.TagUtils._
-import dhg.hmm.tag.TypesupervisedTaggerTrainer
-import dhg.hmm.tag.support.CondFreqCounts
-import dhg.hmm.tag.support.CondFreqDist
-import dhg.hmm.tag.support.DefaultedCondFreqCounts
-import dhg.util.CollectionUtil._
+import dhg.hmm.tag.support._
 import dhg.hmm.util.CollectionUtils._
+import dhg.util.CollectionUtil._
 import dhg.util.LogNum
 import dhg.util.LogNum._
 import dhg.util.Pattern
-import dhg.util.Pattern.{ ->, :+, +: }
+import dhg.util.Pattern.{ -> }
 
 /**
  * Factory for training a Hidden Markov Model (HMM) tagger using the
@@ -38,15 +35,14 @@ class EmHmmTaggerTrainer[Sym, Tag](
   maxIterations: Int = 50,
   minAvgLogProbChangeForEM: Double = 0.00001)
   extends TypesupervisedHmmTaggerTrainer[Sym, Tag](
-    new SupervisedHmmTaggerTrainer[Sym, Tag](transitionCountsTransformer, emissionCountsTransformer, hmmTaggerFactory)) {
+    new SupervisedHmmTaggerTrainer[Sym, Tag](transitionCountsTransformer, emissionCountsTransformer, hmmTaggerFactory))
+  with Logging {
 
   type OSym = Option[Sym]
   type OTag = Option[Tag]
 
   type TokTag = (OTag, (Map[OTag, LogNum], LogNum))
   type Tok = (OSym, Vector[TokTag])
-
-  protected val LOG = LogFactory.getLog(classOf[EmHmmTaggerTrainer[Sym, Tag]])
 
   /**
    * @inheritdoc
@@ -117,17 +113,17 @@ class EmHmmTaggerTrainer[Sym, Tag](
     val newRawSequences = addTagInfoToRaw(rawSequences, initialHmm, tagDict)
     val (hmm, avgLogProb) = reestimateHmm(newRawSequences, priorTransitionCounts, priorEmissionCounts)
 
-    LOG.debug("\t" + (maxIterations - remainingIterations + 1) + ": " + avgLogProb)
+    logger.debug("\t" + (maxIterations - remainingIterations + 1) + ": " + avgLogProb)
 
     hmmExaminationHook(hmm)
 
     // Check each ending condition
     if (remainingIterations <= 1) {
-      LOG.info("DONE: Max number of iterations reached")
+      logger.info("DONE: Max number of iterations reached")
       hmm
     }
     else if ((avgLogProb - prevAvgLogProb).abs < minAvgLogProbChangeForEM) { //check if converged
-      LOG.info("DONE: Change in average log probability is less than " + minAvgLogProbChangeForEM)
+      logger.info("DONE: Change in average log probability is less than " + minAvgLogProbChangeForEM)
       hmm
     }
     else if (avgLogProb < prevAvgLogProb) {

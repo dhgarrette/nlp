@@ -1,12 +1,14 @@
 package dhg.hmm.tag.hmm.support
 
-import scala.math
-import dhg.hmm.util.CollectionUtils._
-import dhg.util.LogNum
-import dhg.hmm.tag.support._
-import org.apache.commons.logging.LogFactory
+import com.typesafe.scalalogging.log4j.Logging
+
 import dhg.hmm.tag.TagDict
+import dhg.hmm.tag.support.CondFreqDist
+import dhg.hmm.tag.support.CountsTransformer
+import dhg.hmm.tag.support.DefaultedCondFreqCounts
+import dhg.hmm.tag.support.DefaultedFreqCounts
 import dhg.util.CollectionUtil._
+import dhg.util.LogNum
 
 /**
  * Produce a conditional frequency distribution without labeled training data.
@@ -34,9 +36,8 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
   countsTransformer: CountsTransformer[Sym],
   tagDict: TagDict[Sym, Tag],
   rawData: Iterable[Iterable[Sym]])
-  extends UnsupervisedEmissionDistFactory[Option[Tag], Option[Sym]] {
-
-  protected val LOG = LogFactory.getLog(classOf[EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym]])
+  extends UnsupervisedEmissionDistFactory[Option[Tag], Option[Sym]]
+  with Logging {
 
   override def make(): Option[Tag] => Option[Sym] => LogNum = {
     val DefaultedFreqCounts(rawCounts, totalAddition, defaultCount) = countsTransformer(rawData.flatten.counts)
@@ -51,9 +52,9 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
     val rawKnownCountByWord = rawSymbolCounts.filter(x => vocabKnown(x._1)) // counts of each known type from raw data
     val rawUnkwnCountByWord = rawSymbolCounts.filter(x => vocabUnknown(x._1)) // counts of each unknown type from raw data
 
-    LOG.debug("totalRawWordCount = " + rawSymbolCounts.values.sum)
-    LOG.debug("totalRawWordCount (known)   = " + rawKnownCountByWord.values.sum)
-    LOG.debug("totalRawWordCount (unknown) = " + rawUnkwnCountByWord.values.sum)
+    logger.debug("totalRawWordCount = " + rawSymbolCounts.values.sum)
+    logger.debug("totalRawWordCount (known)   = " + rawKnownCountByWord.values.sum)
+    logger.debug("totalRawWordCount (unknown) = " + rawUnkwnCountByWord.values.sum)
 
     val knownCounts =
       tagToSymbolDict.mapVals {
@@ -62,7 +63,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
 
     val estimatedUnknownProportions = {
       val estUnkProportionsFromRaw = {
-        LOG.debug("raw proportions =              " + knownCounts.mapValues(_.values.sum).normalizeValues.mapValues("%.3f".format(_)))
+        logger.debug("raw proportions =              " + knownCounts.mapValues(_.values.sum).normalizeValues.mapValues("%.3f".format(_)))
 
         knownCounts
           .mapVals(_.values.sum) // estimated number of unknown tokens for each tag 
@@ -70,7 +71,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
       }
 
       val estUnkProportionsFromTagDict = {
-        LOG.debug("tagDict proportions =          " + tagToSymbolDict.mapValues(_.size).normalizeValues.mapValues("%.3f".format(_)))
+        logger.debug("tagDict proportions =          " + tagToSymbolDict.mapValues(_.size).normalizeValues.mapValues("%.3f".format(_)))
 
         val x =
           tagToSymbolDict
@@ -78,7 +79,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
             .mapVals(math.pow(_, 2)) // exaggerate the differences
             .normalizeValues
 
-        LOG.debug("tagDict (skewed) proportions = " + x.normalizeValues.mapValues("%.3f".format(_)))
+        logger.debug("tagDict (skewed) proportions = " + x.normalizeValues.mapValues("%.3f".format(_)))
 
         x
       }
@@ -88,7 +89,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
       }.normalizeValues.toMap
     }
 
-    LOG.debug("combined =                     " + estimatedUnknownProportions.normalizeValues.mapValues("%.3f".format(_)))
+    logger.debug("combined =                     " + estimatedUnknownProportions.normalizeValues.mapValues("%.3f".format(_)))
 
     val counts =
       knownCounts.map {
@@ -99,10 +100,10 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
           (tag, DefaultedFreqCounts(totalCounts, (totalAddition + defaultCount) * estimatedUnknownProportion, defaultCount * estimatedUnknownProportion)) // default for unseen words in test is one count 
       }
 
-    LOG.debug("totalEstWordCount           = " + counts.values.map(_.simpleCounts.values.sum).sum)
-    val totalEstKnown = counts.values.map(_.simpleCounts.filter(x => vocabKnown(x._1)).values.sum).sum; LOG.debug("totalEstWordCount (known)   = " + totalEstKnown)
-    val totalEstUnkwn = counts.values.map(_.simpleCounts.filter(x => vocabUnknown(x._1)).values.sum).sum; LOG.debug("totalEstWordCount (unknown) = " + totalEstUnkwn)
-    LOG.debug("totalEstWordCount (known + unknown) = " + (totalEstKnown + totalEstUnkwn))
+    logger.debug("totalEstWordCount           = " + counts.values.map(_.simpleCounts.values.sum).sum)
+    val totalEstKnown = counts.values.map(_.simpleCounts.filter(x => vocabKnown(x._1)).values.sum).sum; logger.debug("totalEstWordCount (known)   = " + totalEstKnown)
+    val totalEstUnkwn = counts.values.map(_.simpleCounts.filter(x => vocabUnknown(x._1)).values.sum).sum; logger.debug("totalEstWordCount (unknown) = " + totalEstUnkwn)
+    logger.debug("totalEstWordCount (known + unknown) = " + (totalEstKnown + totalEstUnkwn))
 
     val liftedCounts =
       counts.map {

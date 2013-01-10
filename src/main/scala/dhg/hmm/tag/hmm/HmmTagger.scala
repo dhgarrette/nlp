@@ -1,19 +1,16 @@
 package dhg.hmm.tag.hmm
 
-import dhg.hmm.tag.OptionalTagDict
-import dhg.hmm.tag.TagDict._
+import scala.Option.option2Iterable
+import scala.annotation.tailrec
+
+import dhg.hmm.tag.SimpleTagDict
+import dhg.hmm.tag.TagDict.OptionalTagDict
 import dhg.hmm.tag.Tagger
-import dhg.hmm.tag.support.TagEdgeScorer
+import dhg.hmm.tag.hmm.HmmUtils._
 import dhg.util.CollectionUtil._
-import dhg.hmm.util.CollectionUtils._
 import dhg.util.LogNum
 import dhg.util.Pattern
 import dhg.util.Pattern.{ ->, :+, +: }
-import dhg.hmm.tag.TagDict
-import dhg.hmm.tag.hmm.HmmUtils._
-import scala.annotation.tailrec
-import scala.collection.breakOut
-import dhg.hmm.tag.SimpleTagDict
 
 /**
  * Hidden Markov Model for tagging.

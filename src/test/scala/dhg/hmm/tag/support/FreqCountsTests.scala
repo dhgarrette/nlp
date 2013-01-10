@@ -1,7 +1,8 @@
 package dhg.hmm.tag.support
 
 import org.junit.Assert._
-import org.junit._
+import org.junit.Test
+
 import dhg.hmm.util.CollectionUtils._
 
 class FreqCountsTests {

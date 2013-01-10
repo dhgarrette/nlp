@@ -20,8 +20,8 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5. / 8.0), d('a))
-    assertEqualsProb(LogNum(3. / 8.0), d('b))
+    assertEqualsProb(LogNum(5.0 / 8.0), d('a))
+    assertEqualsProb(LogNum(3.0 / 8.0), d('b))
     assertEqualsProb(LogNum.zero, d('def))
   }
 
@@ -38,9 +38,9 @@ class CountsTransformerTests {
     assertEqualsDouble(1.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5. / 10.0), d('a))
-    assertEqualsProb(LogNum(3. / 10.0), d('b))
-    assertEqualsProb(LogNum(1. / 10.0), d('def))
+    assertEqualsProb(LogNum(5.0 / 10.0), d('a))
+    assertEqualsProb(LogNum(3.0 / 10.0), d('b))
+    assertEqualsProb(LogNum(1.0 / 10.0), d('def))
   }
 
   @Test
@@ -76,10 +76,10 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5. / 9.0), d('a))
-    assertEqualsProb(LogNum(3. / 9.0), d('b))
+    assertEqualsProb(LogNum(5.0 / 9.0), d('a))
+    assertEqualsProb(LogNum(3.0 / 9.0), d('b))
     assertEqualsProb(LogNum.zero, d('c))
-    assertEqualsProb(LogNum(1. / 9.0), d('d))
+    assertEqualsProb(LogNum(1.0 / 9.0), d('d))
     assertEqualsProb(LogNum.zero, d('def))
   }
 
@@ -116,10 +116,10 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5. / 9.0), d('a))
-    assertEqualsProb(LogNum(3. / 9.0), d('b))
+    assertEqualsProb(LogNum(5.0 / 9.0), d('a))
+    assertEqualsProb(LogNum(3.0 / 9.0), d('b))
     assertEqualsProb(LogNum.zero, d('c))
-    assertEqualsProb(LogNum(1. / 9.0), d('d))
+    assertEqualsProb(LogNum(1.0 / 9.0), d('d))
     assertEqualsProb(LogNum.zero, d('def))
   }
 
