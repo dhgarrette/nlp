@@ -9,8 +9,7 @@ import dhg.hmm.tag.Tagger
 import dhg.hmm.tag.hmm.HmmUtils._
 import dhg.util.CollectionUtil._
 import dhg.util.LogNum
-import dhg.util.Pattern
-import dhg.util.Pattern.{ ->, :+, +: }
+import dhg.util.Pattern._
 
 /**
  * Hidden Markov Model for tagging.
@@ -109,7 +108,7 @@ class FastHmmTagger[Sym, Tag] {
         case Nil => assert(curTag == None); tags
         case currPointers :: previousPointers => inner(previousPointers, currPointers(curTag), curTag.get :: tags)
       }
-    val Pattern.Map(None -> lastTag) :: previousPointers = backpointers
+    val UMap(None -> lastTag) :: previousPointers = backpointers
     inner(previousPointers, lastTag, Nil).toVector
   }
 

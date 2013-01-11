@@ -5,7 +5,7 @@ import dhg.hmm.tag.SimpleWeightedTagDict
 import dhg.hmm.tag.TagDict
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.FileUtils._
+import dhg.util.FileUtil._
 import dhg.util.LogNum._
 
 /**
@@ -120,7 +120,7 @@ class DefaultLimitingTagDictFactory[Sym, Tag](maxNumberOfDefaultTags: Int, deleg
 
 class ExternalFileTagDictFactory(filename: String, fullTagset: Set[String]) extends TagDictFactory[String, String] {
   override def make(taggedTrainSequences: Iterable[IndexedSeq[(String, String)]]) = {
-    SimpleTagDict(readLines(filename)
+    SimpleTagDict(File(filename).readLines
       .map(_.split("\\s+"))
       .flatMap { case Array(word, tags @ _*) => tags.map(word -> _) }
       .groupByKey

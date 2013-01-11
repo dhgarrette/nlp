@@ -12,8 +12,7 @@ import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 import dhg.util.LogNum
 import dhg.util.LogNum._
-import dhg.util.Pattern
-import dhg.util.Pattern.{ -> }
+import dhg.util.Pattern._
 
 /**
  * Factory for training a Hidden Markov Model (HMM) tagger using the
@@ -264,7 +263,7 @@ class EmHmmTaggerTrainer[Sym, Tag](
 
     val startForward: Map[OTag, LogNum] = Map(None -> LogNum.one)
 
-    val (lastForward @ Pattern.Map(None -> forwardProb), forwards) =
+    val (lastForward @ UMap(None -> forwardProb), forwards) =
       newSequence.drop(1).foldLeft((startForward, List[Map[OTag, LogNum]]())) {
         case ((prevForward, otherForwards), (tok, currTags)) =>
           val currForward =

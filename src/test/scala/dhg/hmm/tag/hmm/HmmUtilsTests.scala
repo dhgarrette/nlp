@@ -4,7 +4,7 @@ import org.junit.Test
 
 import dhg.hmm.tag._
 import dhg.util.CollectionUtil._
-import dhg.util.FileUtils._
+import dhg.util.FileUtil._
 import dhg.util.LogNum
 
 class HmmUtilsTests {
@@ -63,7 +63,7 @@ class HmmUtilsTests {
       val WordTagRe = """^(.+)\|([^|]+)$""".r
       new Iterable[IndexedSeq[(String, String)]] {
         override def iterator =
-          readLines(filename)
+          File(filename).readLines
             .map(_.trim
               .split("\\s+")
               .map { case WordTagRe(word, tag) => (word, tag) }

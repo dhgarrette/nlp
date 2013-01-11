@@ -11,7 +11,7 @@ import com.typesafe.scalalogging.log4j.Logging
 import dhg.hmm.tag._
 import dhg.hmm.tag.support._
 import dhg.util.CollectionUtil._
-import dhg.util.FileUtils
+import dhg.util.FileUtil._
 
 class SemisupervisedEmHmmTaggerTrainerTests extends Logging {
   @Test
@@ -75,7 +75,7 @@ class SemisupervisedEmHmmTaggerTrainerTests extends Logging {
 
   object TaggedFile {
     def apply(filename: String): Vector[Vector[(String, String)]] =
-      FileUtils.readLines(filename)
+      File(filename).readLines
         .map(_.trim)
         .split("###/###")
         .filter(_.nonEmpty)
@@ -90,7 +90,7 @@ class SemisupervisedEmHmmTaggerTrainerTests extends Logging {
 
   object RawFile {
     def apply(filename: String): Vector[Vector[String]] =
-      FileUtils.readLines(filename)
+      File(filename).readLines
         .map(_.trim)
         .split("###")
         .filter(_.nonEmpty)

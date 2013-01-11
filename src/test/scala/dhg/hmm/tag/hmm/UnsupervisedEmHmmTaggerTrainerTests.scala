@@ -10,7 +10,7 @@ import dhg.hmm.tag._
 import dhg.hmm.tag.hmm.support._
 import dhg.hmm.tag.support._
 import dhg.util.CollectionUtil._
-import dhg.util.FileUtils
+import dhg.util.FileUtil._
 
 class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
 
@@ -255,7 +255,7 @@ class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
 
   object TaggedFile {
     def apply(filename: String) =
-      FileUtils.readLines(filename)
+      File(filename).readLines
         .map(_.trim)
         .split("###/###")
         .filter(_.nonEmpty)
@@ -270,7 +270,7 @@ class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
 
   object RawFile {
     def apply(filename: String) =
-      FileUtils.readLines(filename)
+      File(filename).readLines
         .map(_.trim)
         .split("###")
         .filter(_.nonEmpty)

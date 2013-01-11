@@ -8,8 +8,7 @@ import dhg.hmm.tag.TagDict.OptionalTagDict
 import dhg.hmm.tag.Tagger
 import dhg.util.CollectionUtil._
 import dhg.util.LogNum
-import dhg.util.Pattern
-import dhg.util.Pattern.{ -> }
+import dhg.util.Pattern._
 
 /**
  * A generic implementation of the Viterbi algorithm for finding the most
@@ -116,7 +115,7 @@ class Viterbi[Sym, Tag](
         case Nil => assert(curTag == None); tags
         case currPointers :: previousPointers => inner(previousPointers, currPointers(curTag), curTag :: tags)
       }
-    val Pattern.Map(None -> lastTag) :: previousPointers = backpointers
+    val UMap(None -> lastTag) :: previousPointers = backpointers
     inner(previousPointers, lastTag, Nil).toVector
   }
 }
