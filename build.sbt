@@ -1,4 +1,4 @@
-name := "hmm"
+name := "nlp"
 
 version := "1.0.0"
 
