@@ -5,7 +5,6 @@ import org.junit._
 import dhg.hmm.test.TestUtils._
 import dhg.hmm.tag.TagDict._
 import dhg.hmm.util.CollectionUtils._
-import dhg.util.LogNum
 import dhg.util.CollectionUtil._
 
 class TagDictTests {
@@ -96,9 +95,9 @@ class TagDictTests {
 
   @Test
   def testSimpleWeightedTagDict_withDefault() {
-    val default = Map('b -> LogNum(4), 'd -> LogNum(5))
+    val default = Map('b -> 4.0, 'd -> 5.0)
     val td: WeightedTagDict[Char, Symbol] = SimpleWeightedTagDict(Map(
-      'A' -> Map('a -> LogNum(1), 'b -> LogNum(2)), 'B' -> Map('c -> LogNum(3))),
+      'A' -> Map('a -> 1, 'b -> 2), 'B' -> Map('c -> 3)),
       default)
 
     // TagDict methods
@@ -143,19 +142,19 @@ class TagDictTests {
 
     // WeightedTagDict methods
 
-    assertEquals(Map('b -> LogNum(4), 'd -> LogNum(5)), td.default)
+    assertEquals(Map('b -> 4.0, 'd -> 5.0), td.default)
 
-    assertEquals(Some(Map('a -> LogNum(1), 'b -> LogNum(2))), td.doGetMap('A'))
-    assertEquals(Some(Map('c -> LogNum(3))), td.doGetMap('B'))
+    assertEquals(Some(Map('a -> 1.0, 'b -> 2.0)), td.doGetMap('A'))
+    assertEquals(Some(Map('c -> 3.0)), td.doGetMap('B'))
     assertEquals(None, td.doGetMap('Z'))
 
-    val iterator: Iterator[(Char, Map[Symbol, LogNum])] = td.iterator
+    val iterator: Iterator[(Char, Map[Symbol, Double])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
-    assertEquals(Vector('A' -> Map('a -> LogNum(1), 'b -> LogNum(2)), 'B' -> Map('c -> LogNum(3))), iteratorSorted)
+    assertEquals(Vector('A' -> Map('a -> 1.0, 'b -> 2.0), 'B' -> Map('c -> 3.0)), iteratorSorted)
 
-    assertEquals(Map('a -> LogNum(1), 'b -> LogNum(2)), td.weights('A'))
-    assertEquals(Map('c -> LogNum(3)), td.weights('B'))
-    assertEquals(Map('b -> LogNum(4), 'd -> LogNum(5)), td.weights('Z'))
+    assertEquals(Map('a -> 1.0, 'b -> 2.0), td.weights('A'))
+    assertEquals(Map('c -> 3.0), td.weights('B'))
+    assertEquals(Map('b -> 4.0, 'd -> 5.0), td.weights('Z'))
   }
 
   @Test
@@ -201,19 +200,19 @@ class TagDictTests {
 
     // WeightedTagDict methods
 
-    assertEquals(Map('a -> LogNum.one, 'b -> LogNum.one, 'c -> LogNum.one), td.default)
+    assertEquals(Map('a -> 1.0, 'b -> 1.0, 'c -> 1.0), td.default)
 
-    assertEquals(Some(Map('a -> LogNum.one, 'b -> LogNum.one)), td.doGetMap('A'))
-    assertEquals(Some(Map('c -> LogNum.one)), td.doGetMap('B'))
+    assertEquals(Some(Map('a -> 1.0, 'b -> 1.0)), td.doGetMap('A'))
+    assertEquals(Some(Map('c -> 1.0)), td.doGetMap('B'))
     assertEquals(None, td.doGetMap('Z'))
 
-    val iterator: Iterator[(Char, Map[Symbol, LogNum])] = td.iterator
+    val iterator: Iterator[(Char, Map[Symbol, Double])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
-    assertEquals(Vector('A' -> Map('a -> LogNum.one, 'b -> LogNum.one), 'B' -> Map('c -> LogNum.one)), iteratorSorted)
+    assertEquals(Vector('A' -> Map('a -> 1.0, 'b -> 1.0), 'B' -> Map('c -> 1.0)), iteratorSorted)
 
-    assertEquals(Map('a -> LogNum.one, 'b -> LogNum.one), td.weights('A'))
-    assertEquals(Map('c -> LogNum.one), td.weights('B'))
-    assertEquals(Map('a -> LogNum.one, 'b -> LogNum.one, 'c -> LogNum.one), td.weights('Z'))
+    assertEquals(Map('a -> 1.0, 'b -> 1.0), td.weights('A'))
+    assertEquals(Map('c -> 1.0), td.weights('B'))
+    assertEquals(Map('a -> 1.0, 'b -> 1.0, 'c -> 1.0), td.weights('Z'))
   }
 
   @Test
@@ -263,26 +262,26 @@ class TagDictTests {
 
     // WeightedTagDict methods
 
-    assertEquals(Map('b -> LogNum.one, 'd -> LogNum.one), td.default)
+    assertEquals(Map('b -> 1.0, 'd -> 1.0), td.default)
 
-    assertEquals(Some(Map('a -> LogNum.one, 'b -> LogNum.one)), td.doGetMap('A'))
-    assertEquals(Some(Map('c -> LogNum.one)), td.doGetMap('B'))
+    assertEquals(Some(Map('a -> 1.0, 'b -> 1.0)), td.doGetMap('A'))
+    assertEquals(Some(Map('c -> 1.0)), td.doGetMap('B'))
     assertEquals(None, td.doGetMap('Z'))
 
-    val iterator: Iterator[(Char, Map[Symbol, LogNum])] = td.iterator
+    val iterator: Iterator[(Char, Map[Symbol, Double])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
-    assertEquals(Vector('A' -> Map('a -> LogNum.one, 'b -> LogNum.one), 'B' -> Map('c -> LogNum.one)), iteratorSorted)
+    assertEquals(Vector('A' -> Map('a -> 1.0, 'b -> 1.0), 'B' -> Map('c -> 1.0)), iteratorSorted)
 
-    assertEquals(Map('a -> LogNum.one, 'b -> LogNum.one), td.weights('A'))
-    assertEquals(Map('c -> LogNum.one), td.weights('B'))
-    assertEquals(Map('b -> LogNum.one, 'd -> LogNum.one), td.weights('Z'))
+    assertEquals(Map('a -> 1.0, 'b -> 1.0), td.weights('A'))
+    assertEquals(Map('c -> 1.0), td.weights('B'))
+    assertEquals(Map('b -> 1.0, 'd -> 1.0), td.weights('Z'))
   }
 
   @Test
   def testOptionalTagDict() {
-    val default = Map('b -> LogNum(4), 'd -> LogNum(5))
+    val default = Map('b -> 4.0, 'd -> 5.0)
     val originalTD: WeightedTagDict[Char, Symbol] = SimpleWeightedTagDict(Map(
-      'A' -> Map('a -> LogNum(1), 'b -> LogNum(2)), 'B' -> Map('c -> LogNum(3))),
+      'A' -> Map('a -> 1.0, 'b -> 2.0), 'B' -> Map('c -> 3.0)),
       default)
     val td: OptionalWeightedTagDict[Char, Symbol] = OptionalTagDict(originalTD)
 
@@ -340,28 +339,28 @@ class TagDictTests {
 
     // WeightedTagDict methods
 
-    assertEquals(Map(Some('b) -> LogNum(4), Some('d) -> LogNum(5)), td.default)
+    assertEquals(Map(Some('b) -> 4.0, Some('d) -> 5.0), td.default)
 
-    assertEquals(Some(Map(Some('a) -> LogNum(1), Some('b) -> LogNum(2))), td.doGetMap(Some('A')))
-    assertEquals(Some(Map(Some('c) -> LogNum(3))), td.doGetMap(Some('B')))
+    assertEquals(Some(Map(Some('a) -> 1.0, Some('b) -> 2.0)), td.doGetMap(Some('A')))
+    assertEquals(Some(Map(Some('c) -> 3.0)), td.doGetMap(Some('B')))
     assertEquals(None, td.doGetMap(Some('Z')))
-    assertEquals(Some(Map(None -> LogNum.one)), td.doGetMap(None))
+    assertEquals(Some(Map(None -> 1.0)), td.doGetMap(None))
 
-    val iterator: Iterator[(Option[Char], Map[Option[Symbol], LogNum])] = td.iterator
+    val iterator: Iterator[(Option[Char], Map[Option[Symbol], Double])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
-    assertEquals(Vector(Some('A') -> Map(Some('a) -> LogNum(1), Some('b) -> LogNum(2)), Some('B') -> Map(Some('c) -> LogNum(3))), iteratorSorted)
+    assertEquals(Vector(Some('A') -> Map(Some('a) -> 1.0, Some('b) -> 2.0), Some('B') -> Map(Some('c) -> 3.0)), iteratorSorted)
 
-    assertEquals(Map(Some('a) -> LogNum(1), Some('b) -> LogNum(2)), td.weights(Some('A')))
-    assertEquals(Map(Some('c) -> LogNum(3)), td.weights(Some('B')))
-    assertEquals(Map(Some('b) -> LogNum(4), Some('d) -> LogNum(5)), td.weights(Some('Z')))
-    assertEquals(Map(None -> LogNum.one), td.weights(None))
+    assertEquals(Map(Some('a) -> 1.0, Some('b) -> 2.0), td.weights(Some('A')))
+    assertEquals(Map(Some('c) -> 3.0), td.weights(Some('B')))
+    assertEquals(Map(Some('b) -> 4.0, Some('d) -> 5.0), td.weights(Some('Z')))
+    assertEquals(Map(None -> 1.0), td.weights(None))
   }
 
   @Test
   def testNoDefaultTagDict() {
-    val default = Map('b -> LogNum(4), 'd -> LogNum(5))
+    val default = Map('b -> 4.0, 'd -> 5.0)
     val originalTD: WeightedTagDict[Char, Symbol] = SimpleWeightedTagDict(Map(
-      'A' -> Map('a -> LogNum(1), 'b -> LogNum(2)), 'B' -> Map('c -> LogNum(3))),
+      'A' -> Map('a -> 1.0, 'b -> 2.0), 'B' -> Map('c -> 3.0)),
       default)
     val td: WeightedTagDict[Char, Symbol] = NoDefaultTagDict(originalTD)
 
@@ -409,16 +408,16 @@ class TagDictTests {
 
     assertEquals(Map[Char, Symbol](), td.default)
 
-    assertEquals(Some(Map('a -> LogNum(1), 'b -> LogNum(2))), td.doGetMap('A'))
-    assertEquals(Some(Map('c -> LogNum(3))), td.doGetMap('B'))
+    assertEquals(Some(Map('a -> 1.0, 'b -> 2.0)), td.doGetMap('A'))
+    assertEquals(Some(Map('c -> 3.0)), td.doGetMap('B'))
     assertEquals(None, td.doGetMap('Z'))
 
-    val iterator: Iterator[(Char, Map[Symbol, LogNum])] = td.iterator
+    val iterator: Iterator[(Char, Map[Symbol, Double])] = td.iterator
     val iteratorSorted = iterator.toVector.sortBy(_._1)
-    assertEquals(Vector('A' -> Map('a -> LogNum(1), 'b -> LogNum(2)), 'B' -> Map('c -> LogNum(3))), iteratorSorted)
+    assertEquals(Vector('A' -> Map('a -> 1.0, 'b -> 2.0), 'B' -> Map('c -> 3.0)), iteratorSorted)
 
-    assertEquals(Map('a -> LogNum(1), 'b -> LogNum(2)), td.weights('A'))
-    assertEquals(Map('c -> LogNum(3)), td.weights('B'))
+    assertEquals(Map('a -> 1.0, 'b -> 2.0), td.weights('A'))
+    assertEquals(Map('c -> 3.0), td.weights('B'))
     assertEquals(Map[Char, Symbol](), td.weights('Z'))
   }
 

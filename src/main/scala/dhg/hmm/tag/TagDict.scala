@@ -2,7 +2,6 @@ package dhg.hmm.tag
 
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 import dhg.hmm.tag.TagDict._
 
 /**
@@ -58,13 +57,13 @@ trait WeightedTagDict[Sym, Tag] extends TagDict[Sym, Tag] {
   //
 
   /** The map of tag weights for unknown symbols (symbols not appearing in the dict) */
-  def default: Map[Tag, LogNum]
+  def default: Map[Tag, Double]
 
   /** The tag/weight map associated with this symbol, or None if it does not exist.  Do NOT return the default. */
-  def doGetMap(s: Sym): Option[Map[Tag, LogNum]]
+  def doGetMap(s: Sym): Option[Map[Tag, Double]]
 
   /** An iterator over the symbols and their associated tag/weight maps */
-  def iterator: Iterator[(Sym, Map[Tag, LogNum])]
+  def iterator: Iterator[(Sym, Map[Tag, Double])]
 
   //
   // Methods finalizing those on TagDict -- meaning they are final on ALL valid 
@@ -80,20 +79,20 @@ trait WeightedTagDict[Sym, Tag] extends TagDict[Sym, Tag] {
   // Derived methods
   //
 
-  final def weights(s: Sym): Map[Tag, LogNum] = doGetMap(s).getOrElse(default)
+  final def weights(s: Sym): Map[Tag, Double] = doGetMap(s).getOrElse(default)
 }
 
 /**
  * The base TagDict implementation from which all TagDict implementations are
  * derived (as wrappers of this class).
  */
-final class SimpleWeightedTagDict[Sym, Tag](d: Map[Sym, Map[Tag, LogNum]], override val default: Map[Tag, LogNum]) extends WeightedTagDict[Sym, Tag] {
+final class SimpleWeightedTagDict[Sym, Tag](d: Map[Sym, Map[Tag, Double]], override val default: Map[Tag, Double]) extends WeightedTagDict[Sym, Tag] {
   override def doGetMap(s: Sym) = d.get(s)
   override def iterator = d.iterator
 }
 
 object SimpleWeightedTagDict {
-  def apply[Sym, Tag](d: Map[Sym, Map[Tag, LogNum]], default: Map[Tag, LogNum]) = new SimpleWeightedTagDict(d, default)
+  def apply[Sym, Tag](d: Map[Sym, Map[Tag, Double]], default: Map[Tag, Double]) = new SimpleWeightedTagDict(d, default)
 }
 
 /**
@@ -101,7 +100,7 @@ object SimpleWeightedTagDict {
  */
 object UniformWeightedTagDict {
   def apply[Sym, Tag](d: Map[Sym, Set[Tag]]): WeightedTagDict[Sym, Tag] = UniformWeightedTagDict(d, d.values.flatten.toSet)
-  def apply[Sym, Tag](d: Map[Sym, Set[Tag]], default: Set[Tag]): WeightedTagDict[Sym, Tag] = new SimpleWeightedTagDict(d.mapVals(_.mapToVal(LogNum.one).toMap), default.mapToVal(LogNum.one).toMap)
+  def apply[Sym, Tag](d: Map[Sym, Set[Tag]], default: Set[Tag]): WeightedTagDict[Sym, Tag] = new SimpleWeightedTagDict(d.mapVals(_.mapToVal(1.0).toMap), default.mapToVal(1.0).toMap)
 }
 
 /**
@@ -122,9 +121,9 @@ object OptionalTagDict {
     new WeightedTagDict[Option[Sym], Option[Tag]] {
       override def default = tagDict.default.mapKeys(Option(_))
 
-      override def doGetMap(sym: Option[Sym]): Option[Map[Option[Tag], LogNum]] =
+      override def doGetMap(sym: Option[Sym]): Option[Map[Option[Tag], Double]] =
         sym match {
-          case None => Some(Map(None -> LogNum.one))
+          case None => Some(Map(None -> 1.0))
           case Some(s) => tagDict.doGetMap(s).map(_.mapKeys(Option(_)))
         }
 

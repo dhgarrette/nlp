@@ -5,7 +5,6 @@ import org.junit.Test
 import dhg.hmm.tag._
 import dhg.util.CollectionUtil._
 import dhg.util.FileUtil._
-import dhg.util.LogNum
 
 class HmmUtilsTests {
 
@@ -21,21 +20,21 @@ class HmmUtilsTests {
       "walks" -> Set('N, 'V),
       "runs" -> Set('V)), Set('D, 'A, 'N, 'V))
 
-    val transitions = Map[Option[Symbol], Map[Option[Symbol], LogNum]](
-      None -> Map(Some('D) -> LogNum(1.0)),
-      Some('D) -> Map(Some('N) -> LogNum(0.5), Some('A) -> LogNum(0.4), Some('V) -> LogNum(0.1)),
-      Some('A) -> Map(Some('N) -> LogNum(0.5), Some('V) -> LogNum(0.5)),
-      Some('N) -> Map(Some('V) -> LogNum(1.0)),
-      Some('V) -> Map(Some('D) -> LogNum(0.5), None -> LogNum(0.5)))
-      .mapVals(_.withDefaultValue(LogNum.zero))
+    val transitions = Map[Option[Symbol], Map[Option[Symbol], Double]](
+      None -> Map(Some('D) -> 1.0),
+      Some('D) -> Map(Some('N) -> 0.5, Some('A) -> 0.4, Some('V) -> 0.1),
+      Some('A) -> Map(Some('N) -> 0.5, Some('V) -> 0.5),
+      Some('N) -> Map(Some('V) -> 1.0),
+      Some('V) -> Map(Some('D) -> 0.5, None -> 0.5))
+      .mapVals(_.withDefaultValue(0.0))
 
-    val emissions = Map[Option[Symbol], Map[Option[String], LogNum]](
-      None -> Map(None -> LogNum(1.0)),
-      Some('D) -> Map(Some("the") -> LogNum(1.0)),
-      Some('A) -> Map(Some("big") -> LogNum(1.0)),
-      Some('N) -> Map(Some("dog") -> LogNum(0.6), Some("walks") -> LogNum(0.3), Some("aardvark") -> LogNum(0.1)),
-      Some('V) -> Map(Some("walks") -> LogNum(0.5), Some("runs") -> LogNum(0.5)))
-      .mapVals(_.withDefaultValue(LogNum.zero))
+    val emissions = Map[Option[Symbol], Map[Option[String], Double]](
+      None -> Map(None -> 1.0),
+      Some('D) -> Map(Some("the") -> 1.0),
+      Some('A) -> Map(Some("big") -> 1.0),
+      Some('N) -> Map(Some("dog") -> 0.6, Some("walks") -> 0.3, Some("aardvark") -> 0.1),
+      Some('V) -> Map(Some("walks") -> 0.5, Some("runs") -> 0.5))
+      .mapVals(_.withDefaultValue(0.0))
 
     val validTransitions = Map[Option[Symbol], Set[Option[Symbol]]](
       None -> Set(Some('D)),

@@ -1,9 +1,9 @@
 package dhg.hmm.tag.support
 
-import dhg.hmm.util.CollectionUtils._
+import scalaz._
+import Scalaz._
+
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
-import dhg.util.LogNum._
 
 /**
  * Utilities for frequency distributions: functions to probabilities: P(B).
@@ -14,13 +14,13 @@ object FreqDist {
    * Return an "empty" frequency distribution: a function that maps
    * everything to the zero-probability.  P(B) = 0 for all B.
    */
-  def empty[B]: MultinomialFreqDist[B] = static(LogNum.zero)
+  def empty[B]: MultinomialFreqDist[B] = static(0.0)
 
   /**
    * Return a "static" frequency distribution: a function that maps
    * everything to the same probability.  P(B) = v for all B.
    */
-  def static[B](v: LogNum): MultinomialFreqDist[B] = new MultinomialFreqDist[B](Map(), v)
+  def static[B](v: Double): MultinomialFreqDist[B] = new MultinomialFreqDist[B](Map(), v)
 
   /**
    * Construct a frequency distribution from the counts.  Calculates
@@ -32,7 +32,7 @@ object FreqDist {
    *
    * @tparam B	the item being counted
    */
-  def apply[B, N: Numeric](counts: Map[B, N]): MultinomialFreqDist[B] = {
+  def apply[B](counts: Map[B, Double]): MultinomialFreqDist[B] = {
     apply(DefaultedFreqCounts(counts))
   }
 
@@ -51,15 +51,13 @@ object FreqDist {
    *
    * @tparam B	the item being counted
    */
-  def apply[B, N](resultCounts: DefaultedFreqCounts[B, N])(implicit num: Numeric[N]): MultinomialFreqDist[B] = {
+  def apply[B](resultCounts: DefaultedFreqCounts[B]): MultinomialFreqDist[B] = {
     val DefaultedFreqCounts(counts, totalAddition, defaultCount) = resultCounts
     val total = resultCounts.total
-    if (total == num.zero)
+    if (total == 0.0)
       FreqDist.empty[B]
-    else {
-      val logTotal = total.toLogNum
-      new MultinomialFreqDist(counts.mapVals(_ / logTotal), defaultCount / logTotal)
-    }
+    else
+      new MultinomialFreqDist(counts.mapVals(_ / total), defaultCount / total)
   }
 }
 
@@ -72,17 +70,18 @@ class CondFreqDist[A, B](val dists: Map[A, MultinomialFreqDist[B]], val default:
  * to probabilities: P(B|A).
  */
 object CondFreqDist {
+
   /**
    * Return an "empty" frequency distribution: a function that maps
    * everything to the zero-probability.  P(B|A) = 0 for all A,B.
    */
-  def empty[A, B]: A => MultinomialFreqDist[B] = static(LogNum.zero)
+  def empty[A, B]: A => MultinomialFreqDist[B] = static(0.0)
 
   /**
    * Return a "static" frequency distribution: a function that maps
    * everything to the same probability.  P(B|A) = v for all A,B.
    */
-  def static[A, B](v: LogNum): A => MultinomialFreqDist[B] = (_: Any) => FreqDist.static(v)
+  def static[A, B](v: Double): A => MultinomialFreqDist[B] = (_: Any) => FreqDist.static(v)
 
   /**
    * Construct a frequency distribution from the counts. Calculates
@@ -96,7 +95,7 @@ object CondFreqDist {
    * @tparam A	the conditioning item being counted; P(B|A).
    * @tparam B	the conditioned item being counted; P(B|A).
    */
-  def apply[A, B, N: Numeric](counts: Map[A, Map[B, N]]): CondFreqDist[A, B] = {
+  def apply[A, B](counts: Map[A, Map[B, Double]]): CondFreqDist[A, B] = {
     apply(DefaultedCondFreqCounts.fromMap(counts))
   }
 
@@ -118,11 +117,11 @@ object CondFreqDist {
    * @tparam A	the conditioning item being counted; P(B|A).
    * @tparam B	the conditioned item being counted; P(B|A).
    */
-  def apply[A, B, N](resultCounts: DefaultedCondFreqCounts[A, B, N])(implicit num: Numeric[N]): CondFreqDist[A, B] = {
+  def apply[A, B](resultCounts: DefaultedCondFreqCounts[A, B]): CondFreqDist[A, B] = {
     val DefaultedCondFreqCounts(counts) = resultCounts
-    val summedBackoffCounts = counts.values.foldLeft(DefaultedFreqCounts(Map[B, N](), num.zero, num.zero)) {
+    val summedBackoffCounts = counts.values.foldLeft(DefaultedFreqCounts(Map[B, Double](), 0.0, 0.0)) {
       case (DefaultedFreqCounts(zc, zt, zd), DefaultedFreqCounts(c, t, d)) =>
-        DefaultedFreqCounts(zc +++ c, num.plus(zt, t), num.plus(zd, d))
+        DefaultedFreqCounts(zc |+| c, zt + t, zd + d)
     }
     new CondFreqDist(counts.mapVals(FreqDist(_)), FreqDist(summedBackoffCounts))
   }

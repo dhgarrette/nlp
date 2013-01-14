@@ -1,6 +1,8 @@
 package dhg.hmm.tag.support
 
-import dhg.hmm.util.CollectionUtils._
+import scalaz._
+import Scalaz._
+
 import dhg.util.CollectionUtil._
 
 /**
@@ -10,33 +12,34 @@ import dhg.util.CollectionUtil._
  * items.
  *
  * @tparam B	the item being counted
- * @tparam N	the Numeric type of the count
  */
-case class DefaultedFreqCounts[B, N](counts: Map[B, N], totalAddition: N, defaultCount: N)(implicit num: Numeric[N]) {
-  def +++(that: DefaultedFreqCounts[B, N]) = {
-    val countSum = counts +++ that.counts
-
-    if (totalAddition == num.zero && defaultCount == num.zero)
-      new DefaultedFreqCounts(countSum, that.totalAddition, that.defaultCount)
-
-    else if (that.totalAddition == num.zero && that.defaultCount == num.zero)
-      new DefaultedFreqCounts(countSum, totalAddition, defaultCount)
-
-    else {
-      assert(totalAddition == that.totalAddition)
-      assert(defaultCount == that.defaultCount)
-      new DefaultedFreqCounts(countSum, totalAddition, defaultCount)
-    }
-  }
-
+case class DefaultedFreqCounts[B](counts: Map[B, Double], totalAddition: Double, defaultCount: Double) {
   def simpleCounts = counts
-
-  def total = num.plus(counts.values.sum, totalAddition)
+  def total = counts.values.sum + totalAddition
 }
 
 object DefaultedFreqCounts {
-  def apply[B, N: Numeric](counts: Map[B, N]) =
-    new DefaultedFreqCounts(counts, implicitly[Numeric[N]].zero, implicitly[Numeric[N]].zero)
+  def apply[B](counts: Map[B, Double]) = new DefaultedFreqCounts(counts, 0.0, 0.0)
+
+  implicit def defaultedFreqCountsSemigroup[B]: Semigroup[DefaultedFreqCounts[B]] =
+    new Semigroup[DefaultedFreqCounts[B]] {
+      def append(f1: DefaultedFreqCounts[B], f2CallByName: => DefaultedFreqCounts[B]) = {
+        val f2 = f2CallByName
+        val countSum = f1.counts |+| f2.counts
+
+        if (f1.totalAddition == 0.0 && f1.defaultCount == 0.0)
+          new DefaultedFreqCounts(countSum, f2.totalAddition, f2.defaultCount)
+
+        else if (f2.totalAddition == 0.0 && f2.defaultCount == 0.0)
+          new DefaultedFreqCounts(countSum, f1.totalAddition, f1.defaultCount)
+
+        else {
+          assert(f1.totalAddition == f2.totalAddition)
+          assert(f1.defaultCount == f2.defaultCount)
+          new DefaultedFreqCounts(countSum, f1.totalAddition, f1.defaultCount)
+        }
+      }
+    }
 }
 
 /**
@@ -47,16 +50,19 @@ object DefaultedFreqCounts {
  *
  * @tparam A	the conditioning item being counted; P(B|A).
  * @tparam B	the conditioned item being counted; P(B|A).
- * @tparam N	the Numeric type of the count
  */
-case class DefaultedCondFreqCounts[A, B, N: Numeric](counts: Map[A, DefaultedFreqCounts[B, N]]) {
-  def +++(that: DefaultedCondFreqCounts[A, B, N]): DefaultedCondFreqCounts[A, B, N] =
-    DefaultedCondFreqCounts((counts.iterator ++ that.counts).groupByKey.mapVals(_.reduce(_ +++ _)))
-
+case class DefaultedCondFreqCounts[A, B](counts: Map[A, DefaultedFreqCounts[B]]) {
   def simpleCounts = counts.mapVals(_.simpleCounts)
 }
 
 object DefaultedCondFreqCounts {
-  def fromMap[A, B, N: Numeric](counts: Map[A, Map[B, N]]): DefaultedCondFreqCounts[A, B, N] =
+  def fromMap[A, B](counts: Map[A, Map[B, Double]]): DefaultedCondFreqCounts[A, B] =
     DefaultedCondFreqCounts(counts.mapVals(c => DefaultedFreqCounts(c)))
+
+  implicit def defaultedCondFreqCountsSemigroup[A, B]: Semigroup[DefaultedCondFreqCounts[A, B]] =
+    new Semigroup[DefaultedCondFreqCounts[A, B]] {
+      def append(f1: DefaultedCondFreqCounts[A, B], f2: => DefaultedCondFreqCounts[A, B]) = {
+        DefaultedCondFreqCounts(f1.counts |+| f2.counts)
+      }
+    }
 }

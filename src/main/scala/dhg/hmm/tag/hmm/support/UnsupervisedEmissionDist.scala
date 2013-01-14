@@ -8,13 +8,12 @@ import dhg.hmm.tag.support.CountsTransformer
 import dhg.hmm.tag.support.DefaultedCondFreqCounts
 import dhg.hmm.tag.support.DefaultedFreqCounts
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 
 /**
  * Produce a conditional frequency distribution without labeled training data.
  */
 trait UnsupervisedEmissionDistFactory[Tag, Sym] {
-  def make(): Tag => Sym => LogNum
+  def make(): Tag => Sym => Double
 }
 
 /**
@@ -39,11 +38,11 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
   extends UnsupervisedEmissionDistFactory[Option[Tag], Option[Sym]]
   with Logging {
 
-  override def make(): Option[Tag] => Option[Sym] => LogNum = {
+  override def make(): Option[Tag] => Option[Sym] => Double = {
     val DefaultedFreqCounts(rawCounts, totalAddition, defaultCount) = countsTransformer(rawData.flatten.counts)
 
     val rawSymbolCounts = rawCounts.withDefaultValue(defaultCount) // number of times each symbol appears in the raw data
-    val tagToSymbolDict = tagDict.setIterator.ungroup.map(_.swap).toSet.groupByKey // a reversed tag dict; Tag -> Set[Symbol]
+    val tagToSymbolDict = tagDict.setIterator.ungroup.map(_.swap).to[Set].groupByKey // a reversed tag dict; Tag -> Set[Symbol]
 
     val vocabRaw = rawSymbolCounts.keySet // set of all symbols in raw data
     val vocabKnown = tagDict.symbols // set of all symbols in tag dict (known symbols)
@@ -110,7 +109,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
         case (tag, DefaultedFreqCounts(a, b, c)) =>
           (Option(tag), DefaultedFreqCounts(a.mapKeys(Option(_)), b, c))
       }
-    val startEnd: (Option[Tag], DefaultedFreqCounts[Option[Sym], Double]) =
+    val startEnd: (Option[Tag], DefaultedFreqCounts[Option[Sym]]) =
       (None -> DefaultedFreqCounts(Map(None -> 1.0)))
 
     CondFreqDist(DefaultedCondFreqCounts(liftedCounts + startEnd))

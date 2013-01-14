@@ -1,11 +1,13 @@
 package dhg.hmm.tag.hmm
 
+import scalaz._
+import Scalaz._
+
 import dhg.hmm.tag.TagDict.OptionalTagDict
 import dhg.hmm.tag.TagUtils._
 import dhg.hmm.tag.support.CondFreqDist
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 
 object HmmUtils {
 
@@ -28,11 +30,11 @@ object HmmUtils {
   def getCountsFromEndedTagged[Sym, Tag](endedTaggedSequences: Vector[Vector[(Sym, Tag)]]) = {
     // Get the tag transitions, including start/final tags
     val tagPairs = endedTaggedSequences.map(_.map(_._2).sliding2).flatten
-    val transitionCounts = tagPairs.groupByKey.mapVals(_.counts)
+    val transitionCounts = tagPairs.groupByKey.mapVals(_.counts.mapVals(_.toDouble))
 
     // Get the word/tag pairs (emissions)
     val tagSymbolPairs = endedTaggedSequences.flatMap(_.map(_.swap))
-    val emissionCounts = tagSymbolPairs.groupByKey.mapVals(_.counts)
+    val emissionCounts = tagSymbolPairs.groupByKey.mapVals(_.counts.mapVals(_.toDouble))
 
     (transitionCounts, emissionCounts)
   }
@@ -49,8 +51,8 @@ object HmmUtils {
   def addDistributionsToRawSequences[Sym, Tag](
     rawSequences: Vector[Vector[Sym]],
     tagDict: OptionalTagDict[Sym, Tag],
-    transitions: Option[Tag] => Option[Tag] => LogNum,
-    emissions: Option[Tag] => Option[Sym] => LogNum): Vector[Vector[(Option[Sym], Vector[(Option[Tag], (Map[Option[Tag], LogNum], LogNum))])]] = {
+    transitions: Option[Tag] => Option[Tag] => Double,
+    emissions: Option[Tag] => Option[Sym] => Double): Vector[Vector[(Option[Sym], Vector[(Option[Tag], (Map[Option[Tag], Double], Double))])]] = {
     val allTags = tagDict.allTags + None
     addDistributionsToRawSequences(rawSequences, tagDict, transitions, emissions, allTags.mapToVal(allTags).toMap)
   }
@@ -58,9 +60,9 @@ object HmmUtils {
   def addDistributionsToRawSequences[Sym, Tag](
     rawSequences: Vector[Vector[Sym]],
     tagDict: OptionalTagDict[Sym, Tag],
-    transitions: Option[Tag] => Option[Tag] => LogNum,
-    emissions: Option[Tag] => Option[Sym] => LogNum,
-    validTransitions: Map[Option[Tag], Set[Option[Tag]]]): Vector[Vector[(Option[Sym], Vector[(Option[Tag], (Map[Option[Tag], LogNum], LogNum))])]] = {
+    transitions: Option[Tag] => Option[Tag] => Double,
+    emissions: Option[Tag] => Option[Sym] => Double,
+    validTransitions: Map[Option[Tag], Set[Option[Tag]]]): Vector[Vector[(Option[Sym], Vector[(Option[Tag], (Map[Option[Tag], Double], Double))])]] = {
 
     val allTags = tagDict.allTags + None
     val reverseTransitions =

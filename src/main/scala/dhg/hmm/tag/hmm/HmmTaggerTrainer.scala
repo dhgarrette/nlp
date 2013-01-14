@@ -75,7 +75,7 @@ abstract class TypesupervisedHmmTaggerTrainer[Sym, Tag](
     trainWithPriors(
       rawSequences,
       transitionPriorCounts, emissionPriorCounts,
-      transitionPriorCounts.mapVals(_.mapVals(_.toDouble)), emissionPriorCounts.mapVals(_.mapVals(_.toDouble)),
+      transitionPriorCounts, emissionPriorCounts,
       tagDict)
   }
 
@@ -119,7 +119,7 @@ abstract class TypesupervisedHmmTaggerTrainer[Sym, Tag](
    */
   final def trainWithPriors(
     rawSequences: Vector[Vector[Sym]],
-    initialTransitionCounts: Map[Option[Tag], Map[Option[Tag], Int]], initialEmissionCounts: Map[Option[Tag], Map[Option[Sym], Int]],
+    initialTransitionCounts: Map[Option[Tag], Map[Option[Tag], Double]], initialEmissionCounts: Map[Option[Tag], Map[Option[Sym], Double]],
     priorTransitionCounts: Map[Option[Tag], Map[Option[Tag], Double]], priorEmissionCounts: Map[Option[Tag], Map[Option[Sym], Double]],
     tagDict: TagDict[Sym, Tag]): Tagger[Sym, Tag] = {
 

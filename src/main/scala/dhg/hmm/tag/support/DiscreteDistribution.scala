@@ -1,8 +1,6 @@
 package dhg.hmm.tag.support
 
-import dhg.util.LogNum
-
-trait DiscreteDistribution[T] extends (T => LogNum) {
+trait DiscreteDistribution[T] extends (T => Double) {
 
   def sample(): T
 

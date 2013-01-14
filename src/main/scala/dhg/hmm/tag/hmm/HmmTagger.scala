@@ -1,6 +1,8 @@
 package dhg.hmm.tag.hmm
 
-import scala.Option.option2Iterable
+import scalaz._
+import Scalaz._
+
 import scala.annotation.tailrec
 
 import dhg.hmm.tag.SimpleTagDict
@@ -8,7 +10,6 @@ import dhg.hmm.tag.TagDict.OptionalTagDict
 import dhg.hmm.tag.Tagger
 import dhg.hmm.tag.hmm.HmmUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 import dhg.util.Pattern._
 
 /**
@@ -24,8 +25,8 @@ import dhg.util.Pattern._
  * NOTE: Start and end symbols and tags are represented by None.
  */
 case class HmmTagger[Sym, Tag](
-  transitions: Option[Tag] => Option[Tag] => LogNum,
-  emissions: Option[Tag] => Option[Sym] => LogNum,
+  transitions: Option[Tag] => Option[Tag] => Double,
+  emissions: Option[Tag] => Option[Sym] => Double,
   tagDict: OptionalTagDict[Sym, Tag],
   validTransitions: Map[Option[Tag], Set[Option[Tag]]],
   fastHmmTagger: FastHmmTagger[Sym, Tag])
@@ -43,14 +44,14 @@ case class HmmTagger[Sym, Tag](
 }
 
 object HmmTagger {
-  def apply[Sym, Tag](transitions: Option[Tag] => Option[Tag] => LogNum, emissions: Option[Tag] => Option[Sym] => LogNum, tagDict: OptionalTagDict[Sym, Tag]) = {
+  def apply[Sym, Tag](transitions: Option[Tag] => Option[Tag] => Double, emissions: Option[Tag] => Option[Sym] => Double, tagDict: OptionalTagDict[Sym, Tag]) = {
     val allTags = tagDict.allTags + None
     new HmmTagger[Sym, Tag](transitions, emissions, tagDict, allTags.mapToVal(allTags).toMap, new FastHmmTagger[Sym, Tag])
   }
-  def apply[Sym, Tag](transitions: Option[Tag] => Option[Tag] => LogNum, emissions: Option[Tag] => Option[Sym] => LogNum, tagDict: OptionalTagDict[Sym, Tag], validTransitions: Map[Option[Tag], Set[Option[Tag]]]) = {
+  def apply[Sym, Tag](transitions: Option[Tag] => Option[Tag] => Double, emissions: Option[Tag] => Option[Sym] => Double, tagDict: OptionalTagDict[Sym, Tag], validTransitions: Map[Option[Tag], Set[Option[Tag]]]) = {
     new HmmTagger[Sym, Tag](transitions, emissions, tagDict, validTransitions, new FastHmmTagger[Sym, Tag])
   }
-  def apply[Sym, Tag](transitions: Option[Tag] => Option[Tag] => LogNum, emissions: Option[Tag] => Option[Sym] => LogNum, tagDict: OptionalTagDict[Sym, Tag], fastHmmTagger: FastHmmTagger[Sym, Tag]) = {
+  def apply[Sym, Tag](transitions: Option[Tag] => Option[Tag] => Double, emissions: Option[Tag] => Option[Sym] => Double, tagDict: OptionalTagDict[Sym, Tag], fastHmmTagger: FastHmmTagger[Sym, Tag]) = {
     val allTags = tagDict.allTags + None
     new HmmTagger[Sym, Tag](transitions, emissions, tagDict, allTags.mapToVal(allTags).toMap, fastHmmTagger)
   }
@@ -61,7 +62,7 @@ class FastHmmTagger[Sym, Tag] {
   type OSym = Option[Sym]
   type OTag = Option[Tag]
 
-  type TokTag = (OTag, (Map[OTag, LogNum], LogNum))
+  type TokTag = (OTag, (Map[OTag, Double], Double))
   type Tok = (OSym, Vector[TokTag])
 
   def tagAllFast(sequences: Vector[Vector[Tok]]): Vector[Vector[(Sym, Tag)]] = {
@@ -73,7 +74,7 @@ class FastHmmTagger[Sym, Tag] {
     // that accounts for the first t observations and ends in state j.
 
     // Set the initial values for the fold based on the initial observation
-    val startViterbi = Vector[(Option[Tag], LogNum)](None -> LogNum.one)
+    val startViterbi = Vector[(Option[Tag], Double)](None -> 1.0)
     val startBackpointers = List[Map[Option[Tag], Option[Tag]]]()
 
     // Build up backpointers list by calculating viterbi scores for each subsequent observation
@@ -105,7 +106,8 @@ class FastHmmTagger[Sym, Tag] {
   private def backtrack(backpointers: List[Map[OTag, OTag]]): Vector[Tag] = {
     @tailrec def inner(backpointers: List[Map[OTag, OTag]], curTag: OTag, tags: List[Tag]): List[Tag] =
       backpointers match {
-        case Nil => assert(curTag == None); tags
+        case Nil =>
+          assert(curTag == None); tags
         case currPointers :: previousPointers => inner(previousPointers, currPointers(curTag), curTag.get :: tags)
       }
     val UMap(None -> lastTag) :: previousPointers = backpointers
@@ -120,22 +122,22 @@ class FastHmmTagger[Sym, Tag] {
 
 trait HmmTaggerFactory[Sym, Tag] {
   def apply(
-    transitions: Option[Tag] => Option[Tag] => LogNum,
-    emissions: Option[Tag] => Option[Sym] => LogNum): HmmTagger[Sym, Tag]
+    transitions: Option[Tag] => Option[Tag] => Double,
+    emissions: Option[Tag] => Option[Sym] => Double): HmmTagger[Sym, Tag]
 }
 
 class UnconstrainedHmmTaggerFactory[Sym, Tag](tagSet: Set[Tag]) extends HmmTaggerFactory[Sym, Tag] {
   override def apply(
-    transitions: Option[Tag] => Option[Tag] => LogNum,
-    emissions: Option[Tag] => Option[Sym] => LogNum): HmmTagger[Sym, Tag] = {
+    transitions: Option[Tag] => Option[Tag] => Double,
+    emissions: Option[Tag] => Option[Sym] => Double): HmmTagger[Sym, Tag] = {
     HmmTagger(transitions, emissions, SimpleTagDict(Map(), tagSet).opt)
   }
 }
 
 class HardTagDictConstraintHmmTaggerFactory[Sym, Tag](tagDict: OptionalTagDict[Sym, Tag]) extends HmmTaggerFactory[Sym, Tag] {
   override def apply(
-    transitions: Option[Tag] => Option[Tag] => LogNum,
-    emissions: Option[Tag] => Option[Sym] => LogNum): HmmTagger[Sym, Tag] = {
+    transitions: Option[Tag] => Option[Tag] => Double,
+    emissions: Option[Tag] => Option[Sym] => Double): HmmTagger[Sym, Tag] = {
     HmmTagger(transitions, emissions, tagDict)
   }
 }

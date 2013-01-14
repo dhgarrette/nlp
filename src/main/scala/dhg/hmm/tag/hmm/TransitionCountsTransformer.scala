@@ -8,7 +8,7 @@ import dhg.hmm.tag.support.PassthroughCondCountsTransformer
 class TransitionCountsTransformer[Tag](delegate: CondCountsTransformer[Option[Tag], Option[Tag]])
   extends CondCountsTransformer[Option[Tag], Option[Tag]] {
 
-  override def apply(counts: DefaultedCondFreqCounts[Option[Tag], Option[Tag], Double]) = {
+  override def apply(counts: DefaultedCondFreqCounts[Option[Tag], Option[Tag]]) = {
     DefaultedCondFreqCounts(
       delegate(counts).counts.map {
         case (tag, dfc @ DefaultedFreqCounts(c, t, d)) =>

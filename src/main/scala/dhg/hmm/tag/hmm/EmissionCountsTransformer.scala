@@ -1,5 +1,8 @@
 package dhg.hmm.tag.hmm
 
+import scalaz._
+import Scalaz._
+
 import dhg.hmm.tag.OptionalTagDict
 import dhg.hmm.tag.TagDict
 import dhg.hmm.tag.support.CondCountsTransformer
@@ -15,7 +18,7 @@ import dhg.util.CollectionUtil._
 class EmissionCountsTransformer[Tag, Sym](delegate: CondCountsTransformer[Option[Tag], Option[Sym]])
   extends CondCountsTransformer[Option[Tag], Option[Sym]] {
 
-  override def apply(counts: DefaultedCondFreqCounts[Option[Tag], Option[Sym], Double]) = {
+  override def apply(counts: DefaultedCondFreqCounts[Option[Tag], Option[Sym]]) = {
     DefaultedCondFreqCounts(
       delegate(counts).counts.map {
         case (tag, DefaultedFreqCounts(c, t, d)) =>
@@ -47,7 +50,7 @@ object TagDictConstrainedEmissionCountsTransformer {
   //  }
 
   def apply[Tag, Sym](tagDict: TagDict[Sym, Tag], delegate: CondCountsTransformer[Option[Tag], Option[Sym]]): EmissionCountsTransformer[Tag, Sym] = {
-    val c = (OptionalTagDict(tagDict).setIterator.ungroup.map(_.swap) :+ (None, None)).toSet.groupByKey
+    val c = (OptionalTagDict(tagDict).setIterator.ungroup.map(_.swap) :+ (None, None)).to[Set].groupByKey
     new EmissionCountsTransformer(
       new ConstrainingCondCountsTransformer(c, false,
         delegate))

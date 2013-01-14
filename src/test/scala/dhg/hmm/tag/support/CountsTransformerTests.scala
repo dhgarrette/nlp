@@ -3,8 +3,6 @@ package dhg.hmm.tag.support
 import org.junit.Assert._
 import org.junit.Test
 
-import dhg.util.LogNum
-
 class CountsTransformerTests {
 
   @Test
@@ -20,9 +18,9 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.0 / 8.0), d('a))
-    assertEqualsProb(LogNum(3.0 / 8.0), d('b))
-    assertEqualsProb(LogNum.zero, d('def))
+    assertEqualsProb((5.0 / 8.0), d('a))
+    assertEqualsProb((3.0 / 8.0), d('b))
+    assertEqualsProb(0.0, d('def))
   }
 
   @Test
@@ -38,9 +36,9 @@ class CountsTransformerTests {
     assertEqualsDouble(1.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.0 / 10.0), d('a))
-    assertEqualsProb(LogNum(3.0 / 10.0), d('b))
-    assertEqualsProb(LogNum(1.0 / 10.0), d('def))
+    assertEqualsProb((5.0 / 10.0), d('a))
+    assertEqualsProb((3.0 / 10.0), d('b))
+    assertEqualsProb((1.0 / 10.0), d('def))
   }
 
   @Test
@@ -76,11 +74,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.0 / 9.0), d('a))
-    assertEqualsProb(LogNum(3.0 / 9.0), d('b))
-    assertEqualsProb(LogNum.zero, d('c))
-    assertEqualsProb(LogNum(1.0 / 9.0), d('d))
-    assertEqualsProb(LogNum.zero, d('def))
+    assertEqualsProb((5.0 / 9.0), d('a))
+    assertEqualsProb((3.0 / 9.0), d('b))
+    assertEqualsProb(0.0, d('c))
+    assertEqualsProb((1.0 / 9.0), d('d))
+    assertEqualsProb(0.0, d('def))
   }
 
   @Test
@@ -116,11 +114,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.0 / 9.0), d('a))
-    assertEqualsProb(LogNum(3.0 / 9.0), d('b))
-    assertEqualsProb(LogNum.zero, d('c))
-    assertEqualsProb(LogNum(1.0 / 9.0), d('d))
-    assertEqualsProb(LogNum.zero, d('def))
+    assertEqualsProb((5.0 / 9.0), d('a))
+    assertEqualsProb((3.0 / 9.0), d('b))
+    assertEqualsProb(0.0, d('c))
+    assertEqualsProb((1.0 / 9.0), d('d))
+    assertEqualsProb(0.0, d('def))
   }
 
   @Test
@@ -155,11 +153,11 @@ class CountsTransformerTests {
     assertEqualsDouble(1.1, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.1 / 16.4), d('a))
-    assertEqualsProb(LogNum(3.1 / 16.4), d('b))
-    assertEqualsProb(LogNum(6.1 / 16.4), d('c))
-    assertEqualsProb(LogNum(1.1 / 16.4), d('d))
-    assertEqualsProb(LogNum(1.1 / 16.4), d('def))
+    assertEqualsProb((5.1 / 16.4), d('a))
+    assertEqualsProb((3.1 / 16.4), d('b))
+    assertEqualsProb((6.1 / 16.4), d('c))
+    assertEqualsProb((1.1 / 16.4), d('d))
+    assertEqualsProb((1.1 / 16.4), d('def))
   }
 
   @Test
@@ -203,11 +201,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.1, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.1 / 9.5), d('a))
-    assertEqualsProb(LogNum(3.1 / 9.5), d('b))
-    assertEqualsProb(LogNum(0.1 / 9.5), d('c))
-    assertEqualsProb(LogNum(1.1 / 9.5), d('d))
-    assertEqualsProb(LogNum(0.1 / 9.5), d('def))
+    assertEqualsProb((5.1 / 9.5), d('a))
+    assertEqualsProb((3.1 / 9.5), d('b))
+    assertEqualsProb((0.1 / 9.5), d('c))
+    assertEqualsProb((1.1 / 9.5), d('d))
+    assertEqualsProb((0.1 / 9.5), d('def))
   }
 
   @Test
@@ -251,15 +249,15 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
 
     val d = FreqDist(r)
-    assertEqualsProb(LogNum(5.1 / 9.3), d('a))
-    assertEqualsProb(LogNum(3.1 / 9.3), d('b))
-    assertEqualsProb(LogNum(0.0 / 9.3), d('c))
-    assertEqualsProb(LogNum(1.1 / 9.3), d('d))
-    assertEqualsProb(LogNum(0.0 / 9.3), d('def))
+    assertEqualsProb((5.1 / 9.3), d('a))
+    assertEqualsProb((3.1 / 9.3), d('b))
+    assertEqualsProb((0.0 / 9.3), d('c))
+    assertEqualsProb((1.1 / 9.3), d('d))
+    assertEqualsProb((0.0 / 9.3), d('def))
   }
 
-  case class MockCountsTransformer[B](expected: DefaultedFreqCounts[B, Double], returned: DefaultedFreqCounts[B, Double]) extends CountsTransformer[B] {
-    override def apply(counts: DefaultedFreqCounts[B, Double]) = {
+  case class MockCountsTransformer[B](expected: DefaultedFreqCounts[B], returned: DefaultedFreqCounts[B]) extends CountsTransformer[B] {
+    override def apply(counts: DefaultedFreqCounts[B]) = {
       val DefaultedFreqCounts(eC, eT, eD) = expected
       val DefaultedFreqCounts(cC, cT, cD) = counts
       assertEquals(eC, cC)
@@ -269,7 +267,7 @@ class CountsTransformerTests {
     }
   }
 
-  def assertEqualsProb(a: LogNum, b: LogNum) {
+  def assertEqualsProb(a: Double, b: Double) {
     assertEqualsDouble(a.toDouble, b.toDouble)
   }
 

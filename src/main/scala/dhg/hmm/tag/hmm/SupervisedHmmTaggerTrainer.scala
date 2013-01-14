@@ -2,6 +2,7 @@ package dhg.hmm.tag.hmm
 
 import dhg.hmm.tag.SupervisedTaggerTrainer
 import dhg.hmm.tag.support.CondFreqDist
+import dhg.util.CollectionUtil._
 
 /**
  * Factory for training a Hidden Markov Model tagger directly from labeled data.
@@ -24,9 +25,9 @@ class SupervisedHmmTaggerTrainer[Sym, Tag](
    *
    * Uses transition and emission counters to compute distributions based on labeled data.
    */
-  override def makeTagger[N: Numeric](transitionCounts: Map[Option[Tag], Map[Option[Tag], N]], emissionCounts: Map[Option[Tag], Map[Option[Sym], N]]) = {
-    val transitionDist = CondFreqDist(transitionCountsTransformer(transitionCounts))
-    val emissionDist = CondFreqDist(emissionCountsTransformer(emissionCounts))
+  override def makeTagger[N](transitionCounts: Map[Option[Tag], Map[Option[Tag], N]], emissionCounts: Map[Option[Tag], Map[Option[Sym], N]])(implicit num: Numeric[N]) = {
+    val transitionDist = CondFreqDist(transitionCountsTransformer(transitionCounts.mapVals(_.mapVals(num.toDouble))))
+    val emissionDist = CondFreqDist(emissionCountsTransformer(emissionCounts.mapVals(_.mapVals(num.toDouble))))
     hmmTaggerFactory(transitionDist, emissionDist)
   }
 }

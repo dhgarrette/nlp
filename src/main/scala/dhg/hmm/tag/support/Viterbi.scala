@@ -7,7 +7,6 @@ import dhg.hmm.tag.SimpleTagDict
 import dhg.hmm.tag.TagDict.OptionalTagDict
 import dhg.hmm.tag.Tagger
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
 import dhg.util.Pattern._
 
 /**
@@ -74,7 +73,7 @@ class Viterbi[Sym, Tag](
     // that accounts for the first t observations and ends in state j.
 
     // Set the initial values for the fold based on the initial observation
-    val startViterbi = Map[Option[Tag], LogNum](None -> LogNum.one)
+    val startViterbi = Map[Option[Tag], Double](None -> 1.0)
     val startBackpointers = List[Map[Option[Tag], Option[Tag]]]()
     val startSymbol: Option[Sym] = None
 
@@ -128,5 +127,5 @@ trait TagEdgeScorer[Sym, Tag] {
   /**
    * Calculate the value of a transition from the previous word/tag pair to the current word/tag pair.
    */
-  def apply(prevSym: Option[Sym], prevTag: Option[Tag], currSym: Option[Sym], currTag: Option[Tag]): LogNum
+  def apply(prevSym: Option[Sym], prevTag: Option[Tag], currSym: Option[Sym], currTag: Option[Tag]): Double
 }

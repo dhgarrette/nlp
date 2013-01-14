@@ -1,5 +1,8 @@
 package dhg.hmm.tag
 
+import scalaz._
+import Scalaz._
+
 import collection.mutable.{ Map => MMap, Set => MSet, Buffer }
 
 import dhg.hmm.util.CollectionUtils._
@@ -79,7 +82,7 @@ case class ScoreResults[Sym, Tag](
       correct + other.correct, total + other.total,
       knownCorrect + other.knownCorrect, knownTotal + other.knownTotal,
       unkCorrect + other.unkCorrect, unkTotal + other.unkTotal,
-      mistakes +++ other.mistakes)
+      mistakes |+| other.mistakes)
   }
 
 }

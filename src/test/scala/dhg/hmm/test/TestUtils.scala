@@ -2,11 +2,10 @@ package dhg.hmm.test
 
 import org.junit.Assert._
 import org.junit._
-import dhg.util.LogNum
 
 object TestUtils {
 
-  def assertEqualsProb(expected: LogNum, result: LogNum) {
+  def assertEqualsProb(expected: Double, result: Double) {
     assertEquals(expected.toDouble, result.toDouble, 0.0000001)
   }
 

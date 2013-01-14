@@ -6,7 +6,7 @@ import dhg.hmm.tag.TagDict
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 import dhg.util.FileUtil._
-import dhg.util.LogNum._
+import scala.collection.breakOut
 
 /**
  * Factory for creating a tag dictionary (mapping from symbols to valid tags)
@@ -36,12 +36,13 @@ trait TagDictFactory[Sym, Tag] {
  */
 class SimpleTagDictFactory[Sym, Tag]() extends TagDictFactory[Sym, Tag] {
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
-    SimpleTagDict(taggedTrainSequences.flatten.toSet.groupByKey)
+    val fullWordTagSet = taggedTrainSequences.flatten.toSet
+    SimpleTagDict(fullWordTagSet.groupByKey)
   }
 }
 
 /**
- * Construct a tag dictionary from a labeled corpus.  Each weight value is 
+ * Construct a tag dictionary from a labeled corpus.  Each weight value is
  * given by P(tag | sym).  For unseen symbols, the weight is simply P(tag).
  *
  * @tparam Sym	visible symbols in the sequences
@@ -49,7 +50,7 @@ class SimpleTagDictFactory[Sym, Tag]() extends TagDictFactory[Sym, Tag] {
  */
 class SimpleWeightedTagDictFactory[Sym, Tag](condCountsTransformer: CondCountsTransformer[Sym, Tag]) extends TagDictFactory[Sym, Tag] {
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
-    val counts = taggedTrainSequences.flatten.groupByKey.mapVals(_.counts.mapVals(_.toLogNum))
+    val counts = taggedTrainSequences.flatten.groupByKey.mapVals(_.counts)
     val CondFreqDist(dists, default) = CondFreqDist(condCountsTransformer(counts))
     SimpleWeightedTagDict(dists.mapVals(_.dist), default.dist)
   }
@@ -68,7 +69,7 @@ class TopSymTagPairTagDictFactory[Sym, Tag](numSymTagPairs: Int) extends TagDict
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
     val wordTagPairCounts = taggedTrainSequences.flatten.counts
     val topWordTagPairs = wordTagPairCounts.toVector.sortBy(-_._2).map(_._1).take(numSymTagPairs)
-    val tagDict = topWordTagPairs.toSet.groupByKey
+    val tagDict = topWordTagPairs.to[Set].groupByKey
     val fullTagset = wordTagPairCounts.keySet.map(_._2)
     SimpleTagDict(tagDict, fullTagset)
   }
@@ -87,7 +88,8 @@ class FullTopSymTagDictFactory[Sym, Tag](numSym: Int, fullTagset: Set[Tag]) exte
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
     val wordCounts = taggedTrainSequences.flatten.map(_._1).counts
     val topWords = wordCounts.toVector.sortBy(-_._2).map(_._1).take(numSym)
-    val fullTagDict = taggedTrainSequences.flatten.toSet.groupByKey
+    val fullWordTagSet = taggedTrainSequences.flatten.toSet
+    val fullTagDict = fullWordTagSet.groupByKey
     val tagDict = topWords.mapTo(fullTagDict).toMap
     SimpleTagDict(tagDict, fullTagset)
   }
@@ -105,15 +107,15 @@ class FullTopSymTagDictFactory[Sym, Tag](numSym: Int, fullTagset: Set[Tag]) exte
 class DefaultLimitingTagDictFactory[Sym, Tag](maxNumberOfDefaultTags: Int, delegate: TagDictFactory[Sym, Tag]) extends TagDictFactory[Sym, Tag] {
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
     val delegateDict = delegate.make(taggedTrainSequences).setIterator.toMap
-    val topNTags =
+    val topNTags: Set[Tag] =
       delegateDict
         .ungroup
-        .map(_.swap).toSet
+        .map(_.swap).to[Set]
         .groupByKey
         .mapVals(_.size).toVector
         .sortBy(-_._2)
         .take(maxNumberOfDefaultTags)
-        .map(_._1).toSet
+        .map(_._1)(breakOut)
     SimpleTagDict(delegateDict, topNTags)
   }
 }

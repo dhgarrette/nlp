@@ -1,6 +1,10 @@
 package dhg.hmm.tag.hmm
 
+import scalaz._
+import Scalaz._
+
 import scala.annotation.tailrec
+import scala.collection.parallel.immutable.ParVector
 
 import com.typesafe.scalalogging.log4j.Logging
 
@@ -10,8 +14,6 @@ import dhg.hmm.tag.TagUtils._
 import dhg.hmm.tag.support._
 import dhg.hmm.util.CollectionUtils._
 import dhg.util.CollectionUtil._
-import dhg.util.LogNum
-import dhg.util.LogNum._
 import dhg.util.Pattern._
 
 /**
@@ -40,7 +42,10 @@ class EmHmmTaggerTrainer[Sym, Tag](
   type OSym = Option[Sym]
   type OTag = Option[Tag]
 
-  type TokTag = (OTag, (Map[OTag, LogNum], LogNum))
+  type TCounts = Map[OTag, Map[OTag, Double]]
+  type ECounts = Map[OTag, Map[OSym, Double]]
+
+  type TokTag = (OTag, (Map[OTag, Double], Double))
   type Tok = (OSym, Vector[TokTag])
 
   /**
@@ -53,8 +58,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
     rawSequences: Vector[Vector[Sym]],
     initialHmm: HmmTagger[Sym, Tag],
     tagDict: TagDict[Sym, Tag],
-    priorTransitionCounts: Map[OTag, Map[OTag, Double]],
-    priorEmissionCounts: Map[OTag, Map[OSym, Double]]): HmmTagger[Sym, Tag] = {
+    priorTransitionCounts: TCounts,
+    priorEmissionCounts: ECounts): HmmTagger[Sym, Tag] = {
 
     // Train an HMM using EM
     val emHmm =
@@ -69,8 +74,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
     val autoTagged = emHmm.tag(rawSequences.toVector)
     val (transitionCounts, emissionCounts) = HmmUtils.getCountsFromTagged(autoTagged)
 
-    val transitionCountsWithPriors = CondFreqCounts(transitionCounts).toDoubles ++ priorTransitionCounts toMap
-    val emissionCountsWithPriors = CondFreqCounts(emissionCounts).toDoubles ++ priorEmissionCounts toMap
+    val transitionCountsWithPriors = transitionCounts |+| priorTransitionCounts
+    val emissionCountsWithPriors = emissionCounts |+| priorEmissionCounts
 
     // Perform supervised training (presumably with smoothing counts transformers) 
     // on the auto-tagged corpus to smooth out the EM output 
@@ -81,8 +86,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
     rawSequences: Vector[Vector[Sym]],
     initialHmm: HmmTagger[Sym, Tag],
     tagDict: OptionalTagDict[Sym, Tag],
-    priorTransitionCounts: Map[OTag, Map[OTag, Double]],
-    priorEmissionCounts: Map[OTag, Map[OSym, Double]]): HmmTagger[Sym, Tag] = {
+    priorTransitionCounts: TCounts,
+    priorEmissionCounts: ECounts): HmmTagger[Sym, Tag] = {
 
     estimateHmmWithEm(
       rawSequences,
@@ -104,8 +109,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
     rawSequences: Vector[Vector[Sym]],
     initialHmm: HmmTagger[Sym, Tag],
     tagDict: OptionalTagDict[Sym, Tag],
-    priorTransitionCounts: Map[OTag, Map[OTag, Double]],
-    priorEmissionCounts: Map[OTag, Map[OSym, Double]],
+    priorTransitionCounts: TCounts,
+    priorEmissionCounts: ECounts,
     remainingIterations: Int,
     prevAvgLogProb: Double): HmmTagger[Sym, Tag] = {
 
@@ -173,8 +178,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
 
   protected def reestimateHmm(
     newRawSequences: Vector[Vector[Tok]],
-    priorTransitionCounts: Map[OTag, Map[OTag, Double]],
-    priorEmissionCounts: Map[OTag, Map[OSym, Double]]) = {
+    priorTransitionCounts: TCounts,
+    priorEmissionCounts: ECounts) = {
 
     // E Step:  Use the forward/backward procedure to determine the 
     //          probability of various possible state sequences for 
@@ -183,8 +188,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
     val (expectedTransitionCounts, expectedEmmissionCounts, avgLogProb) =
       estimateCounts(newRawSequences)
 
-    val transitionCountsWithPriors = CondFreqCounts(expectedTransitionCounts) ++ priorTransitionCounts toMap
-    val emissionCountsWithPriors = CondFreqCounts(expectedEmmissionCounts) ++ priorEmissionCounts toMap
+    val transitionCountsWithPriors = expectedTransitionCounts |+| priorTransitionCounts
+    val emissionCountsWithPriors = expectedEmmissionCounts |+| priorEmissionCounts
 
     // M Step: Use these probability estimates to re-estimate the 
     //         probability distributions
@@ -208,13 +213,14 @@ class EmHmmTaggerTrainer[Sym, Tag](
         .map {
           sequence =>
             val (estTrCounts, estEmCounts, seqProb) = estimateCountsForSequence(sequence)
-            (estTrCounts, estEmCounts, seqProb.logValue, 1) // number of sentences == 1
+            (estTrCounts, estEmCounts, math.log(seqProb), 1) // number of sentences == 1
         }
-        .fold((CondFreqCounts[OTag, OTag, Double](), CondFreqCounts[OTag, OSym, Double](), 0.0, 0)) {
-          case ((aTC, aEC, aP, aN), (bTC, bEC, bP, bN)) => (aTC ++ bTC, aEC ++ bEC, aP + bP, aN + bN) // sum up all the components
+        .reduce[(TCounts, ECounts, Double, Int)] {
+          case ((aTC, aEC, aP, aN), (bTC, bEC, bP, bN)) =>
+            (aTC |+| bTC, aEC |+| bEC, aP + bP, aN + bN) // sum up all the components
         }
 
-    (expectedTransitionCounts.toMap, expectedEmissionCounts.toMap, totalSeqProb / numSequences)
+    (expectedTransitionCounts, expectedEmissionCounts, totalSeqProb / numSequences)
   }
 
   /**
@@ -222,11 +228,11 @@ class EmHmmTaggerTrainer[Sym, Tag](
    * the forward/backward procedure.
    */
   protected def estimateCountsForSequence(
-    newSequence: Vector[Tok]): (CondFreqCounts[OTag, OTag, Double], CondFreqCounts[OTag, OSym, Double], LogNum) = {
+    newSequence: Vector[Tok]) = {
 
     val (forwards, forwardProb) = forwardProbabilities(newSequence)
     val (backwrds, backwrdProb) = backwrdProbabilities(newSequence)
-    assert(forwardProb approx backwrdProb, "forward=%s, backward=%s".format(forwardProb.logValue, backwrdProb.logValue))
+    assert(forwardProb - backwrdProb < 0.0000000001, "forward=%s, backward=%s".format(forwardProb, backwrdProb))
     val seqProb = forwardProb // P(sequence | hmm)
 
     // Get expected transition counts based on forward-backward probabilities
@@ -252,7 +258,7 @@ class EmHmmTaggerTrainer[Sym, Tag](
    *             forward(t)(j) = P(o1,o2,...,ot, q_t=j | lambda)
    */
   protected def forwardProbabilities(
-    newSequence: Vector[Tok]): (Vector[OTag => LogNum], LogNum) = {
+    newSequence: Vector[Tok]): (Vector[OTag => Double], Double) = {
 
     // Initialization
     //     forward(1)(j) = a(start)(j) * b(j)(o1)   j in [1,N]
@@ -261,10 +267,10 @@ class EmHmmTaggerTrainer[Sym, Tag](
     // Termination
     //     P(O | lambda) = forward(final)(sf) = (1 to N).sum(i => forward(T)(i) * aif)
 
-    val startForward: Map[OTag, LogNum] = Map(None -> LogNum.one)
+    val startForward: Map[OTag, Double] = Map(None -> 1.0)
 
     val (lastForward @ UMap(None -> forwardProb), forwards) =
-      newSequence.drop(1).foldLeft((startForward, List[Map[OTag, LogNum]]())) {
+      newSequence.drop(1).foldLeft((startForward, List[Map[OTag, Double]]())) {
         case ((prevForward, otherForwards), (tok, currTags)) =>
           val currForward =
             currTags.map {
@@ -291,7 +297,7 @@ class EmHmmTaggerTrainer[Sym, Tag](
    *             backwrd(j) = P(o1,o2,...,ot, q_t=j | lambda)
    */
   protected def backwrdProbabilities(
-    newSequence: Vector[Tok]): (Vector[OTag => LogNum], LogNum) = {
+    newSequence: Vector[Tok]): (Vector[OTag => Double], Double) = {
 
     // Initialization
     //     backwrd(T)(i) = a(i)(F)   i in [1,N]
@@ -302,10 +308,10 @@ class EmHmmTaggerTrainer[Sym, Tag](
 
     val sequenceExceptLast :+ finalTok = newSequence
     val (None, Vector(finalTag)) = finalTok
-    val finalBackwrd: Vector[(TokTag, LogNum)] = Vector((finalTag -> LogNum.one))
+    val finalBackwrd: Vector[(TokTag, Double)] = Vector((finalTag -> 1.0))
 
     val (firstBackwrd @ Vector((None, _) -> backwrdProb), backwrds, lastTok) =
-      sequenceExceptLast.foldRight((finalBackwrd, List[Vector[(TokTag, LogNum)]](), None: OSym)) {
+      sequenceExceptLast.foldRight((finalBackwrd, List[Vector[(TokTag, Double)]](), None: OSym)) {
         case ((tok, currTags), (nextBackwrd, otherBackwrds, nextTok)) =>
           val currBackwrd =
             currTags.mapTo {
@@ -330,9 +336,9 @@ class EmHmmTaggerTrainer[Sym, Tag](
    */
   protected def estimateTransitionCounts(
     newSequence: Vector[Tok],
-    forwards: Vector[OTag => LogNum],
-    backwrds: Vector[OTag => LogNum],
-    seqProb: LogNum) = {
+    forwards: Vector[OTag => Double],
+    backwrds: Vector[OTag => Double],
+    seqProb: Double) = {
 
     val currTokens = newSequence.dropRight(1)
     val nextTokens = newSequence.drop(1)
@@ -351,7 +357,7 @@ class EmHmmTaggerTrainer[Sym, Tag](
           }.toMap
       }
 
-    expectedTransitionCounts.map(CondFreqCounts(_)).reduce(_ ++ _)
+    expectedTransitionCounts.reduce(_ |+| _)
   }
 
   /**
@@ -362,9 +368,9 @@ class EmHmmTaggerTrainer[Sym, Tag](
    */
   protected def estimateEmissionCounts(
     newSequence: Vector[Tok],
-    forwards: Vector[OTag => LogNum],
-    backwrds: Vector[OTag => LogNum],
-    seqProb: LogNum): CondFreqCounts[OTag, OSym, Double] = {
+    forwards: Vector[OTag => Double],
+    backwrds: Vector[OTag => Double],
+    seqProb: Double) = {
 
     val expectedEmissionCounts =
       (newSequence zipSafe forwards zipSafe backwrds).map {
@@ -373,7 +379,7 @@ class EmHmmTaggerTrainer[Sym, Tag](
             Map(tok -> (forward(tag) * backwrd(tag) / seqProb).toDouble)).toMap
       }
 
-    expectedEmissionCounts.map(CondFreqCounts(_)).reduce(_ ++ _)
+    expectedEmissionCounts.reduce(_ |+| _)
   }
 
   protected def hmmExaminationHook(hmm: HmmTagger[Sym, Tag]) {}

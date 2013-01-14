@@ -65,11 +65,7 @@ object CollectionUtils {
      * @return the sum of the results after applications of f
      */
     def sumBy[B](f: A => B)(implicit num: Numeric[B]): B = {
-      val itr = self.toIterator
-      var accum = num.zero
-      while (itr.hasNext)
-        accum = num.plus(accum, f(itr.next))
-      return accum
+      (num.zero /: self)((accum, x) => num.plus(accum, f(x)))
     }
   }
 
@@ -95,135 +91,6 @@ object CollectionUtils {
     def sliding2[B >: A](): Iterator[(B, B)] =
       self.toIterator.sliding2()
   }
-
-  //////////////////////////////////////////////////////
-  // groupBy(f: A => K): Repr[(R,U)]
-  //   - Make Traversable.groupBy functionality available to Iterator
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_groupBy_Iterator[A](self: Iterator[A]) {
-    /**
-     * Same functionality as Traversable.groupBy(f)
-     *
-     * @param f	function mapping items to new keys
-     * @return Map from new keys to original items
-     */
-    def groupBy[K](f: A => K): Map[K, Vector[A]] =
-      this.groupBy(f, Vector.newBuilder[A])
-
-    /**
-     * Same functionality as Traversable.groupBy(f)
-     *
-     * @param f	function mapping items to new keys
-     * @param builder	a builder to construct collections of items that have been grouped
-     * @return Map from new keys to original items
-     */
-    def groupBy[K, That <: Iterable[A]](f: A => K, builder: => Builder[A, That]): Map[K, That] = {
-      val m = mutable.Map.empty[K, Builder[A, That]]
-      for (elem <- self) {
-        val key = f(elem)
-        val bldr = m.getOrElseUpdate(key, builder)
-        bldr += elem
-      }
-      val b = Map.newBuilder[K, That]
-      for ((k, v) <- m)
-        b += ((k, v.result))
-      b.result
-    }
-  }
-
-  //////////////////////////////////////////////////////
-  // groupByKey(): Map[T,Repr[U]]
-  //   - For a collection of pairs, group by the first item in the pair.
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_groupByKey_Iterator[A](self: Iterator[A]) {
-    /**
-     * For a collection of pairs, group by the first item in the pair.
-     *
-     * @return Map from first items of the pairs to collections of items that have been grouped
-     */
-    def groupByKey[T, U](implicit ev: A <:< (T, U)): Map[T, Vector[U]] =
-      this.groupByKey(Vector.newBuilder[U])
-
-    /**
-     * For a collection of pairs, group by the first item in the pair.
-     *
-     * @param builder a builder to construct collections of items that have been grouped
-     * @return Map from first items of the pairs to collections of items that have been grouped
-     */
-    def groupByKey[T, U, That <: Iterable[U]](builder: => Builder[U, That])(implicit ev: A <:< (T, U)): Map[T, That] =
-      self.groupBy(_._1).mapVals(v => (builder ++= v.map(_._2)).result)
-  }
-
-  //////////////////////////////////////////////////////
-  // +++(other: TraversableOnce[(T,Traversable[S])]): Repr[(T,Traversable[S])]
-  //   - Given two collections of pairs (T,Traversable[S]), combine into
-  //     a single collection such that all values associated with the same
-  //     key are concatenated.
-  //   - Functionally equivalent to:
-  //         (this.iterator ++ other).groupBy(_._1).mapValues(_.map(_._2).reduce(_ ++ _))
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_$plus$plus$plus_TraversableLike_Traversable[T, S, Repr2 <: Traversable[S], Repr1 <: Traversable[(T, TraversableLike[S, Repr2])]](self: TraversableLike[(T, TraversableLike[S, Repr2]), Repr1]) {
-    /**
-     * Given two collections of pairs (T,Traversable[S]), combine into
-     * a single collection such that all values associated with the same
-     * key are concatenated.
-     *
-     * @param other 	another collection to add to
-     * @return a collection of pairs
-     */
-    def +++[That1 <: Traversable[(T, TraversableLike[S, Repr2])], That2](other: TraversableOnce[(T, TraversableLike[S, Repr2])])(implicit bf2: CanBuildFrom[Repr2, S, That2], bf1: CanBuildFrom[Repr1, (T, That2), That1]) = {
-      val grouped = (self.toIterator ++ other).groupByKey
-      val b = bf1(grouped.asInstanceOf[Repr1])
-      b.sizeHint(grouped.size)
-      for ((k, vs) <- grouped) {
-        val b2 = bf2()
-        for (v <- vs) b2 ++= v
-        b += k -> b2.result
-      }
-      b.result
-    }
-  }
-
-  //////////////////////////////////////////////////////
-  // +++[U:Numeric](other: Traversable[(T,U)]): Repr[(T,U)]
-  //   - Given two collections of pairs (T,U:Numeric), combine into
-  //     a single collection such that all values associated with the same
-  //     key are summed.
-  //   - Functionally equivalent to:
-  //         (this.iterator ++ other).groupBy(_._1).mapValues(_.map(_._2).sum)
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_$plus$plus$plus_TraversableLike_Numeric[T, U: Numeric, Repr <: Traversable[(T, U)]](self: TraversableLike[(T, U), Repr]) {
-    /**
-     * Given two collections of pairs (T,U:Numeric), combine into
-     * a single collection such that all values associated with the same
-     * key are summed.
-     *
-     * @param other 	another collection to add to
-     * @return a collection of pairs
-     */
-    def +++[That <: Traversable[(T, U)]](other: TraversableOnce[(T, U)])(implicit bf: CanBuildFrom[Repr, (T, U), That]) = {
-      val grouped = (self.toIterator ++ other).groupByKey
-      val b = bf(grouped.asInstanceOf[Repr])
-      b.sizeHint(grouped.size)
-      for ((k, vs) <- grouped) b += k -> vs.sum
-      b.result
-    }
-  }
-
-  //  implicit class Enriched_$plus$plus$plus_Iterator[T, U](self: Iterator[(T, U)]) {
-  //    /**
-  //     * In a collection of pairs, map a function over the second item of each
-  //     * pair.
-  //     *
-  //     * @param f	function to map over the second item of each pair
-  //     * @return a collection of pairs
-  //     */
-  //    def +++[R] = self.mapValues(f)
-  //  }
 
   //////////////////////////////////////////////////////
   // flattenByKey: Repr[(T,Traversable[S])]
@@ -358,16 +225,6 @@ object CollectionUtils {
       val b = bf(self.asInstanceOf[Repr])
       for (x <- self.toIterator.takeSub(n)) b += x
       b.result
-    }
-  }
-
-  //////////////////////////////////////////////////////
-  // shuffle
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_shuffle_GenTraversableOnce[T, CC[X] <: TraversableOnce[X]](xs: CC[T]) {
-    def shuffle(implicit bf: CanBuildFrom[CC[T], T, CC[T]]): CC[T] = {
-      bf(xs) ++= Random.shuffle(xs) result
     }
   }
 

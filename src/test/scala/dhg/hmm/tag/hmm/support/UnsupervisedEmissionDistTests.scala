@@ -6,7 +6,6 @@ import org.junit.Test
 
 import dhg.hmm.tag._
 import dhg.hmm.tag.support._
-import dhg.util.LogNum
 
 class UnsupervisedEmissionDistTests {
 
@@ -45,16 +44,16 @@ class UnsupervisedEmissionDistTests {
 
     for (w <- List("aardvark", "meanders", "horse", "unseen word", "dog", "the").map(Option(_)))
       for (t <- List('N, 'V, 'R, 'D).map(Option(_)))
-        println("p(%s|%s) = %s".format(w, t, d(t)(w).logValue))
+        println("p(%s|%s) = %s".format(w, t, d(t)(w)))
 
     println
     println(d(Some('N))(Some("aardvark")) / d(Some('V))(Some("aardvark")))
     println(d(Some('N))(Some("meanders")) / d(Some('V))(Some("meanders")))
 
-    assertEqualsProb(LogNum(1.0 / 5.0), d(Some('N))(Some("bird")))
+    assertEqualsProb(1.0 / 5.0, d(Some('N))(Some("bird")))
   }
 
-  def assertEqualsProb(a: LogNum, b: LogNum) {
+  def assertEqualsProb(a: Double, b: Double) {
     assertEquals(a.toDouble, b.toDouble, 0.001)
   }
 
