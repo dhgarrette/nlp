@@ -8,8 +8,6 @@ import scala.collection.GenTraversableOnce
 import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
-import scala.collection.mutable.Builder
-import scala.util.Random
 
 import dhg.util.CollectionUtil._
 
