@@ -2,7 +2,7 @@ package dhg.nlp.tag.hmm
 
 import dhg.nlp.freq.CondCountsTransformer
 import dhg.nlp.freq.DefaultedCondFreqCounts
-import dhg.nlp.freq.DefaultedFreqCounts
+import dhg.nlp.freq.DefaultedMultinomial
 import dhg.nlp.freq.PassthroughCondCountsTransformer
 
 class TransitionCountsTransformer[Tag](delegate: CondCountsTransformer[Option[Tag], Option[Tag]])
@@ -11,9 +11,9 @@ class TransitionCountsTransformer[Tag](delegate: CondCountsTransformer[Option[Ta
   override def apply(counts: DefaultedCondFreqCounts[Option[Tag], Option[Tag]]) = {
     DefaultedCondFreqCounts(
       delegate(counts).counts.map {
-        case (tag, dfc @ DefaultedFreqCounts(c, t, d)) =>
+        case (tag, dfc @ DefaultedMultinomial(c, d, t)) =>
           tag -> (tag match {
-            case None => DefaultedFreqCounts(c + (None -> 0.0), t, d)
+            case None => DefaultedMultinomial(c + (None -> 0.0), d, t)
             case _ => dfc
           })
       })

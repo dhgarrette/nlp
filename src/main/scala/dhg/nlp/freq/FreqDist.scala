@@ -13,54 +13,17 @@ object FreqDist {
    * Return an "empty" frequency distribution: a function that maps
    * everything to the zero-probability.  P(B) = 0 for all B.
    */
-  def empty[B]: MultinomialFreqDist[B] = static(0.0)
+  def empty[B]: DefaultedMultinomial[B] = static(0.0)
 
   /**
    * Return a "static" frequency distribution: a function that maps
    * everything to the same probability.  P(B) = v for all B.
    */
-  def static[B](v: Double): MultinomialFreqDist[B] = new MultinomialFreqDist[B](Map(), v)
+  def static[B](v: Double): DefaultedMultinomial[B] = new DefaultedMultinomial[B](Map(), v, 1.0)
 
-  /**
-   * Construct a frequency distribution from the counts.  Calculates
-   * the distribution by dividing each count by the total count.
-   * P(B) = C(B) / Sum[C(x) for all x].
-   *
-   * Note that if the total count is zero, the distribution
-   * returned is simply the empty distribution.
-   *
-   * @tparam B	the item being counted
-   */
-  def apply[B](counts: Map[B, Double]): MultinomialFreqDist[B] = {
-    apply(DefaultedFreqCounts(counts))
-  }
-
-  /**
-   * Construct a frequency distribution from the counter result.  Calculates
-   * the distribution by dividing each count by the total count.
-   * P(B) = C(B) / Sum[C(x) for all x].
-   * Arguments should come from a call to FreqCounter.resultCounts.
-   *
-   * The "totalAddition" portion is added to the total count before
-   * dividing.  The "defaultCount" is used as the count for "unseen" items,
-   * those items not included in the counts.
-   *
-   * Note that if the total (after additions) is zero, the distribution
-   * returned is simply the empty distribution.
-   *
-   * @tparam B	the item being counted
-   */
-  def apply[B](resultCounts: DefaultedFreqCounts[B]): MultinomialFreqDist[B] = {
-    val DefaultedFreqCounts(counts, totalAddition, defaultCount) = resultCounts
-    val total = resultCounts.total
-    if (total == 0.0)
-      FreqDist.empty[B]
-    else
-      new MultinomialFreqDist(counts.mapVals(_ / total), defaultCount / total)
-  }
 }
 
-class CondFreqDist[A, B](val dists: Map[A, MultinomialFreqDist[B]], val default: MultinomialFreqDist[B]) extends (A => MultinomialFreqDist[B]) {
+class CondFreqDist[A, B](val dists: Map[A, DefaultedMultinomial[B]], val default: DefaultedMultinomial[B]) extends (A => DefaultedMultinomial[B]) {
   def apply(a: A) = dists.getOrElse(a, default)
 }
 
@@ -74,13 +37,13 @@ object CondFreqDist {
    * Return an "empty" frequency distribution: a function that maps
    * everything to the zero-probability.  P(B|A) = 0 for all A,B.
    */
-  def empty[A, B]: A => MultinomialFreqDist[B] = static(0.0)
+  def empty[A, B]: A => DefaultedMultinomial[B] = static(0.0)
 
   /**
    * Return a "static" frequency distribution: a function that maps
    * everything to the same probability.  P(B|A) = v for all A,B.
    */
-  def static[A, B](v: Double): A => MultinomialFreqDist[B] = (_: Any) => FreqDist.static(v)
+  def static[A, B](v: Double): A => DefaultedMultinomial[B] = (_: Any) => FreqDist.static(v)
 
   /**
    * Construct a frequency distribution from the counts. Calculates
@@ -118,11 +81,11 @@ object CondFreqDist {
    */
   def apply[A, B](resultCounts: DefaultedCondFreqCounts[A, B]): CondFreqDist[A, B] = {
     val DefaultedCondFreqCounts(counts) = resultCounts
-    val summedBackoffCounts = counts.values.foldLeft(DefaultedFreqCounts(Map[B, Double](), 0.0, 0.0)) {
-      case (DefaultedFreqCounts(zc, zt, zd), DefaultedFreqCounts(c, t, d)) =>
-        DefaultedFreqCounts(zc |+| c, zt + t, zd + d)
+    val summedBackoffCounts = counts.values.foldLeft(DefaultedMultinomial(Map[B, Double](), 0.0, 0.0)) {
+      case (DefaultedMultinomial(zc, zd, zt), DefaultedMultinomial(c, d, t)) =>
+        DefaultedMultinomial(zc |+| c, zd + d, zt + t)
     }
-    new CondFreqDist(counts.mapVals(FreqDist(_)), FreqDist(summedBackoffCounts))
+    new CondFreqDist(counts, summedBackoffCounts)
   }
 
   def unapply[A, B](cfd: CondFreqDist[A, B]) = Some(cfd.dists, cfd.default)

@@ -80,9 +80,9 @@ case class ConditionedCountsTransformer[A, B](bCountsTransformer: CountsTransfor
 
     DefaultedCondFreqCounts(
       resultCounts.mapVals {
-        case DefaultedFreqCounts(c, t, d) =>
+        case DefaultedMultinomial(c, d, t) =>
           val defaultCounts: Map[B, Double] = (allBs -- c.keySet).mapToVal(d)(breakOut)
-          bCountsTransformer(DefaultedFreqCounts(c |+| defaultCounts, t, d))
+          bCountsTransformer(DefaultedMultinomial(c |+| defaultCounts, d, t))
       })
   }
 }
@@ -113,7 +113,7 @@ case class ConstrainingCondCountsTransformer[A, B](validEntries: Map[A, Set[B]],
       val zeroCountBs: Map[B, Double] = allBs.mapToVal(0.0)(breakOut)
       DefaultedCondFreqCounts.fromMap(
         resultCounts.map {
-          case (a, DefaultedFreqCounts(aCounts, aTotalAddition, aDefaultCount)) =>
+          case (a, DefaultedMultinomial(aCounts, aDefaultCount, aTotalAddition)) =>
             validEntries.get(a) match {
               case Some(validBs) =>
                 val filtered = aCounts.filterKeys(validBs)
@@ -128,14 +128,14 @@ case class ConstrainingCondCountsTransformer[A, B](validEntries: Map[A, Set[B]],
       val constrainedBs: Set[B] = validEntries.flatMap(_._2)(breakOut)
       DefaultedCondFreqCounts(
         resultCounts.map {
-          case (a, bs @ DefaultedFreqCounts(aCounts, aTotalAddition, aDefaultCount)) =>
+          case (a, bs @ DefaultedMultinomial(aCounts, aDefaultCount, aTotalAddition)) =>
             val zeros =
               validEntries.get(a) match {
                 case Some(validBs) => (constrainedBs -- validBs)
                 case None => constrainedBs
               }
             val filtered = aCounts ++ zeros.mapToVal(0.0)
-            a -> DefaultedFreqCounts(filtered, aTotalAddition, aDefaultCount)
+            a -> DefaultedMultinomial(filtered, aDefaultCount, aTotalAddition)
         })
     }
   }
@@ -188,7 +188,7 @@ class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTr
     // Compute backoff: probability of B regardless of A
     val totalBackoffCounts = resultCounts.values.map(_.simpleCounts).reduce(_ |+| _)
     val transformedBackoffCounts = backoffCountsTransformer(totalBackoffCounts)
-    val DefaultedFreqCounts(backoffCounts, backoffTotalAddition, backoffDefaultCount) = transformedBackoffCounts
+    val DefaultedMultinomial(backoffCounts, backoffDefaultCount, backoffTotalAddition) = transformedBackoffCounts
     val backoffTotal = backoffCounts.values.sum + backoffTotalAddition
     val backoffDist = backoffCounts.mapVals(_ / backoffTotal)
     val backoffDefault = backoffDefaultCount / backoffTotal
@@ -197,7 +197,7 @@ class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTr
 
     DefaultedCondFreqCounts(
       resultCounts.map {
-        case (a, DefaultedFreqCounts(aCounts, aTotalAdd, aDefault)) =>
+        case (a, DefaultedMultinomial(aCounts, aDefault, aTotalAdd)) =>
           // Replace any missing counts with the default
           val defaultCounts = (allBs -- aCounts.keySet).iterator.mapToVal(aDefault)
           val countsWithDefaults = aCounts ++ defaultCounts
@@ -210,7 +210,7 @@ class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTr
           val smoothedDefaultCount = aDefault + smoothedBackoffDefault
           val smoothedTotalAddition = aTotalAdd + smoothedBackoffDefault
 
-          (a, DefaultedFreqCounts(smoothedCounts, smoothedTotalAddition, smoothedDefaultCount))
+          (a, DefaultedMultinomial(smoothedCounts, smoothedDefaultCount, smoothedTotalAddition))
       })
   }
 }
@@ -242,10 +242,10 @@ case class RandomCondCountsTransformer[A, B](maxCount: Int, delegate: CondCounts
 
     DefaultedCondFreqCounts(
       resultCounts.mapVals {
-        case DefaultedFreqCounts(c, t, d) =>
+        case DefaultedMultinomial(c, d, t) =>
           val defaultCounts: Map[B, Double] = (allBs -- c.keySet).mapToVal(d)(breakOut)
           val scaled = (c |+| defaultCounts).mapVals(_ + rand.nextInt(maxCount + 1))
-          DefaultedFreqCounts(scaled, t, d)
+          DefaultedMultinomial(scaled, d, t)
       })
   }
 }

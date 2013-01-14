@@ -8,13 +8,13 @@ import dhg.nlp.test.TestUtils._
 import breeze.stats.random.MersenneTwister
 import breeze.stats.distributions.RandBasis
 
-class MultinomialFreqDistTests {
+class DefaultedMultinomialTests {
 
   @Test
   def test() {
 
     val d = Map('a -> 2.0, 'b -> 3.0, 'c -> 5.0)
-    val m1 = new MultinomialFreqDist(d)(new RandBasis(new MersenneTwister(0)))
+    val m1 = new DefaultedMultinomial(d)(new RandBasis(new MersenneTwister(0)))
 
     assertEqualsProb(0.2, m1('a))
     assertEqualsProb(0.2, m1.get('a).get)
@@ -26,7 +26,7 @@ class MultinomialFreqDistTests {
 
     assertEquals(Map('a -> 215, 'b -> 293, 'c -> 492), (1 to 1000).map(_ => m1.sample).counts)
 
-    val m2 = new MultinomialFreqDist(d, 1.0, 10.0)(new RandBasis(new MersenneTwister(0)))
+    val m2 = new DefaultedMultinomial(d, 1.0, 10.0)(new RandBasis(new MersenneTwister(0)))
 
     assertEqualsProb(0.1, m2('a))
     assertEqualsProb(0.1, m2.get('a).get)

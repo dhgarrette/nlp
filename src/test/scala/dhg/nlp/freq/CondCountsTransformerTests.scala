@@ -9,7 +9,7 @@ import dhg.util.CollectionUtil._
 class CondCountsTransformerTests {
 
   @Test
-  def test_PassthroughCondCountsTransformer_DefaultCounts_double() {
+  def test_PassthroughCondCountsTransformer_DefaultCounts() {
     val transformer = new PassthroughCondCountsTransformer[Char, Symbol]()
 
     val counts = Map(
@@ -36,18 +36,18 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_ConstrainingCondCountsTransformer_Map_int() {
+  def test_ConstrainingCondCountsTransformer_Map() {
     val transformer =
       new ConstrainingCondCountsTransformer[Char, Symbol](validEntries = Map('A' -> Set('a, 'b, 'd), 'B' -> Set('a, 'b), 'D' -> Set('d)),
         zeroDefaults = true,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 0.0, 0.0),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 0.0, 0.0))),
+            'A' -> DefaultedMultinomial(Map('a -> 27.0), 0.0, 0.0),
+            'C' -> DefaultedMultinomial(Map('b -> 29.0), 0.0, 0.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
-            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
+            'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 2.0, 3.0),
+            'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0), 3.0, 4.0),
+            'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0)))))
 
     /*
      * Starting counts:
@@ -116,19 +116,19 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_ConstrainingCondCountsTransformer_DefaultCounts_double() {
+  def test_ConstrainingCondCountsTransformer_DefaultCounts() {
     val transformer =
       new ConstrainingCondCountsTransformer[Char, Symbol](
         validEntries = Map('A' -> Set('a, 'b, 'd), 'B' -> Set('a, 'b), 'D' -> Set('d)),
         zeroDefaults = true,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
+            'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+            'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
-            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
+            'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 2.0, 3.0),
+            'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0), 3.0, 4.0),
+            'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0)))))
 
     /*
      * Starting counts:
@@ -162,8 +162,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
+      'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+      'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -197,7 +197,7 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_ConstrainingCondCountsTransformer_dontZeroDefaults_DefaultCounts_double() {
+  def test_ConstrainingCondCountsTransformer_dontZeroDefaults_DefaultCounts() {
     val transformer =
       new ConstrainingCondCountsTransformer[Char, Symbol](
         validEntries = Map('A' -> Set('a, 'b, 'd), 'B' -> Set('a, 'b), 'D' -> Set('d)),
@@ -205,12 +205,12 @@ class CondCountsTransformerTests {
         zeroDefaults = false,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
+            'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+            'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 4.0, 2.0),
-            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 3.0, 3.0),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
+            'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 2.0, 4.0),
+            'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0), 3.0, 3.0),
+            'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0)))))
 
     /*
      * Starting counts:
@@ -244,8 +244,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
+      'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+      'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -279,17 +279,17 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_AddLambdaSmoothingCondCountsTransformer_DefaultCounts_double() {
+  def test_AddLambdaSmoothingCondCountsTransformer_DefaultCounts() {
     val transformer =
       AddLambdaSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.1,
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
+            'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+            'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
-            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
+            'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 2.0, 3.0),
+            'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0), 3.0, 4.0),
+            'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0)))))
 
     /*
      * Starting counts:
@@ -322,8 +322,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
+      'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+      'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -358,19 +358,19 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_ConstrainingCondCountsTransformer_before_AddLambdaSmoothingCondCountsTransformer_DefaultCounts_double() {
+  def test_ConstrainingCondCountsTransformer_before_AddLambdaSmoothingCondCountsTransformer_DefaultCounts() {
     val transformer =
       AddLambdaSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.1, delegate =
         new ConstrainingCondCountsTransformer[Char, Symbol](validEntries = Map('A' -> Set('a, 'b, 'd), 'B' -> Set('a, 'b), 'D' -> Set('d)),
           zeroDefaults = true,
           delegate = MockCondCountsTransformer(
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-              'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
+              'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+              'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0))),
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
-              'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
-              'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0))))))
+              'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 2.0, 3.0),
+              'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0), 3.0, 4.0),
+              'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0))))))
 
     /*
      * Starting counts:
@@ -417,8 +417,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
+      'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+      'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -452,19 +452,19 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_AddLambdaSmoothingCondCountsTransformer_before_ConstrainingCondCountsTransformer_DefaultCounts_double() {
+  def test_AddLambdaSmoothingCondCountsTransformer_before_ConstrainingCondCountsTransformer_DefaultCounts() {
     val transformer =
       new ConstrainingCondCountsTransformer[Char, Symbol](validEntries = Map('A' -> Set('a, 'b, 'd), 'B' -> Set('a, 'b), 'D' -> Set('d)),
         zeroDefaults = true,
         AddLambdaSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.1,
           delegate = MockCondCountsTransformer(
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-              'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
+              'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+              'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0))),
             DefaultedCondFreqCounts(Map(
-              'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 3.0, 2.0),
-              'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0), 4.0, 3.0),
-              'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0))))))
+              'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0), 2.0, 3.0),
+              'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0), 3.0, 4.0),
+              'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0))))))
 
     /*
      * Starting counts:
@@ -512,8 +512,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
+      'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+      'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -548,17 +548,17 @@ class CondCountsTransformerTests {
   }
 
   @Test
-  def test_EisnerSmoothingCondCountsTransformer_DefaultCounts_double() {
+  def test_EisnerSmoothingCondCountsTransformer_DefaultCounts() {
     val transformer =
       new EisnerSmoothingCondCountsTransformer[Char, Symbol](lambda = 0.2, backoffCountsTransformer = AddLambdaSmoothingCountsTransformer(lambda = 0.1),
         delegate = MockCondCountsTransformer(
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-            'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0))),
+            'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+            'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0))),
           DefaultedCondFreqCounts(Map(
-            'A' -> DefaultedFreqCounts(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0, 'x -> 1.0, 'y -> 1.0, 'z -> 1.0), 3.0, 2.0),
-            'B' -> DefaultedFreqCounts(Map('a -> 6.0, 'c -> 9.0, 'x -> 1.0, 'y -> 1.0), 4.0, 3.0),
-            'C' -> DefaultedFreqCounts(Map('a -> 8.0), 5.0, 1.0)))))
+            'A' -> DefaultedMultinomial(Map('a -> 5.0, 'b -> 4.0, 'c -> 7.0, 'x -> 1.0, 'y -> 1.0, 'z -> 1.0), 2.0, 3.0),
+            'B' -> DefaultedMultinomial(Map('a -> 6.0, 'c -> 9.0, 'x -> 1.0, 'y -> 1.0), 3.0, 4.0),
+            'C' -> DefaultedMultinomial(Map('a -> 8.0), 1.0, 5.0)))))
 
     /*
      * Starting counts:
@@ -614,8 +614,8 @@ class CondCountsTransformerTests {
      */
 
     val counts = DefaultedCondFreqCounts(Map(
-      'A' -> DefaultedFreqCounts(Map('a -> 27.0), 21.0, 22.0),
-      'C' -> DefaultedFreqCounts(Map('b -> 29.0), 25.0, 26.0)))
+      'A' -> DefaultedMultinomial(Map('a -> 27.0), 22.0, 21.0),
+      'C' -> DefaultedMultinomial(Map('b -> 29.0), 26.0, 25.0)))
 
     val r = transformer(counts)
     // TODO: assert counts 
@@ -659,11 +659,11 @@ class CondCountsTransformerTests {
     override def apply(counts: DefaultedCondFreqCounts[A, B]) = {
       for ((eA -> e, cA -> c) <- (expected.counts zipSafe counts.counts)) {
         assertEquals(eA, cA)
-        val DefaultedFreqCounts(eC, eT, eD) = e
-        val DefaultedFreqCounts(cC, cT, cD) = c
+        val DefaultedMultinomial(eC, eD, eT) = e
+        val DefaultedMultinomial(cC, cD, cT) = c
         assertEquals(eC, cC)
-        assertEqualsDouble(eT, cT)
         assertEqualsDouble(eD, cD)
+        assertEqualsDouble(eT, cT)
       }
       returned
     }

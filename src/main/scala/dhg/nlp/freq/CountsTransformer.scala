@@ -46,9 +46,9 @@ import scalaz.Scalaz._
  * @tparam B	the item being counted
  */
 trait CountsTransformer[B] {
-  final def apply[N](counts: CMap[B, N])(implicit num: Numeric[N]): DefaultedFreqCounts[B] =
-    this(DefaultedFreqCounts(counts.mapVals(num.toDouble)(breakOut): Map[B, Double]))
-  def apply(counts: DefaultedFreqCounts[B]): DefaultedFreqCounts[B]
+  final def apply[N](counts: CMap[B, N])(implicit num: Numeric[N]): DefaultedMultinomial[B] =
+    this(DefaultedMultinomial(counts.mapVals(num.toDouble)(breakOut): Map[B, Double]))
+  def apply(counts: DefaultedMultinomial[B]): DefaultedMultinomial[B]
 }
 
 //////////////////////////////////////
@@ -59,7 +59,7 @@ trait CountsTransformer[B] {
  * CountsTransformer that performs no transformation
  */
 case class PassthroughCountsTransformer[B]() extends CountsTransformer[B] {
-  override def apply(counts: DefaultedFreqCounts[B]) = counts
+  override def apply(counts: DefaultedMultinomial[B]) = counts
 }
 
 //////////////////////////////////////
@@ -74,10 +74,10 @@ case class PassthroughCountsTransformer[B]() extends CountsTransformer[B] {
  * @param delegate		the delegate counter upon which the transformation is performed
  */
 case class ConstrainingCountsTransformer[B](validEntries: Set[B], delegate: CountsTransformer[B]) extends CountsTransformer[B] {
-  override def apply(counts: DefaultedFreqCounts[B]): DefaultedFreqCounts[B] = {
-    val DefaultedFreqCounts(resultCounts, totalAddition, defaultCount) = delegate(counts)
-    val zeroCounts = DefaultedFreqCounts(resultCounts.mapVals(_ => 0.0)) // a count for every B in validEntries
-    DefaultedFreqCounts(validEntries.mapTo(b => resultCounts.getOrElse(b, defaultCount)).toMap) |+| zeroCounts
+  override def apply(counts: DefaultedMultinomial[B]): DefaultedMultinomial[B] = {
+    val DefaultedMultinomial(resultCounts, defaultCount, totalAddition) = delegate(counts)
+    val zeroCounts = resultCounts.mapVals(_ => 0.0) // a count for every B in validEntries
+    DefaultedMultinomial(validEntries.mapTo(b => resultCounts.getOrElse(b, defaultCount)).toMap |+| zeroCounts)
   }
 }
 
@@ -107,9 +107,9 @@ object ConstrainingCountsTransformer {
  * @param items	the items to drop from the counts
  */
 case class ItemDroppingCountsTransformer[B](items: Iterable[B], delegate: CountsTransformer[B]) extends CountsTransformer[B] {
-  override def apply(counts: DefaultedFreqCounts[B]) = {
-    val DefaultedFreqCounts(resultCounts, totalAddition, defaultCount) = delegate(counts)
-    DefaultedFreqCounts(resultCounts -- items, totalAddition, defaultCount)
+  override def apply(counts: DefaultedMultinomial[B]) = {
+    val DefaultedMultinomial(resultCounts, defaultCount, totalAddition) = delegate(counts)
+    DefaultedMultinomial(resultCounts -- items, defaultCount, totalAddition)
   }
 }
 
@@ -146,9 +146,9 @@ object ItemDroppingCountsTransformer {
  * @param lambda	smoothing parameter for add-lambda smoothing
  */
 case class AddLambdaSmoothingCountsTransformer[B](lambda: Double, delegate: CountsTransformer[B]) extends CountsTransformer[B] {
-  override def apply(counts: DefaultedFreqCounts[B]) = {
-    val DefaultedFreqCounts(resultCounts, totalAddition, defaultCount) = delegate(counts)
-    DefaultedFreqCounts(resultCounts.mapVals(_ + lambda), totalAddition + lambda, defaultCount + lambda)
+  override def apply(counts: DefaultedMultinomial[B]) = {
+    val DefaultedMultinomial(resultCounts, defaultCount, totalAddition) = delegate(counts)
+    DefaultedMultinomial(resultCounts.mapVals(_ + lambda), defaultCount + lambda, totalAddition + lambda)
   }
 }
 

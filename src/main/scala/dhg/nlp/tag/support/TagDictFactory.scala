@@ -54,7 +54,7 @@ class SimpleWeightedTagDictFactory[Sym, Tag](condCountsTransformer: CondCountsTr
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
     val counts = taggedTrainSequences.flatten.groupByKey.mapVals(_.counts)
     val CondFreqDist(dists, default) = CondFreqDist(condCountsTransformer(counts))
-    SimpleWeightedTagDict(dists.mapVals(_.dist), default.dist)
+    SimpleWeightedTagDict(dists.mapVals(_.probMap), default.probMap)
   }
 }
 

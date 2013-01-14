@@ -3,7 +3,7 @@ package dhg.nlp.tag.hmm
 import dhg.nlp.freq.CondCountsTransformer
 import dhg.nlp.freq.ConstrainingCondCountsTransformer
 import dhg.nlp.freq.DefaultedCondFreqCounts
-import dhg.nlp.freq.DefaultedFreqCounts
+import dhg.nlp.freq.DefaultedMultinomial
 import dhg.nlp.freq.PassthroughCondCountsTransformer
 import dhg.nlp.tag.OptionalTagDict
 import dhg.nlp.tag.TagDict
@@ -18,10 +18,10 @@ class EmissionCountsTransformer[Tag, Sym](delegate: CondCountsTransformer[Option
   override def apply(counts: DefaultedCondFreqCounts[Option[Tag], Option[Sym]]) = {
     DefaultedCondFreqCounts(
       delegate(counts).counts.map {
-        case (tag, DefaultedFreqCounts(c, t, d)) =>
+        case (tag, DefaultedMultinomial(c, d, t)) =>
           tag -> (tag match {
-            case None => DefaultedFreqCounts(Map((None: Option[Sym]) -> 1.0), 0.0, 0.0)
-            case _ => DefaultedFreqCounts(c + (None -> 0.0), t, d)
+            case None => DefaultedMultinomial(Map((None: Option[Sym]) -> 1.0), 0.0, 0.0)
+            case _ => DefaultedMultinomial(c + (None -> 0.0), d, t)
           })
       })
   }

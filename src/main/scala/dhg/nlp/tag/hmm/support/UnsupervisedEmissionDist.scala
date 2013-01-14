@@ -5,9 +5,11 @@ import com.typesafe.scalalogging.log4j.Logging
 import dhg.nlp.freq.CondFreqDist
 import dhg.nlp.freq.CountsTransformer
 import dhg.nlp.freq.DefaultedCondFreqCounts
-import dhg.nlp.freq.DefaultedFreqCounts
+import dhg.nlp.freq.DefaultedMultinomial
 import dhg.nlp.tag.TagDict
 import dhg.util.CollectionUtil._
+import scalaz._
+import scalaz.Scalaz._
 
 
 /**
@@ -40,7 +42,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
   with Logging {
 
   override def make(): Option[Tag] => Option[Sym] => Double = {
-    val DefaultedFreqCounts(rawCounts, totalAddition, defaultCount) = countsTransformer(rawData.flatten.counts)
+    val DefaultedMultinomial(rawCounts, defaultCount, totalAddition) = countsTransformer(rawData.flatten.counts)
 
     val rawSymbolCounts = rawCounts.withDefaultValue(defaultCount) // number of times each symbol appears in the raw data
     val tagToSymbolDict = tagDict.setIterator.ungroup.map(_.swap).to[Set].groupByKey // a reversed tag dict; Tag -> Set[Symbol]
@@ -97,7 +99,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
           val estimatedUnknownProportion = estimatedUnknownProportions(tag)
           val unknownCounts = rawUnkwnCountByWord.mapVals(_ * estimatedUnknownProportion)
           val totalCounts = estimatedKnownCounts ++ unknownCounts // combine known and unknown estimates
-          (tag, DefaultedFreqCounts(totalCounts, (totalAddition + defaultCount) * estimatedUnknownProportion, defaultCount * estimatedUnknownProportion)) // default for unseen words in test is one count 
+          (tag, DefaultedMultinomial(totalCounts, defaultCount * estimatedUnknownProportion, (totalAddition + defaultCount) * estimatedUnknownProportion)) // default for unseen words in test is one count 
       }
 
     logger.debug("totalEstWordCount           = " + counts.values.map(_.simpleCounts.values.sum).sum)
@@ -107,11 +109,11 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
 
     val liftedCounts =
       counts.map {
-        case (tag, DefaultedFreqCounts(a, b, c)) =>
-          (Option(tag), DefaultedFreqCounts(a.mapKeys(Option(_)), b, c))
+        case (tag, DefaultedMultinomial(a, b, c)) =>
+          (Option(tag), DefaultedMultinomial(a.mapKeys(Option(_)), b, c))
       }
-    val startEnd: (Option[Tag], DefaultedFreqCounts[Option[Sym]]) =
-      (None -> DefaultedFreqCounts(Map(None -> 1.0)))
+    val startEnd: (Option[Tag], DefaultedMultinomial[Option[Sym]]) =
+      (None -> DefaultedMultinomial(Map(none[Sym] -> 1.0)))
 
     CondFreqDist(DefaultedCondFreqCounts(liftedCounts + startEnd))
   }
