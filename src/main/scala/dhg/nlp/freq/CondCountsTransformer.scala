@@ -3,9 +3,10 @@ package dhg.nlp.freq
 import scala.collection.{ Map => CMap }
 import scala.collection.breakOut
 import scala.util.Random
-
 import dhg.util.CollectionUtil._
 import scalaz.Scalaz._
+import breeze.stats.distributions.RandBasis
+import breeze.stats.distributions.Rand
 
 /**
  * A builder for conditional frequency distributions.  Stores counts (in a mutable
@@ -48,8 +49,8 @@ import scalaz.Scalaz._
  * @tparam B	the conditioned item being counted; P(B|A).
  */
 trait CondCountsTransformer[A, B] {
-  final def apply[N](counts: CMap[A, CMap[B, N]])(implicit num: Numeric[N]): DefaultedCondFreqCounts[A, B] =
-    this(DefaultedCondFreqCounts.fromMap(counts.mapVals(_.mapVals(num.toDouble)(breakOut): Map[B, Double]).toMap))
+  final def apply[N](counts: CMap[A, CMap[B, N]])(implicit num: Numeric[N], rand: RandBasis = Rand): DefaultedCondFreqCounts[A, B] =
+    this(DefaultedCondFreqCounts.fromMap(counts.mapVals(_.mapVals(num.toDouble)(breakOut): Map[B, Double]).toMap)(rand))
 
   def apply(counts: DefaultedCondFreqCounts[A, B]): DefaultedCondFreqCounts[A, B]
 }
@@ -80,9 +81,9 @@ case class ConditionedCountsTransformer[A, B](bCountsTransformer: CountsTransfor
 
     DefaultedCondFreqCounts(
       resultCounts.mapVals {
-        case DefaultedMultinomial(c, d, t) =>
+        case m @ DefaultedMultinomial(c, d, t) =>
           val defaultCounts: Map[B, Double] = (allBs -- c.keySet).mapToVal(d)(breakOut)
-          bCountsTransformer(DefaultedMultinomial(c |+| defaultCounts, d, t))
+          bCountsTransformer(DefaultedMultinomial(c |+| defaultCounts, d, t)(m.rand))
       })
   }
 }
@@ -135,7 +136,7 @@ case class ConstrainingCondCountsTransformer[A, B](validEntries: Map[A, Set[B]],
                 case None => constrainedBs
               }
             val filtered = aCounts ++ zeros.mapToVal(0.0)
-            a -> DefaultedMultinomial(filtered, aDefaultCount, aTotalAddition)
+            a -> DefaultedMultinomial(filtered, aDefaultCount, aTotalAddition)(bs.rand)
         })
     }
   }
@@ -197,7 +198,7 @@ class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTr
 
     DefaultedCondFreqCounts(
       resultCounts.map {
-        case (a, DefaultedMultinomial(aCounts, aDefault, aTotalAdd)) =>
+        case (a, m @ DefaultedMultinomial(aCounts, aDefault, aTotalAdd)) =>
           // Replace any missing counts with the default
           val defaultCounts = (allBs -- aCounts.keySet).iterator.mapToVal(aDefault)
           val countsWithDefaults = aCounts ++ defaultCounts
@@ -210,7 +211,7 @@ class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTr
           val smoothedDefaultCount = aDefault + smoothedBackoffDefault
           val smoothedTotalAddition = aTotalAdd + smoothedBackoffDefault
 
-          (a, DefaultedMultinomial(smoothedCounts, smoothedDefaultCount, smoothedTotalAddition))
+          (a, DefaultedMultinomial(smoothedCounts, smoothedDefaultCount, smoothedTotalAddition)(m.rand))
       })
   }
 }
@@ -242,10 +243,10 @@ case class RandomCondCountsTransformer[A, B](maxCount: Int, delegate: CondCounts
 
     DefaultedCondFreqCounts(
       resultCounts.mapVals {
-        case DefaultedMultinomial(c, d, t) =>
+        case m @ DefaultedMultinomial(c, d, t) =>
           val defaultCounts: Map[B, Double] = (allBs -- c.keySet).mapToVal(d)(breakOut)
           val scaled = (c |+| defaultCounts).mapVals(_ + rand.nextInt(maxCount + 1))
-          DefaultedMultinomial(scaled, d, t)
+          DefaultedMultinomial(scaled, d, t)(m.rand)
       })
   }
 }

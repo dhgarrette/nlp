@@ -3,6 +3,8 @@ package dhg.nlp.freq
 import dhg.util.CollectionUtil._
 import scalaz._
 import Scalaz._
+import breeze.stats.distributions.RandBasis
+import breeze.stats.distributions.Rand
 
 /**
  * Utilities for frequency distributions: functions to probabilities: P(B).
@@ -57,8 +59,9 @@ object CondFreqDist {
    * @tparam A	the conditioning item being counted; P(B|A).
    * @tparam B	the conditioned item being counted; P(B|A).
    */
-  def apply[A, B](counts: Map[A, Map[B, Double]]): CondFreqDist[A, B] = {
-    apply(DefaultedCondFreqCounts.fromMap(counts))
+  def apply[A, B](counts: Map[A, Map[B, Double]])(
+    implicit rand: RandBasis = Rand): CondFreqDist[A, B] = {
+    apply(DefaultedCondFreqCounts.fromMap(counts)(rand))
   }
 
   /**
@@ -81,10 +84,11 @@ object CondFreqDist {
    */
   def apply[A, B](resultCounts: DefaultedCondFreqCounts[A, B]): CondFreqDist[A, B] = {
     val DefaultedCondFreqCounts(counts) = resultCounts
-    val summedBackoffCounts = counts.values.foldLeft(DefaultedMultinomial(Map[B, Double](), 0.0, 0.0)) {
-      case (DefaultedMultinomial(zc, zd, zt), DefaultedMultinomial(c, d, t)) =>
-        DefaultedMultinomial(zc |+| c, zd + d, zt + t)
-    }
+    val summedBackoffCounts =
+      if (counts.nonEmpty)
+        counts.values.reduce { (f1, f2) => DefaultedMultinomial(f1.counts |+| f2.counts, f1.defaultCount + f2.defaultCount, f1.totalAddition + f2.totalAddition)(f1.rand) }
+      else
+        DefaultedMultinomial(Map[B, Double](), 0, 0)
     new CondFreqDist(counts, summedBackoffCounts)
   }
 

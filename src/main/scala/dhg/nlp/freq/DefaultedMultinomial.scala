@@ -23,7 +23,7 @@ import scalaz.Scalaz._
  */
 case class DefaultedMultinomial[T](
   val counts: Map[T, Double], defaultCount: Double = 0.0, totalAddition: Double = 0.0)(
-    implicit rand: RandBasis = Rand)
+    implicit val rand: RandBasis = Rand)
   extends DiscreteDistribution[T] {
 
   private[this] val sum = counts.values.sum // sum of counts of all known events 
@@ -74,15 +74,15 @@ object DefaultedMultinomial {
         val countSum = f1.counts |+| f2.counts
 
         if (f1.defaultCount == 0.0 && f1.totalAddition == 0.0)
-          new DefaultedMultinomial(countSum, f2.defaultCount, f2.totalAddition)
+          new DefaultedMultinomial(countSum, f2.defaultCount, f2.totalAddition)(f2.rand)
 
         else if (f2.defaultCount == 0.0 && f2.totalAddition == 0.0)
-          new DefaultedMultinomial(countSum, f1.defaultCount, f1.totalAddition)
+          new DefaultedMultinomial(countSum, f1.defaultCount, f1.totalAddition)(f1.rand)
 
         else {
           assert(f1.defaultCount == f2.defaultCount)
           assert(f1.totalAddition == f2.totalAddition)
-          new DefaultedMultinomial(countSum, f1.defaultCount, f1.totalAddition)
+          new DefaultedMultinomial(countSum, f1.defaultCount, f1.totalAddition)(f1.rand)
         }
       }
     }
