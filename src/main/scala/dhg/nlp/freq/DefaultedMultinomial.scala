@@ -22,7 +22,7 @@ import scalaz.Scalaz._
  * those items not included in the counts.
  */
 case class DefaultedMultinomial[T](
-  val counts: Map[T, Double], defaultCount: Double = 0.0, totalAddition: Double = 0.0)(
+  counts: Map[T, Double], defaultCount: Double = 0.0, totalAddition: Double = 0.0)(
     implicit val rand: RandBasis = Rand)
   extends DiscreteDistribution[T] {
 
@@ -65,8 +65,6 @@ case class DefaultedMultinomial[T](
 }
 
 object DefaultedMultinomial {
-  def apply[B](counts: Map[B, Double]) = new DefaultedMultinomial(counts, 0.0, 0.0)
-
   implicit def DefaultedMultinomialSemigroup[B]: Semigroup[DefaultedMultinomial[B]] =
     new Semigroup[DefaultedMultinomial[B]] {
       def append(f1: DefaultedMultinomial[B], f2CallByName: => DefaultedMultinomial[B]) = {

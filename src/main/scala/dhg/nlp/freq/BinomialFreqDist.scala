@@ -22,14 +22,16 @@ class BinomialFreqDist[T](label0: T, label1: T, firstProb: Double)(
 }
 
 object BinomialFreqDist {
-  def apply[T](label0: T, label1: T, firstProb: Double) = {
-    new BinomialFreqDist(label0, label1, firstProb)
+  def apply[T](label0: T, label1: T, firstProb: Double)(
+    implicit rand: RandBasis = Rand) = {
+    new BinomialFreqDist(label0, label1, firstProb)(rand)
   }
 
-  def apply[T](labels: Seq[T], firstProb: Double) = {
+  def apply[T](labels: Seq[T], firstProb: Double)(
+    implicit rand: RandBasis = Rand) = {
     require(labels.size == 2, "BinomialFreqDist must have exactly two labels")
     val Seq(l0, l1) = labels
-    new BinomialFreqDist(l0, l1, firstProb)
+    new BinomialFreqDist(l0, l1, firstProb)(rand)
   }
 }
 

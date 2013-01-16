@@ -25,8 +25,9 @@ object FreqDist {
 
 }
 
-class CondFreqDist[A, B](val dists: Map[A, DefaultedMultinomial[B]], val default: DefaultedMultinomial[B]) extends (A => DefaultedMultinomial[B]) {
-  def apply(a: A) = dists.getOrElse(a, default)
+case class CondFreqDist[A, B](dists: Map[A, DefaultedMultinomial[B]], default: DefaultedMultinomial[B]) extends (A => DefaultedMultinomial[B]) {
+  override def apply(a: A) = dists.getOrElse(a, default)
+  override def toString = s"CondFreqDist($dists, $default)"
 }
 
 /**
@@ -61,7 +62,34 @@ object CondFreqDist {
    */
   def apply[A, B](counts: Map[A, Map[B, Double]])(
     implicit rand: RandBasis = Rand): CondFreqDist[A, B] = {
-    apply(DefaultedCondFreqCounts.fromMap(counts)(rand))
+    apply(counts.mapVals(DefaultedMultinomial(_)(rand)))
+  }
+
+  /**
+   * Construct a frequency distribution from the counter result. Calculates
+   * the distribution for each entry by dividing each count by the total
+   * count for that entry.
+   * P(B|A) = For each A: C(B|A) / Sum[C(x|A) for all x].
+   * Argument should be from a call to CondFreqDist.resultCounts.
+   *
+   * The "totalAddition" portions at each level are added to the total
+   * counts before dividing.  The grand total includes the additions to each
+   * individual 'A' entry.  The "defaultCount" at each level are used as
+   * the count for "unseen" items, those items not included in the counts.
+   *
+   * Note that if the total for a given 'A' (after additions) is zero, then
+   * that 'A' will map to the empty distribution.
+   *
+   * @tparam A	the conditioning item being counted; P(B|A).
+   * @tparam B	the conditioned item being counted; P(B|A).
+   */
+  def apply[A, B](counts: Map[A, DefaultedMultinomial[B]]): CondFreqDist[A, B] = {
+    val summedBackoffCounts =
+      if (counts.nonEmpty)
+        counts.values.reduce { (f1, f2) => DefaultedMultinomial(f1.counts |+| f2.counts, f1.defaultCount + f2.defaultCount, f1.totalAddition + f2.totalAddition)(f1.rand) }
+      else
+        DefaultedMultinomial(Map[B, Double](), 0, 0)
+    CondFreqDist(counts, summedBackoffCounts)
   }
 
   /**
@@ -84,13 +112,6 @@ object CondFreqDist {
    */
   def apply[A, B](resultCounts: DefaultedCondFreqCounts[A, B]): CondFreqDist[A, B] = {
     val DefaultedCondFreqCounts(counts) = resultCounts
-    val summedBackoffCounts =
-      if (counts.nonEmpty)
-        counts.values.reduce { (f1, f2) => DefaultedMultinomial(f1.counts |+| f2.counts, f1.defaultCount + f2.defaultCount, f1.totalAddition + f2.totalAddition)(f1.rand) }
-      else
-        DefaultedMultinomial(Map[B, Double](), 0, 0)
-    new CondFreqDist(counts, summedBackoffCounts)
+    apply(counts)
   }
-
-  def unapply[A, B](cfd: CondFreqDist[A, B]) = Some(cfd.dists, cfd.default)
 }
