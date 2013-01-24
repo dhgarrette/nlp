@@ -16,7 +16,7 @@ import breeze.stats.distributions.Rand
  * @tparam B	the conditioned item being counted; P(B|A).
  */
 case class DefaultedCondFreqCounts[A, B](counts: Map[A, DefaultedMultinomial[B]]) {
-  def simpleCounts = counts.mapVals(_.simpleCounts)
+  def simpleCounts = counts.mapVals(_.counts)
 }
 
 object DefaultedCondFreqCounts {

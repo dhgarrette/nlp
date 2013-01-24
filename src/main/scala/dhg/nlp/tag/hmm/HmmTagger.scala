@@ -63,7 +63,7 @@ class FastHmmTagger[Sym, Tag] {
   type Tok = (OSym, Vector[TokTag])
 
   def tagAllFast(sequences: Vector[Vector[Tok]]): Vector[Vector[(Sym, Tag)]] = {
-    sequences.par.map(tagSequenceFast).seq
+    sequences /* TODO: .par*/ .map(tagSequenceFast) //TODO: .seq
   }
 
   def tagSequenceFast(sequence: Vector[Tok]): Vector[(Sym, Tag)] = {

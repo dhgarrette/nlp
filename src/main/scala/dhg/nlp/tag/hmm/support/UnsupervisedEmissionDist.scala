@@ -11,7 +11,6 @@ import dhg.util.CollectionUtil._
 import scalaz._
 import scalaz.Scalaz._
 
-
 /**
  * Produce a conditional frequency distribution without labeled training data.
  */
@@ -102,9 +101,9 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
           (tag, DefaultedMultinomial(totalCounts, defaultCount * estimatedUnknownProportion, (totalAddition + defaultCount) * estimatedUnknownProportion)) // default for unseen words in test is one count 
       }
 
-    logger.debug("totalEstWordCount           = " + counts.values.map(_.simpleCounts.values.sum).sum)
-    val totalEstKnown = counts.values.map(_.simpleCounts.filter(x => vocabKnown(x._1)).values.sum).sum; logger.debug("totalEstWordCount (known)   = " + totalEstKnown)
-    val totalEstUnkwn = counts.values.map(_.simpleCounts.filter(x => vocabUnknown(x._1)).values.sum).sum; logger.debug("totalEstWordCount (unknown) = " + totalEstUnkwn)
+    logger.debug("totalEstWordCount           = " + counts.values.map(_.counts.values.sum).sum)
+    val totalEstKnown = counts.values.map(_.counts.filter(x => vocabKnown(x._1)).values.sum).sum; logger.debug("totalEstWordCount (known)   = " + totalEstKnown)
+    val totalEstUnkwn = counts.values.map(_.counts.filter(x => vocabUnknown(x._1)).values.sum).sum; logger.debug("totalEstWordCount (unknown) = " + totalEstUnkwn)
     logger.debug("totalEstWordCount (known + unknown) = " + (totalEstKnown + totalEstUnkwn))
 
     val liftedCounts =
@@ -112,8 +111,7 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
         case (tag, DefaultedMultinomial(a, b, c)) =>
           (Option(tag), DefaultedMultinomial(a.mapKeys(Option(_)), b, c))
       }
-    val startEnd: (Option[Tag], DefaultedMultinomial[Option[Sym]]) =
-      (None -> DefaultedMultinomial(Map(none[Sym] -> 1.0)))
+    val startEnd = (none[Tag] -> DefaultedMultinomial(Map(none[Sym] -> 1.0)))
 
     CondFreqDist(DefaultedCondFreqCounts(liftedCounts + startEnd))
   }

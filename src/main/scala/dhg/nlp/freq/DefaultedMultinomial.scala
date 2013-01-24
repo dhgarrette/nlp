@@ -26,39 +26,34 @@ case class DefaultedMultinomial[T](
     implicit val rand: RandBasis = Rand)
   extends DiscreteDistribution[T] {
 
-  private[this] val sum = counts.values.sum // sum of counts of all known events 
-  private[this] val total = sum + totalAddition // sum of all counts (including unknown events)
-  private[this] val isEmpty = total == 0
-  private[this] val defaultProb = if (isEmpty) 0.0 else (defaultCount / total)
-  private[this] val zeroProb = Some(0.0)
+  private[this] lazy val sum = counts.values.sum // sum of counts of all known events 
+  private[this] lazy val total = sum + totalAddition // sum of all counts (including unknown events)
+  private[this] lazy val isEmpty = total == 0
+  private[this] lazy val defaultProb = if (isEmpty) 0.0 else (defaultCount / total)
 
   /** A map of the probabilities (excluding defaults) */
-  def probMap = {
-    if (isEmpty)
-      Map[T, Double]().withDefaultValue(0.0)
-    else {
-      counts.mapVals(_ / total)
-    }
+  lazy val probMap = {
+    if (isEmpty) Map[T, Double]().withDefaultValue(0.0)
+    else counts.mapVals(_ / total)
   }
 
-  def simpleCounts = counts
+  lazy val sortedCounts = counts.toVector.sortBy(-_._2)
 
-  override def apply(key: T) = get(key).getOrElse(defaultProb)
-  def get(key: T) = if (isEmpty) zeroProb else counts.get(key).map(_ / total)
-  def getNoDefault(key: T) = get(key).getOrElse(sys.error(s"key not found: $key"))
-  def iterator = counts.iterator.mapVals(_ / total)
+  override def apply(key: T) = probMap.get(key).getOrElse(defaultProb)
+  def get(key: T) = probMap.get(key)
+  def getNoDefault(key: T) = probMap.get(key).getOrElse(sys.error(s"key not found: $key"))
+  def iterator = probMap.iterator
 
   override def sample(): T = {
     var key = rand.uniform.get * sum
-    val itr = counts.toIterator
+    val itr = sortedCounts.iterator
     while (itr.hasNext) {
       val (item, p) = itr.next()
-      if (p > 0.0) {
-        key -= p
-        if (key <= 0) return item
-      }
+      key -= p
+      if (key <= 0)
+        return item
     }
-    throw new RuntimeException("Could not sample from: " + { val s = counts.toString; if (s.length <= 50) s else s.take(47) + "..." })
+    throw new RuntimeException(s"Could not sample from: ${val s = s"[${sortedCounts.mkString(", ")}]"; if (s.length <= 50) s else s.take(47) + "..."} ")
   }
 
   override def toString = "DefaultedMultinomial(%s, %s, %s)".format(counts, defaultCount, totalAddition)

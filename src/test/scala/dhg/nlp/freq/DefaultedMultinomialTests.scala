@@ -24,7 +24,7 @@ class DefaultedMultinomialTests {
     assertEquals(None, m1.get('z))
     assertException(m1.getNoDefault('z)) { case e: RuntimeException => assertEquals("key not found: 'z", e.getMessage) }
 
-    assertEquals(Map('a -> 215, 'b -> 293, 'c -> 492), (1 to 1000).map(_ => m1.sample).counts)
+    assertEquals(Map('a -> 188, 'b -> 304, 'c -> 508), (1 to 1000).map(_ => m1.sample).counts)
 
     val m2 = new DefaultedMultinomial(d, 1.0, 10.0)(new RandBasis(new MersenneTwister(0)))
 
@@ -36,7 +36,7 @@ class DefaultedMultinomialTests {
     assertEquals(None, m2.get('z))
     assertException(m2.getNoDefault('z)) { case e: RuntimeException => assertEquals("key not found: 'z", e.getMessage) }
 
-    assertEquals(Map('a -> 215, 'b -> 293, 'c -> 492), (1 to 1000).map(_ => m2.sample).counts)
+    assertEquals(Map('a -> 188, 'b -> 304, 'c -> 508), (1 to 1000).map(_ => m2.sample).counts)
 
   }
 

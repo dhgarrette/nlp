@@ -187,7 +187,7 @@ class EisnerSmoothingCondCountsTransformer[A, B](lambda: Double, backoffCountsTr
     val DefaultedCondFreqCounts(resultCounts) = delegate(counts)
 
     // Compute backoff: probability of B regardless of A
-    val totalBackoffCounts = resultCounts.values.map(_.simpleCounts).reduce(_ |+| _)
+    val totalBackoffCounts = resultCounts.values.map(_.counts).reduce(_ |+| _)
     val transformedBackoffCounts = backoffCountsTransformer(totalBackoffCounts)
     val DefaultedMultinomial(backoffCounts, backoffDefaultCount, backoffTotalAddition) = transformedBackoffCounts
     val backoffTotal = backoffCounts.values.sum + backoffTotalAddition
