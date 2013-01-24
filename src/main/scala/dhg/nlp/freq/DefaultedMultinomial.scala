@@ -45,13 +45,17 @@ case class DefaultedMultinomial[T](
   def iterator = probMap.iterator
 
   override def sample(): T = {
+    sampleProb()._1
+  }
+
+  def sampleProb(): (T, Double) = {
     var key = rand.uniform.get * sum
     val itr = sortedCounts.iterator
     while (itr.hasNext) {
       val (item, p) = itr.next()
       key -= p
       if (key <= 0)
-        return item
+        return (item, p)
     }
     throw new RuntimeException(s"Could not sample from: ${val s = s"[${sortedCounts.mkString(", ")}]"; if (s.length <= 50) s else s.take(47) + "..."} ")
   }
