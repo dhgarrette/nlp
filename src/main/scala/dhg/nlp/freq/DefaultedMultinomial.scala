@@ -55,7 +55,7 @@ case class DefaultedMultinomial[T](
       val (item, p) = itr.next()
       key -= p
       if (key <= 0)
-        return (item, p)
+        return (item, p / total)
     }
     throw new RuntimeException(s"Could not sample from: ${val s = s"[${sortedCounts.mkString(", ")}]"; if (s.length <= 50) s else s.take(47) + "..."} ")
   }
