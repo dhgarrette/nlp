@@ -80,16 +80,14 @@ class FastHmmTagger[Sym, Tag] {
         case ((viterbi, backpointers), (currSym, currTags)) =>
           // for each possible tag, get the highest probability previous tag and its score
           val (nextViterbi, currBackpointers) =
-            currTags.iterator // each legal tag for the current symbol
-              .map {
-                case (currTag, (currTagTransitions, currTagEmission)) =>
-                  currTag -> viterbi.map {
-                    case (prevTag, viterbiScore) =>
-                      (prevTag, viterbiScore * currTagTransitions(prevTag) * currTagEmission)
+            currTags.map { // each legal tag for the current symbol
+              case (currTag, (currTagTransitions, currTagEmission)) =>
+                val (bestPrev, bestPrevScore) =
+                  viterbi.mapt { (prevTag, viterbiScore) =>
+                    (prevTag, viterbiScore * currTagTransitions(prevTag))
                   }.maxBy(_._2)
-              }
-              .map { case (prev, (curr, viterbiScore)) => ((prev, viterbiScore), (prev, curr)) }
-              .unzip
+                (currTag -> (bestPrevScore * currTagEmission), currTag -> bestPrev)
+            }.unzip
           (nextViterbi, currBackpointers.toMap :: backpointers)
       }._2
 

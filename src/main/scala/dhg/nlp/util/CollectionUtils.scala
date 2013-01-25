@@ -241,9 +241,9 @@ object CollectionUtils {
    */
   class UniversalSet[A] extends Set[A] {
     override def contains(key: A): Boolean = true
-    override def iterator: Iterator[A] = sys.error("not implemented")
-    override def +(elem: A): UniversalSet[A] = sys.error("not implemented")
-    override def -(elem: A): UniversalSet[A] = sys.error("not implemented")
+    override def iterator: Iterator[A] = sys.error("UniversalSet.iterator is not implemented")
+    override def +(elem: A): UniversalSet[A] = sys.error("UniversalSet.+ is not implemented")
+    override def -(elem: A): UniversalSet[A] = sys.error("UniversalSet.- is not implemented")
     override def toString() = "UniversalSet()"
   }
   object UniversalSet {
