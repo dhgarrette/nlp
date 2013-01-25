@@ -5,9 +5,9 @@ import org.junit.Test
 
 import dhg.nlp.tag._
 import dhg.nlp.util.CollectionUtils._
-import dhg.nlp.test.TestUtils._
 import dhg.util.CollectionUtil._
 import dhg.nlp.freq._
+import dhg.util.TestUtil._
 
 class TagDictFactoryTests {
 
@@ -166,21 +166,4 @@ class TagDictFactoryTests {
     assertEqualsSmart(Map('D -> (8 / 24.0), 'N -> (7 / 24.0), 'V -> (6 / 24.0)), td.weights("aardvark"))
   }
 
-  def assertEqualsSmart[A](expected: Map[A, Double], actual: Map[A, Double]) {
-    assertEquals(expected.keys.toSet, actual.keys.toSet)
-    for (k <- expected.keys) assertEqualsProb(expected(k), actual(k))
-  }
-
-  def assertEqualsSmart[A](expected: Option[Map[A, Double]], actual: Option[Map[A, Double]]) {
-    assertEquals(expected.isDefined, actual.isDefined)
-    if (expected.isDefined) assertEqualsSmart(expected.get, actual.get)
-  }
-
-  def assertEqualsSmart[A, B](expected: Vector[(A, Map[B, Double])], actual: Vector[(A, Map[B, Double])]) {
-    assertEquals(expected.size, actual.size)
-    for (((eA, eB), (aA, aB)) <- expected zip actual) {
-      assertEquals(eA, aA)
-      assertEqualsSmart(eB, aB)
-    }
-  }
 }

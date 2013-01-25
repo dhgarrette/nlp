@@ -2,7 +2,7 @@ package dhg.nlp.tag
 
 import org.junit.Assert._
 import org.junit._
-import dhg.nlp.test.TestUtils._
+import dhg.util.TestUtil._
 import dhg.nlp.tag.TagDict._
 import dhg.nlp.util.CollectionUtils._
 import dhg.util.CollectionUtil._

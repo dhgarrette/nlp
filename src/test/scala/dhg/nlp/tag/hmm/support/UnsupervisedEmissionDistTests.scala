@@ -7,6 +7,7 @@ import org.junit.Test
 import dhg.nlp.tag._
 import dhg.nlp.tag.support._
 import dhg.nlp.freq._
+import dhg.util.TestUtil._
 
 class UnsupervisedEmissionDistTests {
 
@@ -51,15 +52,7 @@ class UnsupervisedEmissionDistTests {
     println(d(Some('N))(Some("aardvark")) / d(Some('V))(Some("aardvark")))
     println(d(Some('N))(Some("meanders")) / d(Some('V))(Some("meanders")))
 
-    assertEqualsProb(1.0 / 5.0, d(Some('N))(Some("bird")))
-  }
-
-  def assertEqualsProb(a: Double, b: Double) {
-    assertEquals(a.toDouble, b.toDouble, 0.001)
-  }
-
-  def assertEqualsDouble(a: Double, b: Double) {
-    assertEquals(a.toDouble, b.toDouble, 0.0000001)
+    assertEqualsDouble(1.0 / 5.0, d(Some('N))(Some("bird")))
   }
 
 }

@@ -5,6 +5,7 @@ import org.junit.Test
 
 import dhg.nlp.tag.support._
 import dhg.nlp.freq._
+import dhg.util.TestUtil._
 
 class TransitionCountsTransformerTests {
 
@@ -17,15 +18,15 @@ class TransitionCountsTransformerTests {
         Some('B) -> Map(Some('c) -> 4, Some('d) -> 5),
         None -> Map(Some('e) -> 6, Some('f) -> 7, None -> 8)))
     val result = t(counts).simpleCounts
-    assertDouble(1.0, result(Some('A))(Some('a)))
-    assertDouble(2.0, result(Some('A))(Some('b)))
-    assertDouble(3.0, result(Some('A))(None))
-    assertDouble(4.0, result(Some('B))(Some('c)))
-    assertDouble(5.0, result(Some('B))(Some('d)))
+    assertEqualsDouble(1.0, result(Some('A))(Some('a)))
+    assertEqualsDouble(2.0, result(Some('A))(Some('b)))
+    assertEqualsDouble(3.0, result(Some('A))(None))
+    assertEqualsDouble(4.0, result(Some('B))(Some('c)))
+    assertEqualsDouble(5.0, result(Some('B))(Some('d)))
     assertEquals(None, result(Some('B)).get(None))
-    assertDouble(6.0, result(None)(Some('e)))
-    assertDouble(7.0, result(None)(Some('f)))
-    assertDouble(0.0, result(None)(None))
+    assertEqualsDouble(6.0, result(None)(Some('e)))
+    assertEqualsDouble(7.0, result(None)(Some('f)))
+    assertEqualsDouble(0.0, result(None)(None))
   }
 
   @Test
@@ -37,19 +38,15 @@ class TransitionCountsTransformerTests {
         Some('B) -> Map(Some('c) -> 4, Some('d) -> 5),
         None -> Map(Some('e) -> 6, Some('f) -> 7)))
     val result = t(counts).simpleCounts
-    assertDouble(1.0, result(Some('A))(Some('a)))
-    assertDouble(2.0, result(Some('A))(Some('b)))
-    assertDouble(3.0, result(Some('A))(None))
-    assertDouble(4.0, result(Some('B))(Some('c)))
-    assertDouble(5.0, result(Some('B))(Some('d)))
+    assertEqualsDouble(1.0, result(Some('A))(Some('a)))
+    assertEqualsDouble(2.0, result(Some('A))(Some('b)))
+    assertEqualsDouble(3.0, result(Some('A))(None))
+    assertEqualsDouble(4.0, result(Some('B))(Some('c)))
+    assertEqualsDouble(5.0, result(Some('B))(Some('d)))
     assertEquals(None, result(Some('B)).get(None))
-    assertDouble(6.0, result(None)(Some('e)))
-    assertDouble(7.0, result(None)(Some('f)))
-    assertDouble(0.0, result(None)(None))
-  }
-
-  private def assertDouble(expected: Double, actual: Double) {
-    assertEquals(expected, actual, .000000001)
+    assertEqualsDouble(6.0, result(None)(Some('e)))
+    assertEqualsDouble(7.0, result(None)(Some('f)))
+    assertEqualsDouble(0.0, result(None)(None))
   }
 
 }

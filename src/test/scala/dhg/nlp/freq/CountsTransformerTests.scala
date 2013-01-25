@@ -2,6 +2,7 @@ package dhg.nlp.freq
 
 import org.junit.Assert._
 import org.junit.Test
+import dhg.util.TestUtil._
 
 class CountsTransformerTests {
 
@@ -17,9 +18,9 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
     assertEqualsDouble(0.0, rT)
 
-    assertEqualsProb((5.0 / 8.0), d('a))
-    assertEqualsProb((3.0 / 8.0), d('b))
-    assertEqualsProb(0.0, d('def))
+    assertEqualsDouble((5.0 / 8.0), d('a))
+    assertEqualsDouble((3.0 / 8.0), d('b))
+    assertEqualsDouble(0.0, d('def))
   }
 
   @Test
@@ -34,9 +35,9 @@ class CountsTransformerTests {
     assertEqualsDouble(1.0, rD)
     assertEqualsDouble(2.0, rT)
 
-    assertEqualsProb((5.0 / 10.0), d('a))
-    assertEqualsProb((3.0 / 10.0), d('b))
-    assertEqualsProb((1.0 / 10.0), d('def))
+    assertEqualsDouble((5.0 / 10.0), d('a))
+    assertEqualsDouble((3.0 / 10.0), d('b))
+    assertEqualsDouble((1.0 / 10.0), d('def))
   }
 
   @Test
@@ -71,11 +72,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
     assertEqualsDouble(0.0, rT)
 
-    assertEqualsProb((5.0 / 9.0), d('a))
-    assertEqualsProb((3.0 / 9.0), d('b))
-    assertEqualsProb(0.0, d('c))
-    assertEqualsProb((1.0 / 9.0), d('d))
-    assertEqualsProb(0.0, d('def))
+    assertEqualsDouble((5.0 / 9.0), d('a))
+    assertEqualsDouble((3.0 / 9.0), d('b))
+    assertEqualsDouble(0.0, d('c))
+    assertEqualsDouble((1.0 / 9.0), d('d))
+    assertEqualsDouble(0.0, d('def))
   }
 
   @Test
@@ -110,11 +111,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
     assertEqualsDouble(0.0, rT)
 
-    assertEqualsProb((5.0 / 9.0), d('a))
-    assertEqualsProb((3.0 / 9.0), d('b))
-    assertEqualsProb(0.0, d('c))
-    assertEqualsProb((1.0 / 9.0), d('d))
-    assertEqualsProb(0.0, d('def))
+    assertEqualsDouble((5.0 / 9.0), d('a))
+    assertEqualsDouble((3.0 / 9.0), d('b))
+    assertEqualsDouble(0.0, d('c))
+    assertEqualsDouble((1.0 / 9.0), d('d))
+    assertEqualsDouble(0.0, d('def))
   }
 
   @Test
@@ -148,11 +149,11 @@ class CountsTransformerTests {
     assertEqualsDouble(1.1, rD)
     assertEqualsDouble(2.1, rT)
 
-    assertEqualsProb((5.1 / 16.4), d('a))
-    assertEqualsProb((3.1 / 16.4), d('b))
-    assertEqualsProb((6.1 / 16.4), d('c))
-    assertEqualsProb((1.1 / 16.4), d('d))
-    assertEqualsProb((1.1 / 16.4), d('def))
+    assertEqualsDouble((5.1 / 16.4), d('a))
+    assertEqualsDouble((3.1 / 16.4), d('b))
+    assertEqualsDouble((6.1 / 16.4), d('c))
+    assertEqualsDouble((1.1 / 16.4), d('d))
+    assertEqualsDouble((1.1 / 16.4), d('def))
   }
 
   @Test
@@ -195,11 +196,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.1, rD)
     assertEqualsDouble(0.1, rT)
 
-    assertEqualsProb((5.1 / 9.5), d('a))
-    assertEqualsProb((3.1 / 9.5), d('b))
-    assertEqualsProb((0.1 / 9.5), d('c))
-    assertEqualsProb((1.1 / 9.5), d('d))
-    assertEqualsProb((0.1 / 9.5), d('def))
+    assertEqualsDouble((5.1 / 9.5), d('a))
+    assertEqualsDouble((3.1 / 9.5), d('b))
+    assertEqualsDouble((0.1 / 9.5), d('c))
+    assertEqualsDouble((1.1 / 9.5), d('d))
+    assertEqualsDouble((0.1 / 9.5), d('def))
   }
 
   @Test
@@ -242,11 +243,11 @@ class CountsTransformerTests {
     assertEqualsDouble(0.0, rD)
     assertEqualsDouble(0.0, rT)
 
-    assertEqualsProb((5.1 / 9.3), d('a))
-    assertEqualsProb((3.1 / 9.3), d('b))
-    assertEqualsProb((0.0 / 9.3), d('c))
-    assertEqualsProb((1.1 / 9.3), d('d))
-    assertEqualsProb((0.0 / 9.3), d('def))
+    assertEqualsDouble((5.1 / 9.3), d('a))
+    assertEqualsDouble((3.1 / 9.3), d('b))
+    assertEqualsDouble((0.0 / 9.3), d('c))
+    assertEqualsDouble((1.1 / 9.3), d('d))
+    assertEqualsDouble((0.0 / 9.3), d('def))
   }
 
   case class MockCountsTransformer[B](expected: DefaultedMultinomial[B], returned: DefaultedMultinomial[B]) extends CountsTransformer[B] {
@@ -258,14 +259,6 @@ class CountsTransformerTests {
       assertEqualsDouble(eT, cT)
       returned
     }
-  }
-
-  def assertEqualsProb(a: Double, b: Double) {
-    assertEqualsDouble(a.toDouble, b.toDouble)
-  }
-
-  def assertEqualsDouble(a: Double, b: Double) {
-    assertEquals(a.toDouble, b.toDouble, 0.0000001)
   }
 
 }
