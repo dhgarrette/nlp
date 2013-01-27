@@ -15,6 +15,6 @@ libraryDependencies ++= Seq(
   "org.scalanlp" % "breeze-learn_2.10" % "0.2-SNAPSHOT" changing(),
   "org.scalanlp" % "breeze-viz_2.10" % "0.2-SNAPSHOT" changing(),
   "junit" % "junit" % "4.10" % "test",
-  "com.novocode" % "junit-interface" % "0.6" % "test->default") //switch to ScalaTest at some point...
+  "com.novocode" % "junit-interface" % "0.8" % "test->default") //switch to ScalaTest at some point...
 
 scalacOptions ++= Seq("-deprecation")

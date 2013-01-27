@@ -20,7 +20,7 @@ object CollectionUtils {
   //         this.count(p).compareTo(count)
   //////////////////////////////////////////////////////
 
-  implicit class Enriched_countCompare_GenTraversableOnce[A](self: GenTraversableOnce[A]) {
+  implicit class Enriched_countCompare_GenTraversableOnce[A](val self: GenTraversableOnce[A]) extends AnyVal {
     /**
      * Compares the number of items satisfying a predicate to a test value.
      *
@@ -53,7 +53,7 @@ object CollectionUtils {
   //         this.map(f).sum
   //////////////////////////////////////////////////////
 
-  implicit class Enriched_sumBy_GenTraversableOnce[A](self: GenTraversableOnce[A]) {
+  implicit class Enriched_sumBy_GenTraversableOnce[A](val self: GenTraversableOnce[A]) extends AnyVal {
     /**
      * Map a numeric-producing function over each item and sum the results.
      *
@@ -74,15 +74,15 @@ object CollectionUtils {
   //         this.sliding(2).map{Seq(a,b) => (a,b)}
   //////////////////////////////////////////////////////
 
-  implicit class Enriched_sliding2_Iterator[A](self: Iterator[A]) {
+  implicit class Enriched_sliding2_Iterator[A](val self: Iterator[A]) { // extends AnyVal {
     /**
      * Slide over this collection to produce pairs.
      */
     def sliding2[B >: A](): Iterator[(B, B)] =
-      self.sliding(2).map(_.toTuple2)
+      self.sliding(2).map { case Seq(a, b) => (a, b) }
   }
 
-  implicit class Enriched_sliding2_GenTraversableLike[A, Repr <: GenTraversable[A]](self: GenTraversableLike[A, Repr]) {
+  implicit class Enriched_sliding2_GenTraversableLike[A, Repr <: GenTraversable[A]](val self: GenTraversableLike[A, Repr]) { // extends AnyVal {
     /**
      * Slide over this collection to produce pairs.
      */
@@ -101,7 +101,7 @@ object CollectionUtils {
   //         this.reduce(_ +++ _)
   //////////////////////////////////////////////////////
 
-  implicit class Enriched_flattenByKey_TraversableOnce_Traversable[T, S, Repr2 <: Traversable[S], Repr1 <: Traversable[(T, TraversableLike[S, Repr2])]](self: TraversableOnce[TraversableLike[(T, TraversableLike[S, Repr2]), Repr1]]) {
+  implicit class Enriched_flattenByKey_TraversableOnce_Traversable[T, S, Repr2 <: Traversable[S], Repr1 <: Traversable[(T, TraversableLike[S, Repr2])]](val self: TraversableOnce[TraversableLike[(T, TraversableLike[S, Repr2]), Repr1]]) extends AnyVal {
     /**
      * Reduce a collection of collections of pairs (T,Traversable[S]), into
      * a single collection such that all values associated with the same
@@ -134,7 +134,7 @@ object CollectionUtils {
   //         this.reduce(_ +++ _)
   //////////////////////////////////////////////////////
 
-  implicit class Enriched_sumByKey_GenTraversableOnce_Numeric[T, U: Numeric, Repr <: Traversable[(T, U)]](self: GenTraversableOnce[TraversableLike[(T, U), Repr]]) {
+  implicit class Enriched_sumByKey_GenTraversableOnce_Numeric[T, U: Numeric, Repr <: Traversable[(T, U)]](val self: GenTraversableOnce[TraversableLike[(T, U), Repr]]) {
     /**
      * Given a collection of collections of pairs (T,U:Numeric), combine into
      * a single collection such that all values associated with the same
@@ -152,7 +152,7 @@ object CollectionUtils {
     }
   }
 
-  implicit class Enriched_sumByKey_GenTraversableOnce_Iterator[T, U: Numeric](self: GenTraversableOnce[Iterator[(T, U)]]) {
+  implicit class Enriched_sumByKey_GenTraversableOnce_Iterator[T, U: Numeric](val self: GenTraversableOnce[Iterator[(T, U)]]) {
     /**
      * Given a collection of collections of pairs (T,U:Numeric), combine into
      * a single collection such that all values associated with the same
@@ -171,7 +171,7 @@ object CollectionUtils {
   //     of elements will be less than or equal to `n`.
   //////////////////////////////////////////////////////
 
-  implicit class Enriched_takeSub_Iterator[A, R <: GenIterable[A]](self: Iterator[GenIterableLike[A, R]]) {
+  implicit class Enriched_takeSub_Iterator[A, R <: GenIterable[A]](val self: Iterator[GenIterableLike[A, R]]) {
     /**
      * Take iterables from this collection until the total number of elements
      * in the taken items is about to exceed `n`.  The total number of
@@ -210,7 +210,7 @@ object CollectionUtils {
     }
   }
 
-  implicit class Enriched_takeSub_GenTraversableLike[A, R <: GenIterable[A], Repr <: GenTraversable[GenIterable[A]]](self: GenTraversableLike[GenIterableLike[A, R], Repr]) {
+  implicit class Enriched_takeSub_GenTraversableLike[A, R <: GenIterable[A], Repr <: GenTraversable[GenIterable[A]]](val self: GenTraversableLike[GenIterableLike[A, R], Repr]) extends AnyVal {
     /**
      * Take iterables from this collection until the total number of elements
      * in the taken items is about to exceed `n`.  The total number of
@@ -226,12 +226,12 @@ object CollectionUtils {
     }
   }
 
-  //  implicit class ReversableIterableMap[A, B](map: Map[A, GenTraversableOnce[B]]) {
+  //  implicit class ReversableIterableMap[A, B](val map: Map[A, GenTraversableOnce[B]]) extends AnyVal {
   //    def reverse(): Map[B, GenTraversableOnce[A]] =
   //      map.ungroup.groupBy(_._2).mapValues(_.map(_._1)).iterator.toMap
   //  }
   //
-  //  implicit class ReversableMap[A, B](map: Map[A, B]) {
+  //  implicit class ReversableMap[A, B](val map: Map[A, B]) extends AnyVal {
   //    def reverse(): Map[B, Iterable[A]] =
   //      map.toIndexedSeq.groupBy(_._2).mapValues(_.map(_._1)).iterator.toMap
   //  }
@@ -253,7 +253,7 @@ object CollectionUtils {
   //////////////////////////////////////////////////////
   // Conversion (.toX) methods
   //////////////////////////////////////////////////////
-  implicit class EnrichedWithToMMap[K, V](self: TraversableOnce[(K, V)]) {
+  implicit class EnrichedWithToMMap[K, V](val self: TraversableOnce[(K, V)]) extends AnyVal {
     def toMMap =
       if (self.isEmpty) mutable.Map.empty[K, V]
       else mutable.Map.newBuilder[K, V] ++= self result
