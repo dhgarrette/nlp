@@ -131,7 +131,7 @@ class CountsTransformerTests {
      * 
      * |  a  |  b  |  c  |  d  | def |
      * +=====+=====+=====+=====+=====+=================
-     * | 5.0 | 3.0 | 6.0 |  -  | 1.0 | 14.0 + 2 = 16.0
+     * | 5.0 | 3.0 | 6.0 |  -  | 1.0 | 14.0 + 2.0 = 16.0
      *
      * After smoothing:
      * 
@@ -154,6 +154,75 @@ class CountsTransformerTests {
     assertEqualsDouble((6.1 / 16.4), d('c))
     assertEqualsDouble((1.1 / 16.4), d('d))
     assertEqualsDouble((1.1 / 16.4), d('def))
+  }
+
+  @Test
+  def test_AddLambdaSmoothingCountsTransformer_empty() {
+    val transformer =
+      new AddLambdaSmoothingCountsTransformer[Symbol](lambda = 0.1,
+        delegate = MockCountsTransformer(
+          DefaultedMultinomial(Map()),
+          DefaultedMultinomial(Map())))
+
+    /*
+     * Original Counts:
+     * 
+     * |  a  |  b  |  c  |  d  | def |
+     * +=====+=====+=====+=====+=====+=================
+     * |  -  |  -  |  -  |  -  | 0.0 | 0.0 + 0.0 = 0.0
+     *
+     * After smoothing:
+     * 
+     * |  a  |  b  |  c  |  d  | def |
+     * +=====+=====+=====+=====+=====+=================
+     * |  -  |  -  |  -  |  -  | 0.1 | 0.0 + 0.1 = 0.1
+     */
+
+    val counts = DefaultedMultinomial[Symbol](Map())
+
+    val d @ DefaultedMultinomial(rC, rD, rT) = transformer(counts)
+    assertFalse(rC.contains('def))
+    assertEqualsDouble(0.1, rD)
+    assertEqualsDouble(0.1, rT)
+
+    assertEqualsDouble((0.1 / 0.1), d('def))
+  }
+
+  @Test
+  def test_AddLambdaSmoothingCountsTransformer_zeros() {
+    val transformer =
+      new AddLambdaSmoothingCountsTransformer[Symbol](lambda = 0.1,
+        delegate = MockCountsTransformer(
+          DefaultedMultinomial(Map('a -> 0.0, 'b -> 0.0, 'c -> 0.0)),
+          DefaultedMultinomial(Map('a -> 0.0, 'b -> 0.0, 'c -> 0.0))))
+
+    /*
+     * Original Counts:
+     * 
+     * |  a  |  b  |  c  |  d  | def |
+     * +=====+=====+=====+=====+=====+=================
+     * | 0.0 | 0.0 | 0.0 |  -  | 0.0 | 0.0 + 0.0 = 0.0
+     *
+     * After smoothing:
+     * 
+     * |  a  |  b  |  c  |  d  | def |
+     * +=====+=====+=====+=====+=====+=================
+     * | 0.1 | 0.1 | 0.1 |  -  | 0.1 | 0.3 + 0.1 = 0.4
+     */
+
+    val counts = DefaultedMultinomial[Symbol](Map('a -> 0.0, 'b -> 0.0, 'c -> 0.0))
+
+    val d @ DefaultedMultinomial(rC, rD, rT) = transformer(counts)
+    assertEqualsDouble(0.1, rC('a))
+    assertEqualsDouble(0.1, rC('b))
+    assertEqualsDouble(0.1, rC('c))
+    assertEqualsDouble(0.1, rD)
+    assertEqualsDouble(0.1, rT)
+
+    assertEqualsDouble((0.1 / 0.4), d('a))
+    assertEqualsDouble((0.1 / 0.4), d('b))
+    assertEqualsDouble((0.1 / 0.4), d('c))
+    assertEqualsDouble((0.1 / 0.4), d('def))
   }
 
   @Test

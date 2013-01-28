@@ -49,6 +49,7 @@ case class DefaultedMultinomial[T](
   }
 
   def sampleProb(): (T, Double) = {
+    assert(!isEmpty, "Cannot sample from a multinomial with no mass.")
     var key = rand.uniform.get * sum
     val itr = sortedCounts.iterator
     while (itr.hasNext) {
