@@ -11,7 +11,6 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalaz" % "scalaz-core_2.10" % "7.0.0-M7",
   "org.scalanlp" % "breeze-learn_2.10" % "0.2-SNAPSHOT" changing(),
   "org.scalanlp" % "breeze-viz_2.10" % "0.2-SNAPSHOT" changing(),
   "junit" % "junit" % "4.10" % "test",
