@@ -15,7 +15,7 @@ import scalaz.Scalaz._
  * Produce a conditional frequency distribution without labeled training data.
  */
 trait UnsupervisedEmissionDistFactory[Tag, Sym] {
-  def make(): Tag => Sym => Double
+  def apply(rawData: Seq[Seq[Sym]], tagDict: TagDict[Sym, Tag]): Option[Tag] => Option[Sym] => Double
 }
 
 /**
@@ -34,13 +34,11 @@ trait UnsupervisedEmissionDistFactory[Tag, Sym] {
  * each tag.
  */
 class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
-  countsTransformer: CountsTransformer[Sym],
-  tagDict: TagDict[Sym, Tag],
-  rawData: Iterable[Iterable[Sym]])
-  extends UnsupervisedEmissionDistFactory[Option[Tag], Option[Sym]]
+  countsTransformer: CountsTransformer[Sym])
+  extends UnsupervisedEmissionDistFactory[Tag, Sym]
   with Logging {
 
-  override def make(): Option[Tag] => Option[Sym] => Double = {
+  override def apply(rawData: Seq[Seq[Sym]], tagDict: TagDict[Sym, Tag]): Option[Tag] => Option[Sym] => Double = {
     val DefaultedMultinomial(rawCounts, defaultCount, totalAddition) = countsTransformer(rawData.flatten.counts)
 
     val rawSymbolCounts = rawCounts.withDefaultValue(defaultCount) // number of times each symbol appears in the raw data
@@ -57,10 +55,10 @@ class EstimatedRawCountUnsupervisedEmissionDistFactory[Tag, Sym](
     logger.debug("totalRawWordCount (known)   = " + rawKnownCountByWord.values.sum)
     logger.debug("totalRawWordCount (unknown) = " + rawUnkwnCountByWord.values.sum)
 
-    val knownCounts =
-      tagToSymbolDict.mapVals {
-        _.mapTo(s => (rawSymbolCounts(s)) / tagDict.set(s).size.toDouble).toMap // estimated C(w,t) for known symbols
-      }
+    val knownCounts = // estimated C(w,t) for known symbols
+      tagToSymbolDict.mapVals(
+        _.mapTo(s =>
+          rawSymbolCounts(s) / tagDict.set(s).size.toDouble).toMap)
 
     val estimatedUnknownProportions = {
       val estUnkProportionsFromRaw = {

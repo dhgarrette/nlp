@@ -52,13 +52,8 @@ class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
       Vector(("the", "D"), ("dog", "N"), ("walks", "V"), ("briskly", "R")))
 
     // Create the initial distributions
-    val allTags = tagDict.allTags.map(Option(_)) + None
-    val initialTransitions = CondFreqDist(DefaultedCondFreqCounts.fromMap(allTags.mapToVal(allTags.mapToVal(1.0).toMap).toMap))
-    val initialEmissions =
-      new EstimatedRawCountUnsupervisedEmissionDistFactory(
-        new PassthroughCountsTransformer(),
-        tagDict,
-        trainRaw).make()
+    val initialTransitions = HmmUtils.uniformTransitionDist(tagDict.allTags)
+    val initialEmissions = new EstimatedRawCountUnsupervisedEmissionDistFactory(new PassthroughCountsTransformer()).apply(trainRaw, tagDict)
     val unsupervisedTagger = HmmTagger(initialTransitions, initialEmissions, tagDict.opt)
 
     val output = unsupervisedTagger.tag(gold.map(_.map(_._1)))
@@ -112,10 +107,7 @@ class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
 
     val initialHmm = HmmTagger(
       HmmUtils.uniformTransitionDist(tagDict.allTags),
-      new EstimatedRawCountUnsupervisedEmissionDistFactory(
-        new PassthroughCountsTransformer(),
-        tagDict,
-        trainRaw).make(),
+      new EstimatedRawCountUnsupervisedEmissionDistFactory(new PassthroughCountsTransformer()).apply(trainRaw, tagDict),
       tagDict.opt)
 
     val unsupervisedTrainer: TypesupervisedTaggerTrainer[String, String] =
@@ -221,10 +213,7 @@ class UnsupervisedEmHmmTaggerTrainerTests extends Logging {
 
     val initialHmm = HmmTagger(
       HmmUtils.uniformTransitionDist(tagDict.allTags),
-      new EstimatedRawCountUnsupervisedEmissionDistFactory(
-        new PassthroughCountsTransformer(),
-        tagDict,
-        trainRaw).make(),
+      new EstimatedRawCountUnsupervisedEmissionDistFactory(new PassthroughCountsTransformer()).apply(trainRaw, tagDict),
       tagDict.opt)
 
     val unsupervisedTrainer: TypesupervisedHmmTaggerTrainer[String, String] =

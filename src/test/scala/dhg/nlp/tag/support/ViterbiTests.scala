@@ -61,19 +61,19 @@ class ViterbiTests {
 
     val s = "the big dog walks".split(" ").toVector
 
-    assertEquals(Some(List('D, 'N, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagset).tagSequence(s))
-    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagDict).tagSequence(s))
-    assertEquals(Some(List('D, 'D, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict).tagSequence(s))
-    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, NoDefaultTagDict(incompleteTagDict)).tagSequence(s))
-    assertEquals(Some(List('D, 'N, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagset, largeTagTransitions).tagSequence(s))
-    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagDict, largeTagTransitions).tagSequence(s))
-    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagset, smallTagTransitions).tagSequence(s))
-    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagDict, smallTagTransitions).tagSequence(s))
-    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict, largeTagTransitions).tagSequence(s))
-    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict, smallTagTransitions).tagSequence(s))
-    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, fullTagset, incompleteTagTransitions).tagSequence(s))
-    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, fullTagDict, incompleteTagTransitions).tagSequence(s))
-    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict, incompleteTagTransitions).tagSequence(s))
+    assertEquals(Some(List('D, 'N, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagset).tagSequence(s).map(_.map(_._2)))
+    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagDict).tagSequence(s).map(_.map(_._2)))
+    assertEquals(Some(List('D, 'D, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict).tagSequence(s).map(_.map(_._2)))
+    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, NoDefaultTagDict(incompleteTagDict)).tagSequence(s).map(_.map(_._2)))
+    assertEquals(Some(List('D, 'N, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagset, largeTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagDict, largeTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagset, smallTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(Some(List('D, 'A, 'N, 'V)), new Viterbi[Sym, Tag](edgeScorer, fullTagDict, smallTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict, largeTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict, smallTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, fullTagset, incompleteTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, fullTagDict, incompleteTagTransitions).tagSequence(s).map(_.map(_._2)))
+    assertEquals(None, new Viterbi[Sym, Tag](edgeScorer, incompleteTagDict, incompleteTagTransitions).tagSequence(s).map(_.map(_._2)))
 
   }
 

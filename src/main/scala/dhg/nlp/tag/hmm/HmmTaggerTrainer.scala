@@ -54,10 +54,7 @@ abstract class TypesupervisedHmmTaggerTrainer[Sym, Tag](
 
     //    val initialHmm = HmmTagger(
     //      HmmUtils.uniformTransitionDist(tagDict.allTags),
-    //      new EstimatedRawCountUnsupervisedEmissionDistFactory(
-    //        new PassthroughCountsTransformer(),
-    //        tagDict,
-    //        trainRaw).make(),
+    //      new EstimatedRawCountUnsupervisedEmissionDistFactory(new PassthroughCountsTransformer()).apply(trainRaw, tagDict),
     //      tagDict.opt)
 
     val uniformTrCounts = HmmUtils.uniformTransitionCounts(tagDict.allTags)

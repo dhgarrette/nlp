@@ -39,10 +39,8 @@ class UnsupervisedEmissionDistTests {
       "walks" -> Set('V)))
 
     val d =
-      new EstimatedRawCountUnsupervisedEmissionDistFactory[Symbol, String](
-        new PassthroughCountsTransformer(),
-        tagDict,
-        rawData).make()
+      new EstimatedRawCountUnsupervisedEmissionDistFactory[Symbol, String](new PassthroughCountsTransformer())
+        .apply(rawData, tagDict)
 
     for (w <- List("aardvark", "meanders", "horse", "unseen word", "dog", "the").map(Option(_)))
       for (t <- List('N, 'V, 'R, 'D).map(Option(_)))
