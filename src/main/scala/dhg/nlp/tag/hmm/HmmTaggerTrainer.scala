@@ -52,9 +52,21 @@ abstract class TypesupervisedHmmTaggerTrainer[Sym, Tag](
     rawSequences: Vector[Vector[Sym]],
     tagDict: TagDict[Sym, Tag]): Tagger[Sym, Tag] = {
 
+    //    val initialHmm = HmmTagger(
+    //      HmmUtils.uniformTransitionDist(tagDict.allTags),
+    //      new EstimatedRawCountUnsupervisedEmissionDistFactory(
+    //        new PassthroughCountsTransformer(),
+    //        tagDict,
+    //        trainRaw).make(),
+    //      tagDict.opt)
+
+    val uniformTrCounts = HmmUtils.uniformTransitionCounts(tagDict.allTags)
+    val allSym = tagDict.symbols ++ rawSequences.flatten
+    val uniformEmCounts = HmmUtils.uniformEmissionCounts(allSym, tagDict.allTags)
+
     trainWithPriors(
       rawSequences,
-      Map(), Map(),
+      uniformTrCounts, uniformEmCounts,
       Map(), Map(),
       tagDict)
   }

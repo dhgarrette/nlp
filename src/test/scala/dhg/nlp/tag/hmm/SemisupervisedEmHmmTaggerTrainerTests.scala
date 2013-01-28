@@ -22,17 +22,17 @@ class SemisupervisedEmHmmTaggerTrainerTests extends Logging {
     val semisupervisedResults = runUnsupervisedTrainingTest(tagDict, labeledTrain)
 
     assertResultsEqual("""
-	            Total:   91.26 (21857/23949)
-				Known:   94.22 (20228/21469)
-				Unknown: 65.69 (1629/2480)
+    			Total:   91.27 (21859/23949)
+				Known:   94.22 (20229/21469)
+				Unknown: 65.73 (1630/2480)
 				Common Mistakes:
 				#Err     Gold      Model
-				416      N        J       
-				311      V        N       
-				210      J        N       
-				171      N        V       
-				133      V        J       
-    	""", semisupervisedResults)
+				416      N        J
+				310      V        N
+				210      J        N
+				171      N        V
+				134      V        J       
+    			""", semisupervisedResults)
   }
 
   @Test
@@ -62,7 +62,7 @@ class SemisupervisedEmHmmTaggerTrainerTests extends Logging {
       new EmHmmTaggerTrainer(
         transitionCountsTransformer =
           new TransitionCountsTransformer(
-            EisnerSmoothingCondCountsTransformer(lambda = 1.0)),
+            EisnerSmoothingCondCountsTransformer(lambda = 1.0, backoffCountsTransformer = AddLambdaSmoothingCountsTransformer(lambda = 1.0))),
         emissionCountsTransformer =
           new EmissionCountsTransformer(
             EisnerSmoothingCondCountsTransformer(lambda = 1.0, backoffCountsTransformer = AddLambdaSmoothingCountsTransformer(lambda = 1.0))),

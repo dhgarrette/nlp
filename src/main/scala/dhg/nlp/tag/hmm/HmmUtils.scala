@@ -5,6 +5,8 @@ import dhg.nlp.tag.TagDict.OptionalTagDict
 import dhg.nlp.tag.TagUtils._
 import dhg.nlp.util.CollectionUtils._
 import dhg.util.CollectionUtil._
+import scalaz._
+import Scalaz._
 
 object HmmUtils {
 
@@ -37,12 +39,26 @@ object HmmUtils {
   }
 
   /**
+   * Make uniform transition counts mapping every tag to every other
+   * tag (but without mapping None -> None).
+   */
+  def uniformTransitionCounts[Tag](tagset: Set[Tag]) = {
+    val allTags: Set[Option[Tag]] = tagset.map(Some(_))
+    allTags.mapToVal((allTags + None).mapToVal(1.0).toMap).toMap + (None -> allTags.mapToVal(1.0).toMap)
+  }
+
+  /**
    * Make a uniform transition distribution mapping every tag to every other
    * tag (but without mapping None -> None).
    */
   def uniformTransitionDist[Tag](tagset: Set[Tag]) = {
+    CondFreqDist(uniformTransitionCounts(tagset))
+  }
+
+  def uniformEmissionCounts[Sym, Tag](allSym: Set[Sym], tagset: Set[Tag]): Map[Option[Tag], Map[Option[Sym], Double]] = {
     val allTags: Set[Option[Tag]] = tagset.map(Some(_))
-    CondFreqDist(allTags.mapToVal((allTags + None).mapToVal(1.0).toMap).toMap + (None -> allTags.mapToVal(1.0).toMap))
+    val allSyms: Set[Option[Sym]] = allSym.map(Some(_))
+    allTags.mapToVal(allSyms.mapToVal(1.0).toMap).toMap + (none[Tag] -> Map(none[Sym] -> 1.0))
   }
 
   def addDistributionsToRawSequences[Sym, Tag](

@@ -101,16 +101,16 @@ class SupervisedHmmTaggerTrainerTests extends Logging {
     val gold = TaggedFile("data/postag/english/entest")
     val results = new TaggerEvaluator().evaluate(output, gold, tagDict)
     assertResultsEqual("""
-				Total:   16.82 (4028/23949)
-				Known:   18.44 (4028/21841)
-				Unknown: 0.00 (0/2108)
+				Total:   42.18 (10101/23949)
+				Known:   46.23 (10098/21841)
+				Unknown: 0.14 (3/2108)
 				Common Mistakes:
 				#Err     Gold      Model
-				6190     N        .
-				2732     V        .
-				2194     I        .
-				1791     D        .
-				1488     J        .
+				4689     N        I
+				1877     V        I
+				1151     D        I
+				1110     J        I
+				1074     C        I
                 """, results)
   }
 
