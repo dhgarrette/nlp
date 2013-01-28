@@ -101,8 +101,7 @@ class FastHmmTagger[Sym, Tag] {
   private def backtrack(backpointers: List[Map[OTag, OTag]]): Vector[Tag] = {
     @tailrec def inner(backpointers: List[Map[OTag, OTag]], curTag: OTag, tags: List[Tag]): List[Tag] =
       backpointers match {
-        case Nil =>
-          assert(curTag == None); tags
+        case Nil => assert(curTag == None); tags
         case currPointers :: previousPointers => inner(previousPointers, currPointers(curTag), curTag.get :: tags)
       }
     val UMap(None -> lastTag) :: previousPointers = backpointers
