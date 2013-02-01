@@ -31,6 +31,8 @@ case class DefaultedMultinomial[T](
   private[this] lazy val isEmpty = total == 0
   private[this] lazy val defaultProb = if (isEmpty) 0.0 else (defaultCount / total)
 
+  def knownKeys = counts.keySet
+  
   /** A map of the probabilities (excluding defaults) */
   lazy val probMap = {
     if (isEmpty) Map[T, Double]().withDefaultValue(0.0)
