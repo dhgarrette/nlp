@@ -229,7 +229,8 @@ class EmHmmTaggerTrainer[Sym, Tag](
 
     val (forwards, forwardProb) = forwardProbabilities(newSequence)
     val (backwrds, backwrdProb) = backwrdProbabilities(newSequence)
-    assert(forwardProb approx backwrdProb, "forward=%s, backward=%s".format(forwardProb, backwrdProb))
+    assert(forwardProb approx backwrdProb, "forward=%s (%s), backward=%s (%s)".format(
+      forwardProb.toDouble, forwardProb.logValue, backwrdProb.toDouble, backwrdProb.logValue))
     val seqProb = forwardProb // P(sequence | hmm)
 
     // Get expected transition counts based on forward-backward probabilities
