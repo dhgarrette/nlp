@@ -60,7 +60,7 @@ case class DefaultedMultinomial[T](
       if (key <= 0)
         return (item, p / total)
     }
-    throw new RuntimeException(s"Could not sample from: ${val s = s"[${sortedCounts.mkString(", ")}]"; if (s.length <= 50) s else s.take(47) + "..."} ")
+    throw new RuntimeException(s"Could not sample from: ${val s = s"[${sortedCounts.take(50).mkString(", ")}]"; if (s.length <= 50) s else s.take(47) + "..."} ")
   }
 
   override def toString = "DefaultedMultinomial(%s, %s, %s)".format(counts, defaultCount, totalAddition)
