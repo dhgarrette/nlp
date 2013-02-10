@@ -38,8 +38,8 @@ trait TagDictFactory[Sym, Tag] {
  */
 class SimpleTagDictFactory[Sym, Tag]() extends TagDictFactory[Sym, Tag] {
   def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
-    val fullWordTagSet = taggedTrainSequences.flatten.toSet
-    SimpleTagDict(fullWordTagSet.groupByKey)
+    val fullWordTagSet = taggedTrainSequences.flatten
+    SimpleTagDict(fullWordTagSet.groupByKey(breakOut))
   }
 }
 
@@ -55,6 +55,18 @@ class SimpleWeightedTagDictFactory[Sym, Tag](condCountsTransformer: CondCountsTr
     val counts = taggedTrainSequences.flatten.groupByKey.mapVals(_.counts)
     val CondFreqDist(dists, default) = CondFreqDist(condCountsTransformer(counts))
     SimpleWeightedTagDict(dists.mapVals(_.probMap), default.probMap)
+  }
+}
+
+/**
+ *
+ */
+class PctThresholdTagDictFactory[Sym, Tag](threshold: Double) extends TagDictFactory[Sym, Tag] {
+  def make(taggedTrainSequences: Iterable[IndexedSeq[(Sym, Tag)]]) = {
+    val wordTagPairCounts = taggedTrainSequences.flatten.counts
+    val tagPctsByWord = wordTagPairCounts.toVector.map { case ((w, t), c) => (w, (t, c)) }.groupByKey.mapVals(_.toMap.normalizeValues)
+    val filteredTagsByWord = tagPctsByWord.mapVals(_.collect { case (t, p) if p >= threshold => t }.toSet)
+    SimpleTagDict(filteredTagsByWord)
   }
 }
 
