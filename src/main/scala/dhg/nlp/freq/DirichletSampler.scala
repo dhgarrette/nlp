@@ -23,11 +23,11 @@ class DirichletSampler[T](dirichlet: Dirichlet[Counter[T, Double], T]) {
 object DirichletSampler {
 
   def apply[T](labels: Iterable[T], pseudocounts: T => Double)(implicit rand: RandBasis = Rand): DirichletSampler[T] = {
-    new DirichletSampler(new Dirichlet(Counter(labels.mapTo(pseudocounts)))(Counter.tensorspace, rand))
+    new DirichletSampler(new Dirichlet(Counter(labels.mapTo(pseudocounts)))(implicitly, rand, implicitly))
   }
 
   def apply[T](pseudocounts: Map[T, Double])(implicit rand: RandBasis = Rand): DirichletSampler[T] = {
-    new DirichletSampler(new Dirichlet(Counter(pseudocounts))(Counter.tensorspace, rand))
+    new DirichletSampler(new Dirichlet(Counter(pseudocounts))(implicitly, rand, implicitly))
   }
 
   def apply[T](multinomial: DefaultedMultinomial[T])(implicit rand: RandBasis = Rand): DirichletSampler[T] = {
