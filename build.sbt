@@ -11,10 +11,10 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "edu.stanford.nlp" % "stanford-corenlp" % "1.3.4",
-  "org.scalanlp" % "breeze-learn_2.10" % "0.3-SNAPSHOT" changing() excludeAll(
+  "edu.stanford.nlp" % "stanford-corenlp" % "1.3.5",
+  "org.scalanlp" % "breeze-learn_2.10" % "0.4-SNAPSHOT" changing() excludeAll(
     ExclusionRule(organization = "com.codecommit")),
-  "org.scalanlp" % "breeze-viz_2.10" % "0.3-SNAPSHOT" changing() excludeAll(
+  "org.scalanlp" % "breeze-viz_2.10" % "0.4-SNAPSHOT" changing() excludeAll(
     ExclusionRule(organization = "com.codecommit")),
   "junit" % "junit" % "4.10" % "test",
   "com.novocode" % "junit-interface" % "0.8" % "test->default") //switch to ScalaTest at some point...
