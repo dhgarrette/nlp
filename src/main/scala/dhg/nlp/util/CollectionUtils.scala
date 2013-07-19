@@ -91,80 +91,6 @@ object CollectionUtils {
   }
 
   //////////////////////////////////////////////////////
-  // flattenByKey: Repr[(T,Traversable[S])]
-  //   - Reduce a collection of collections of pairs (T,Traversable[S]), into
-  //     a single collection such that all values associated with the same
-  //     key are concatenated.
-  //   - Functionally equivalent to:
-  //         this.flatten.groupBy(_._1).mapValues(_.map(_._2).reduce(_ ++ _))
-  //       or
-  //         this.reduce(_ +++ _)
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_flattenByKey_TraversableOnce_Traversable[T, S, Repr2 <: Traversable[S], Repr1 <: Traversable[(T, TraversableLike[S, Repr2])]](val self: TraversableOnce[TraversableLike[(T, TraversableLike[S, Repr2]), Repr1]]) extends AnyVal {
-    /**
-     * Reduce a collection of collections of pairs (T,Traversable[S]), into
-     * a single collection such that all values associated with the same
-     * key are concatenated.
-     *
-     * @return a collection of pairs
-     */
-    def flattenByKey[That1 <: Traversable[(T, TraversableLike[S, Repr2])], That2](implicit bf2: CanBuildFrom[Repr2, S, That2], bf1: CanBuildFrom[Repr1, (T, That2), That1]) = {
-      val grouped = self.toIterator.flatten.groupByKey
-      val b = bf1(grouped.asInstanceOf[Repr1])
-      for ((k, vs) <- grouped) {
-        val b2 = bf2()
-        for (v <- vs) b2 ++= v
-        b += k -> b2.result
-      }
-      b.result
-    }
-  }
-
-  //////////////////////////////////////////////////////
-  // sumByKey[U:Numeric](other: Traversable[(T,U)]): Repr[(T,U)]
-  //   - Given a collection of collections of pairs (T,U:Numeric), combine into
-  //     a single collection such that all values associated with the same
-  //     key are summed.
-  //   - Functionally equivalent to:
-  //         (this.iterator ++ other).groupBy(_._1).mapValues(_.map(_._2).sum)
-  //       or
-  //         (this.iterator ++ other).groupByKey.mapValues(_.sum)
-  //       or
-  //         this.reduce(_ +++ _)
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_sumByKey_GenTraversableOnce_Numeric[T, U: Numeric, Repr <: Traversable[(T, U)]](val self: GenTraversableOnce[TraversableLike[(T, U), Repr]]) {
-    /**
-     * Given a collection of collections of pairs (T,U:Numeric), combine into
-     * a single collection such that all values associated with the same
-     * key are summed.
-     *
-     * @param other 	another collection to add to
-     * @return a collection of pairs
-     */
-    def sumByKey[That <: Traversable[(T, U)]](implicit bf: CanBuildFrom[Repr, (T, U), That]) = {
-      val grouped = self.toIterator.flatten.groupByKey
-      val b = bf(grouped.asInstanceOf[Repr])
-      b.sizeHint(grouped.size)
-      for ((k, vs) <- grouped) b += k -> vs.sum
-      b.result
-    }
-  }
-
-  implicit class Enriched_sumByKey_GenTraversableOnce_Iterator[T, U: Numeric](val self: GenTraversableOnce[Iterator[(T, U)]]) {
-    /**
-     * Given a collection of collections of pairs (T,U:Numeric), combine into
-     * a single collection such that all values associated with the same
-     * key are summed.
-     *
-     * @param other 	another collection to add to
-     * @return a collection of pairs
-     */
-    def sumByKey = self.toIterator.flatten.groupByKey.mapVals(_.sum)
-  }
-
-  //////////////////////////////////////////////////////
   // takeSub[GenIterable[B]](n: Int): Repr[GenIterable[B]]
   //   - Take iterables from this collection until the total number of 
   //     elements in the taken items is about to exceed `n`.  The total number
@@ -235,20 +161,6 @@ object CollectionUtils {
   //    def reverse(): Map[B, Iterable[A]] =
   //      map.toIndexedSeq.groupBy(_._2).mapValues(_.map(_._1)).iterator.toMap
   //  }
-
-  /**
-   * This Set implementation always returns 'true' from its 'contains' method.
-   */
-  class UniversalSet[A] extends Set[A] {
-    override def contains(key: A): Boolean = true
-    override def iterator: Iterator[A] = sys.error("UniversalSet.iterator is not implemented")
-    override def +(elem: A): UniversalSet[A] = sys.error("UniversalSet.+ is not implemented")
-    override def -(elem: A): UniversalSet[A] = sys.error("UniversalSet.- is not implemented")
-    override def toString() = "UniversalSet()"
-  }
-  object UniversalSet {
-    def apply[A]() = new UniversalSet[A]
-  }
 
   //////////////////////////////////////////////////////
   // Conversion (.toX) methods

@@ -12,7 +12,7 @@ import breeze.stats.distributions.Rand
 
 class NgramModel[T, S](
   val n: Int,
-  val cfd: Seq[Option[T]] => DefaultedMultinomial[Option[T]]) {
+  val cfd: Vector[Option[T]] => DefaultedMultinomial[Option[T]]) {
   require(n > 0, "N must be positive")
 
   /**
@@ -58,7 +58,7 @@ class NgramModel[T, S](
    */
   def generate(implicit bf: CanBuildFrom[S, T, S]): S = {
     val b = bf()
-    @tailrec def inner(cur: Seq[Option[T]]) {
+    @tailrec def inner(cur: Vector[Option[T]]) {
       cfd(cur).sample match {
         case None =>
         case next =>
