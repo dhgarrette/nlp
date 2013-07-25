@@ -18,13 +18,12 @@ object Giga2APL {
     val GzFilenameRe = """(.+).gz""".r
     val DocHeadRe = """<DOC id="(.+)" type="(.+)" >""".r
 
-    val dir =
+    val (inputDir, outputDir) =
       args.toList match {
-        case Seq(d) => d
-        case Seq() => "data/giga-full"
+        case Seq(inputDir, outputDir) => (inputDir, outputDir)
       }
 
-    for (inputFile <- File(dir).ls(GzFilenameRe)) {
+    for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
       val GzFilenameRe(filename) = inputFile.name
 
       val lines =
@@ -36,7 +35,7 @@ object Giga2APL {
         lines.splitWhere((line: String) => line.startsWith("<DOC "), KeepDelimiterAsFirst)
           .filter(_.nonEmpty)
 
-      writeUsing(File(dir, s"$filename.txt")) { w =>
+      writeUsing(File(outputDir, s"$filename.apl")) { w =>
         articles.foreach { article =>
           val DocHeadRe(id, typ) = article.head
           val paragraphs =
