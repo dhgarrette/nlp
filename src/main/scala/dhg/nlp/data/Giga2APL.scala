@@ -29,6 +29,7 @@ object Giga2APL {
 
     for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
       val GzFilenameRe(filename) = inputFile.name
+      println("Handling: " + filename)
 
       val lines =
         SelfClosingBufferedReaderIterator(GzFileBufferedReader(inputFile))
@@ -40,14 +41,16 @@ object Giga2APL {
           .filter(_.nonEmpty)
 
       writeUsing(File(outputDir, s"$filename.apl")) { w =>
-        articles.foreach { article =>
-          val DocHeadRe(id, typ) = article.head
+        for (
+          article <- articles;
+          DocHeadRe(id, typ) = article.head;
+          if Set("story").contains(typ)
+        ) {
           val paragraphs =
             article
-              .dropWhile(_ != "<P>").drop(1)
-              .dropRightWhile(_ != "</P>")
-              .filter(_ != "</P>")
-              .split("<P>")
+              .dropWhile(_ != "<TEXT>").drop(1)
+              .dropRightWhile(_ != "</TEXT>")
+              .splitWhere(Set("<P>", "</P>"))
               .flatMap(_.split(""))
               .filter(_.nonEmpty)
               .map(_.mkString(" "))
