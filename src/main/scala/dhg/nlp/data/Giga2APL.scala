@@ -15,7 +15,7 @@ object Giga2APL {
 
   def main(args: Array[String]): Unit = {
 
-    val DocHeadRe = """<DOC id="(.+)" type="(.+)" >""".r
+    val DocHeadRe = """<DOC +id="(.+)" +type="(.+)" *>""".r
 
     val (inputDir, inputFilenamePattern, outputDir) =
       args.toList match {
