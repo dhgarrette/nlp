@@ -15,13 +15,17 @@ object Giga2APL {
 
   def main(args: Array[String]): Unit = {
 
-    val GzFilenameRe = """(.+).gz""".r
     val DocHeadRe = """<DOC id="(.+)" type="(.+)" >""".r
 
-    val (inputDir, outputDir) =
+    val (inputDir, inputFilenamePattern, outputDir) =
       args.toList match {
-        case Seq(inputDir, outputDir) => (inputDir, outputDir)
+        case Seq(inputDir, inputFilenamePattern, outputDir) => (inputDir, inputFilenamePattern, outputDir)
+        case Seq(inputDir, outputDir) => (inputDir, """.+""", outputDir)
       }
+    val GzFilenameRe = s"($inputFilenamePattern)\\.gz".r
+
+    println(s"Reading: $inputDir/$inputFilenamePattern")
+    println(s"Writing: $outputDir")
 
     for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
       val GzFilenameRe(filename) = inputFile.name
