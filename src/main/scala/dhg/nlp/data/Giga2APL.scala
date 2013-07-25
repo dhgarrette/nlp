@@ -49,7 +49,7 @@ object Giga2APL {
           val paragraphs =
             article
               .dropWhile(_ != "<TEXT>").drop(1)
-              .dropRightWhile(_ != "</TEXT>")
+              .dropRightWhile(_ != "</TEXT>").dropRight(1)
               .splitWhere(Set("<P>", "</P>"))
               .flatMap(_.split(""))
               .filter(_.nonEmpty)
