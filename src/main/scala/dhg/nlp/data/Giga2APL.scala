@@ -49,9 +49,9 @@ object Giga2APL {
   def toAplString(id: String, typ: String, paragraphs: Vector[String]) = {
     val sb = new StringBuilder
     sb ++= id.replaceAll("\\s+", "")
-    sb ++= " "
+    sb ++= "\t"
     sb ++= typ.replaceAll("\\s+", "")
-    sb ++= " "
+    sb ++= "\t"
     sb ++= paragraphs.mkString("\t")
     sb.result
   }

@@ -28,7 +28,7 @@ object Giga2TokLemPos {
     val annotatedDoc = annotator(paragraphs)
   }
 
-  def toTlpString(id: String, typ: String, sentences: Vector[AnnotatedSentence]) = {
+  def toTlpString(id: String, typ: String, sentences: Seq[AnnotatedSentence]) = {
     val sentenceStrings = sentences.map(s => s.map { case AnnotatedToken(CleanTok(w), CleanTok(l), p, _) => "%s|%s|%s".format(w, l, p) }.mkString(" "))
 
     val sb = new StringBuilder
