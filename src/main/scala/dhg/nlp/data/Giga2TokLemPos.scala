@@ -29,7 +29,7 @@ object Giga2TokLemPos {
   }
 
   def toTlpString(id: String, typ: String, sentences: Vector[AnnotatedSentence]) = {
-    val sentenceStrings = sentences.map(s => s.map { case AnnotatedToken(CleanTok(w), CleanTok(l), p, _) => s"$w|$l|$p" }.mkString(" "))
+    val sentenceStrings = sentences.map(s => s.map { case AnnotatedToken(CleanTok(w), CleanTok(l), p, _) => "%s|%s|%s".format(w, l, p) }.mkString(" "))
 
     val sb = new StringBuilder
     sb ++= id.replaceAll("\\s+", "")
