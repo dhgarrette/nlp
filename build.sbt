@@ -14,7 +14,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "dhg" % "scala-util_2.10" % "1.0.0-SNAPSHOT" changing(),
-  "edu.stanford.nlp" % "stanford-corenlp" % "1.3.5",
+  "edu.stanford.nlp" % "stanford-corenlp" % "3.2.0",
   "org.scalanlp" % "breeze-learn_2.10" % "0.4-SNAPSHOT" changing() excludeAll(
     ExclusionRule(organization = "com.codecommit")),
   "org.scalanlp" % "breeze-viz_2.10" % "0.4-SNAPSHOT" changing() excludeAll(
