@@ -41,7 +41,7 @@ object Giga2TokLemPos {
   }
 
   def main(args: Array[String]): Unit = {
-    val (inputDir, inputFilenamePattern, outputFilename) =
+    val (inputDir, inputFilenamePattern, outputDir) =
       args.toList match {
         case Seq(inputDir, inputFilenamePattern, outputDir) => (inputDir, inputFilenamePattern, outputDir)
         case Seq(inputDir, outputDir) => (inputDir, """.+""", outputDir)
@@ -49,18 +49,18 @@ object Giga2TokLemPos {
     val GzFilenameRe = ("(" + inputFilenamePattern + ")\\.gz").r
 
     println("Reading: %s/%s".format(inputDir, inputFilenamePattern))
-    println("Writing: %s".format(outputFilename))
+    println("Writing: %s".format(outputDir))
 
-    writeUsing(File(outputFilename)) { w =>
-      for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
-        val GzFilenameRe(filename) = inputFile.name
-        print("Handling: " + filename + " ...")
-        val startTime = System.currentTimeMillis()
+    for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
+      val GzFilenameRe(filename) = inputFile.name
+      print("Handling: " + filename + " ...")
+      val startTime = System.currentTimeMillis()
+      writeUsing(File(outputDir, filename + ".tlp")) { w =>
         for ((id, typ, paragraphs) <- Giga2APL.readArticles(inputFile)) {
           w.wl(toTlpString(id, typ, annotator(paragraphs)))
         }
-        println("done (" + ((System.currentTimeMillis() - startTime) / 1000.0) + " sec)")
       }
+      println("done (" + ((System.currentTimeMillis() - startTime) / 1000.0) + " sec)")
     }
   }
 

@@ -22,7 +22,7 @@ object Giga2APL {
       SelfClosingBufferedReaderIterator(GzFileBufferedReader(inputFile))
         .map(_.trim)
         .filter(_ != "(STORY CAN END HERE. OPTIONAL 2ND TAKE FOLLOWS.)")
-        .filter(EosRe.pattern.matcher(_).matches)
+        .filterNot(EosRe.pattern.matcher(_).matches)
 
     val articles =
       lines.splitWhere((line: String) => line.startsWith("<DOC "), KeepDelimiterAsFirst)
@@ -57,14 +57,13 @@ object Giga2APL {
   }
 
   def main(args: Array[String]): Unit = {
-    val (inputDir, inputFilenamePattern, outputFilename) =
+    val (inputDir, outputFilename) =
       args.toList match {
-        case Seq(inputDir, inputFilenamePattern, outputDir) => (inputDir, inputFilenamePattern, outputDir)
-        case Seq(inputDir, outputDir) => (inputDir, """.+""", outputDir)
+        case Seq(inputDir, outputFilename) => (inputDir, outputFilename)
       }
-    val GzFilenameRe = ("(" + inputFilenamePattern + ")\\.gz").r
+    val GzFilenameRe = "(.*)\\.gz".r
 
-    println("Reading: %s/%s".format(inputDir, inputFilenamePattern))
+    println("Reading: %s".format(inputDir))
     println("Writing: %s".format(outputFilename))
 
     writeUsing(File(outputFilename)) { w =>
