@@ -10,32 +10,56 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream
 import java.io.FileInputStream
-import dhg.nlp.data.AnnotatedData.AnnotatedToken
+import dhg.nlp.data.AnnotatedData._
 
 object Giga2TokLemPos {
 
+  val annotator = new StanfordAnnotator()
+
+  def readAplFile(inputFile: java.io.File) = {
+    inputFile.readLines
+      .map { line =>
+        val Array(id, typ, paragraphs @ _*) = line.split("\t")
+        (id, typ, paragraphs.toVector)
+      }
+  }
+
+  def tokLemTagArticle(id: String, typ: String, paragraphs: Vector[String]) = {
+    val annotatedDoc = annotator(paragraphs)
+  }
+
+  def toTlpString(id: String, typ: String, sentences: Vector[AnnotatedSentence]) = {
+    val sentenceStrings = sentences.map(s => s.map { case AnnotatedToken(CleanTok(w), CleanTok(l), p, _) => s"$w|$l|$p" }.mkString(" "))
+
+    val sb = new StringBuilder
+    sb ++= id.replaceAll("\\s+", "")
+    sb ++= " "
+    sb ++= typ.replaceAll("\\s+", "")
+    sb ++= " "
+    sb ++= sentenceStrings.mkString("\t")
+    sb.result
+  }
+
   def main(args: Array[String]): Unit = {
-    val (inputDir, inputFilenamePattern, outputDir) =
+    val (inputDir, inputFilenamePattern, outputFilename) =
       args.toList match {
         case Seq(inputDir, inputFilenamePattern, outputDir) => (inputDir, inputFilenamePattern, outputDir)
         case Seq(inputDir, outputDir) => (inputDir, """.+""", outputDir)
       }
-    val InputFilenameRe = s"($inputFilenamePattern)\\.gz".r
+    val GzFilenameRe = ("(" + inputFilenamePattern + ")\\.gz").r
 
-    println(s"Reading: $inputDir/$inputFilenamePattern")
-    println(s"Writing: $outputDir")
+    println("Reading: %s/%s".format(inputDir, inputFilenamePattern))
+    println("Writing: %s".format(outputFilename))
 
-    val annotator = new StanfordAnnotator()
-
-    for (inputFile <- File(inputDir).ls(InputFilenameRe)) {
-      val InputFilenameRe(filename) = inputFile.name
-      println("Handling: " + filename)
-      writeUsing(File(outputDir, s"$filename.tlp")) { w =>
+    writeUsing(File(outputFilename)) { w =>
+      for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
+        val GzFilenameRe(filename) = inputFile.name
+        print("Handling: " + filename + " ...")
+        val startTime = System.currentTimeMillis()
         for ((id, typ, paragraphs) <- Giga2APL.readArticles(inputFile)) {
-          val annotatedDoc = annotator(paragraphs)
-          val sentenceStrings = annotatedDoc.map(s => s.map { case AnnotatedToken(CleanTok(w), CleanTok(l), p, _) => s"$w|$l|$p" }.mkString(" "))
-          w.wl(s"${id.replaceAll("\\s+", "")}\t${typ.replaceAll("\\s+", "")}\t${sentenceStrings.mkString("\t")}")
+          w.wl(toTlpString(id, typ, annotator(paragraphs)))
         }
+        println("done (" + ((System.currentTimeMillis() - startTime) / 1000.0) + " sec)")
       }
     }
   }

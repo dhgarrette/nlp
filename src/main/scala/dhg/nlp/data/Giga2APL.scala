@@ -15,11 +15,14 @@ object Giga2APL {
 
   val DocHeadRe = """<DOC +id="(.+)" +type="(.+)" *>""".r
 
+  val EosRe = """X*END OF STORY""".r
+
   def readArticles(inputFile: java.io.File) = {
     val lines =
       SelfClosingBufferedReaderIterator(GzFileBufferedReader(inputFile))
         .map(_.trim)
         .filter(_ != "(STORY CAN END HERE. OPTIONAL 2ND TAKE FOLLOWS.)")
+        .filter(EosRe.pattern.matcher(_).matches)
 
     val articles =
       lines.splitWhere((line: String) => line.startsWith("<DOC "), KeepDelimiterAsFirst)
@@ -43,24 +46,36 @@ object Giga2APL {
     }
   }
 
+  def toAplString(id: String, typ: String, paragraphs: Vector[String]) = {
+    val sb = new StringBuilder
+    sb ++= id.replaceAll("\\s+", "")
+    sb ++= " "
+    sb ++= typ.replaceAll("\\s+", "")
+    sb ++= " "
+    sb ++= paragraphs.mkString("\t")
+    sb.result
+  }
+
   def main(args: Array[String]): Unit = {
-    val (inputDir, inputFilenamePattern, outputDir) =
+    val (inputDir, inputFilenamePattern, outputFilename) =
       args.toList match {
         case Seq(inputDir, inputFilenamePattern, outputDir) => (inputDir, inputFilenamePattern, outputDir)
         case Seq(inputDir, outputDir) => (inputDir, """.+""", outputDir)
       }
-    val GzFilenameRe = s"($inputFilenamePattern)\\.gz".r
+    val GzFilenameRe = ("(" + inputFilenamePattern + ")\\.gz").r
 
-    println(s"Reading: $inputDir/$inputFilenamePattern")
-    println(s"Writing: $outputDir")
+    println("Reading: %s/%s".format(inputDir, inputFilenamePattern))
+    println("Writing: %s".format(outputFilename))
 
-    for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
-      val GzFilenameRe(filename) = inputFile.name
-      println("Handling: " + filename)
-      writeUsing(File(outputDir, s"$filename.apl")) { w =>
+    writeUsing(File(outputFilename)) { w =>
+      for (inputFile <- File(inputDir).ls(GzFilenameRe)) {
+        val GzFilenameRe(filename) = inputFile.name
+        print("Handling: " + filename + " ...")
+        val startTime = System.currentTimeMillis()
         for ((id, typ, paragraphs) <- readArticles(inputFile)) {
-          s"${id.replaceAll("\\s+", "")}\t${typ.replaceAll("\\s+", "")}\t${paragraphs.mkString("\t")}"
+          w.wl(toAplString(id, typ, paragraphs))
         }
+        println("done (" + ((System.currentTimeMillis() - startTime) / 1000.0) + " sec)")
       }
     }
   }
