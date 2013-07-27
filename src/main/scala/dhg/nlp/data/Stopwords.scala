@@ -1,4 +1,4 @@
-package dhg.nov.nlp
+package dhg.nlp.data
 
 import scala.Array.canBuildFrom
 
