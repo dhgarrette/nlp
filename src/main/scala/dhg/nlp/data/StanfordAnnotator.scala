@@ -5,8 +5,8 @@ import dhg.nlp.data.AnnotatedData._
 import dhg.util.CollectionUtil._
 
 class StanfordAnnotator(
-  posModelLocation: String = "data/stanford-corenlp-models/pos-tagger/english-left3words-distsim.tagger",
-  nerModelLocation: String = "data/stanford-corenlp-models/ner/english.all.3class.distsim.crf.ser.gz") {
+  posModelLocation: String = "stanford-corenlp-models/pos-tagger/english-left3words-distsim.tagger",
+  nerModelLocation: String = "stanford-corenlp-models/ner/english.all.3class.distsim.crf.ser.gz") {
 
   val j = new JStanfordAnnotator(posModelLocation, nerModelLocation)
 
