@@ -11,6 +11,7 @@ import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream
 import java.io.FileInputStream
 import dhg.nlp.data.AnnotatedData._
+import dhg.nlp.data.Clean._
 
 object Giga2TokLemPos {
 
@@ -62,13 +63,6 @@ object Giga2TokLemPos {
       }
       println("done (" + ((System.currentTimeMillis() - startTime) / 1000.0) + " sec)")
     }
-  }
-
-  object CleanTok {
-    def unapply(t: String): Option[String] = Some(t match {
-      case "|" => "-VERTBAR-"
-      case _ => t
-    })
   }
 
 }
