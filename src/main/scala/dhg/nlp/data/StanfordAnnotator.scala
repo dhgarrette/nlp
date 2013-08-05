@@ -6,7 +6,8 @@ import dhg.util.CollectionUtil._
 
 class StanfordAnnotator(
   posModelLocation: String = "stanford-corenlp-models/pos-tagger/english-left3words-distsim.tagger",
-  nerModelLocation: String = "stanford-corenlp-models/ner/english.all.3class.distsim.crf.ser.gz") {
+  nerModelLocation: String = "stanford-corenlp-models/ner/english.all.3class.distsim.crf.ser.gz")
+  extends (String => AnnotatedDoc) {
 
   val j = new JStanfordAnnotator(posModelLocation, nerModelLocation)
 
@@ -40,8 +41,12 @@ object AnnotatedData {
       .mkString(" ")
       .replace("-LRB-", "(")
       .replace("-RRB-", ")")
-      .replaceAll("([`(]) ", "$1")
-      .replaceAll(" ([^`(A-Za-z0-9])", "$1")
+      .replace("-LSB-", "[")
+      .replace("-RSB-", "]")
+      .replace("-LCB-", "{")
+      .replace("-RCB-", "}")
+      .replaceAll("""([`(\[\{]) """, "$1")
+      .replaceAll(""" ([^`(\[\{A-Za-z0-9])""", "$1")
   }
 
 }
