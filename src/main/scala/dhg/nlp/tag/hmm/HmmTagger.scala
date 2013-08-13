@@ -104,7 +104,7 @@ class FastHmmTagger[Sym, Tag] {
         case Nil => assert(curTag == None); tags
         case currPointers :: previousPointers => inner(previousPointers, currPointers(curTag), curTag.get :: tags)
       }
-    val UMap(None -> lastTag) :: previousPointers = backpointers
+    val Coll(None -> lastTag) :: previousPointers = backpointers
     inner(previousPointers, lastTag, Nil).toVector
   }
 

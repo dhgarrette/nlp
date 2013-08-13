@@ -114,7 +114,7 @@ class Viterbi[Sym, Tag](
         case Nil => assert(curTag == None); tags
         case currPointers :: previousPointers => inner(previousPointers, currPointers(curTag), curTag :: tags)
       }
-    val UMap(None -> lastTag) :: previousPointers = backpointers
+    val Coll(None -> lastTag) :: previousPointers = backpointers
     inner(previousPointers, lastTag, Nil).toVector
   }
 }
