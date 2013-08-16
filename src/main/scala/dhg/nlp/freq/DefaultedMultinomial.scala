@@ -25,6 +25,7 @@ case class DefaultedMultinomial[T](
   counts: Map[T, Double], defaultCount: Double = 0.0, totalAddition: Double = 0.0)(
     implicit val rand: RandBasis = Rand)
   extends DiscreteDistribution[T] {
+  override def isDefinedAt(x: T) = counts.isDefinedAt(x)
 
   private[this] lazy val sum = counts.values.sum // sum of counts of all known events 
   private[this] lazy val total = sum + totalAddition // sum of all counts (including unknown events)
@@ -32,7 +33,7 @@ case class DefaultedMultinomial[T](
   private[this] lazy val defaultProb = if (isEmpty) 0.0 else (defaultCount / total)
 
   def knownKeys = counts.keySet
-  
+
   /** A map of the probabilities (excluding defaults) */
   lazy val probMap = {
     if (isEmpty) Map[T, Double]().withDefaultValue(0.0)

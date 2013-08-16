@@ -25,8 +25,9 @@ object FreqDist {
 
 }
 
-case class CondFreqDist[A, B](dists: Map[A, DefaultedMultinomial[B]], default: DefaultedMultinomial[B]) extends (A => DefaultedMultinomial[B]) {
-  override def apply(a: A) = dists.getOrElse(a, default)
+case class CondFreqDist[A, B](dists: Map[A, DefaultedMultinomial[B]], default: DefaultedMultinomial[B]) extends PartialFunction[A, DefaultedMultinomial[B]] {
+  override def isDefinedAt(x: A) = dists.isDefinedAt(x)
+  override def apply(a: A) = dists.lift(a).getOrElse(default)
   override def toString = s"CondFreqDist($dists, $default)"
 }
 

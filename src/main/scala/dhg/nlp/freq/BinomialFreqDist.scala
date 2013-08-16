@@ -7,6 +7,7 @@ import breeze.stats.distributions.Rand
 class BinomialFreqDist[T](label0: T, label1: T, firstProb: Double)(
   implicit rand: RandBasis = Rand)
   extends DiscreteDistribution[T] {
+  override def isDefinedAt(x: T) = true
 
   val dist = Map(label0 -> firstProb, label1 -> (1 - firstProb))
   override def apply(key: T) = dist.getOrElse(key, 0.0)
