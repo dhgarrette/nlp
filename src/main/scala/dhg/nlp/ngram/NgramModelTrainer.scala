@@ -14,17 +14,6 @@ import dhg.nlp.freq.CountsTransformer
 import dhg.nlp.freq.PassthroughCountsTransformer
 
 trait NgramModelTrainer[T] {
-  def n: Int; require(n > 0, "N must be positive")
-
-  protected def counts[S <% Seq[T]](sentences: TraversableOnce[S]) = {
-    val wordStart: Seq[Option[T]] = Vector.fill(n - 1)(None)
-    val allNgrams = sentences.flatMap { sentence =>
-      val ended = (wordStart ++ sentence.map(Option(_)) :+ None)
-      ended.sliding(n).map { case context :+ word => context -> word }
-    }
-    allNgrams.toIterator.groupByKey.mapVals(_.counts)
-  }
-
   def apply[S <% Seq[T]](sentences: Traversable[S]): NgramModel[T, S]
 }
 
@@ -53,18 +42,35 @@ case class OptionUnigramModelTrainer[T](
   }
 }
 
+trait HigherOrderNgramModelTrainer[T] extends NgramModelTrainer[T] {
+  def n: Int; require(n > 0, "N must be positive")
+  def condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]]()
+
+  protected def counts[S <% Seq[T]](sentences: TraversableOnce[S]) = {
+    val wordStart: Seq[Option[T]] = Vector.fill(n - 1)(None)
+    val allNgrams = sentences.flatMap { sentence =>
+      val ended = (wordStart ++ sentence.map(Option(_)) :+ None)
+      ended.sliding(n).map { case context :+ word => context -> word }
+    }
+    allNgrams.toIterator.groupByKey.mapVals(_.counts)
+  }
+
+  protected def condFreqDist[S <% Seq[T]](sentences: TraversableOnce[S])(implicit rand: RandBasis = Rand) =
+    CondFreqDist(condCountsTransformer(counts(sentences))(implicitly, rand))
+}
+
 case class SimpleNgramModelTrainer[T](
   n: Int,
-  condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]](),
+  override val condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]](),
   countsTransformer: CountsTransformer[Option[T]] = PassthroughCountsTransformer[Option[T]]())(
     implicit val rand: RandBasis = Rand)
-  extends NgramModelTrainer[T] {
+  extends HigherOrderNgramModelTrainer[T] {
 
   override def apply[S <% Seq[T]](sentences: Traversable[S]): NgramModel[T, S] = {
     if (n == 1)
       OptionUnigramModelTrainer[T](countsTransformer)(rand)(sentences)
     else {
-      new SimpleNgramModel[T, S](CondFreqDist(condCountsTransformer(counts(sentences))(implicitly, rand)),
+      new SimpleNgramModel[T, S](condFreqDist(sentences)(implicitly, rand),
         SimpleNgramModelTrainer[T](n - 1, condCountsTransformer)(rand)(sentences))
     }
   }
@@ -73,10 +79,10 @@ case class SimpleNgramModelTrainer[T](
 case class InterpolatedBackoffNgramModelTrainer[T](
   n: Int,
   lambdas: Seq[Double],
-  condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]](),
+  override val condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]](),
   countsTransformer: CountsTransformer[Option[T]] = PassthroughCountsTransformer[Option[T]]())(
     implicit val rand: RandBasis = Rand)
-  extends NgramModelTrainer[T] {
+  extends HigherOrderNgramModelTrainer[T] {
 
   override def apply[S <% Seq[T]](sentences: Traversable[S]): NgramModel[T, S] = {
     assert(lambdas.size == n, f"the given list of lambdas [${lambdas.map(l => f"$l%.2f").mkString(", ")}] must be length n=$n")
@@ -84,7 +90,7 @@ case class InterpolatedBackoffNgramModelTrainer[T](
       OptionUnigramModelTrainer[T](countsTransformer)(rand)(sentences)
     else {
       val lambda +: remainingLambdas = lambdas.normalize
-      new InterpolatedBackoffNgramModel[T, S](CondFreqDist(condCountsTransformer(counts(sentences))(implicitly, rand)), lambda,
+      new InterpolatedBackoffNgramModel[T, S](condFreqDist(sentences)(implicitly, rand), lambda,
         InterpolatedBackoffNgramModelTrainer[T](n - 1, remainingLambdas, condCountsTransformer, countsTransformer)(rand)(sentences))
     }
   }
@@ -104,21 +110,17 @@ object InterpolatedBackoffNgramModelTrainer {
 
 case class StupidBackoffNgramModelTrainer[T](
   n: Int,
-  lambdas: Seq[Double],
-  condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]](),
+  override val condCountsTransformer: CondCountsTransformer[Seq[Option[T]], Option[T]] = PassthroughCondCountsTransformer[Seq[Option[T]], Option[T]](),
   countsTransformer: CountsTransformer[Option[T]] = PassthroughCountsTransformer[Option[T]]())(
     implicit val rand: RandBasis = Rand)
-  extends NgramModelTrainer[T] {
+  extends HigherOrderNgramModelTrainer[T] {
 
   override def apply[S <% Seq[T]](sentences: Traversable[S]): NgramModel[T, S] = {
-    assert(lambdas.size == n, f"the given list of lambdas [${lambdas.map(l => f"$l%.2f").mkString(", ")}] must be length n=$n")
     if (n == 1)
       OptionUnigramModelTrainer[T](countsTransformer)(rand)(sentences)
     else {
-      val lambda +: remainingLambdas = lambdas.normalize
-      new InterpolatedBackoffNgramModel[T, S](CondFreqDist(condCountsTransformer(counts(sentences))(implicitly, rand)), lambda,
-        InterpolatedBackoffNgramModelTrainer[T](n - 1, remainingLambdas, condCountsTransformer, countsTransformer)(rand)(sentences))
+      new StupidBackoffNgramModel[T, S](condFreqDist(sentences)(implicitly, rand),
+        StupidBackoffNgramModelTrainer[T](n - 1, condCountsTransformer, countsTransformer)(rand)(sentences))
     }
   }
 }
-
