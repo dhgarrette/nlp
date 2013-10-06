@@ -4,7 +4,7 @@ version := "1.0.0-SNAPSHOT"
 
 organization := "dhg"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
