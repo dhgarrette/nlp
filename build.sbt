@@ -15,7 +15,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "dhg" % "scala-util_2.10" % "1.0.0-SNAPSHOT" changing(),
   "edu.stanford.nlp" % "stanford-corenlp" % "3.2.0",
-  "org.scalanlp" % "breeze-math_2.10" % "0.5-SNAPSHOT",
+  "org.scalanlp" % "breeze_2.10" % "0.5-SNAPSHOT" changing(),
   "junit" % "junit" % "4.10" % "test",
   "com.novocode" % "junit-interface" % "0.8" % "test->default") //switch to ScalaTest at some point...
 
