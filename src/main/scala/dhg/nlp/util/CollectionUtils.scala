@@ -47,27 +47,6 @@ object CollectionUtils {
   }
 
   //////////////////////////////////////////////////////
-  // sumBy[B: Numeric](f: A => B): B
-  //   - Map a numeric-producing function over each item and sum the results 
-  //   - Functionally equivalent to:
-  //         this.map(f).sum
-  //////////////////////////////////////////////////////
-
-  implicit class Enriched_sumBy_GenTraversableOnce[A](val self: GenTraversableOnce[A]) extends AnyVal {
-    /**
-     * Map a numeric-producing function over each item and sum the results.
-     *
-     * Functionally equivalent to `this.map(f).sum`
-     *
-     * @param f	A function that produces a Numeric
-     * @return the sum of the results after applications of f
-     */
-    def sumBy[B](f: A => B)(implicit num: Numeric[B]): B = {
-      (num.zero /: self)((accum, x) => num.plus(accum, f(x)))
-    }
-  }
-
-  //////////////////////////////////////////////////////
   // sliding2: Iterator[(A,A)]
   //   - slide over this collection to produce pairs.
   //   - Functionally equivalent to:
