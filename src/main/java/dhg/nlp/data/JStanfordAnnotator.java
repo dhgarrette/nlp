@@ -17,7 +17,7 @@ import edu.stanford.nlp.util.CoreMap;
 
 public class JStanfordAnnotator {
 
-	StanfordCoreNLP pipeline;
+	private StanfordCoreNLP pipeline;
 
 	public JStanfordAnnotator(String posModelLocation, String nerModelLocation) {
 		// creates a StanfordCoreNLP object, with POS tagging, lemmatization,
@@ -31,17 +31,22 @@ public class JStanfordAnnotator {
 	}
 
 	public static class JStanfordAnnotatedToken {
-		String word;
-		String lemma;
-		String pos;
-		String ne;
+		private String _word;
+		private String _lemma;
+		private String _pos;
+		private String _ne;
 
 		public JStanfordAnnotatedToken(String word, String lemma, String pos, String ne) {
-			this.word = word;
-			this.lemma = lemma;
-			this.pos = pos;
-			this.ne = ne;
+			this._word = word;
+			this._lemma = lemma;
+			this._pos = pos;
+			this._ne = ne;
 		}
+
+		public String word() { return _word; }
+		public String lemma() { return _lemma; }
+		public String pos() { return _pos; }
+		public String ne() { return _ne; }
 	}
 
 	public List<List<JStanfordAnnotatedToken>> annotate(String text) {
@@ -58,8 +63,8 @@ public class JStanfordAnnotator {
 			// traversing the words in the current sentence
 			// a CoreLabel is a CoreMap with additional token-specific methods
 			for (CoreLabel token : sentence.get(TokensAnnotation.class)) {
-				String word = token.get(TextAnnotation.class);
-				String lemma = token.get(LemmaAnnotation.class);
+				String word = replaceJunk(token.get(TextAnnotation.class));
+				String lemma = replaceJunk(token.get(LemmaAnnotation.class));
 				String pos = token.get(PartOfSpeechAnnotation.class);
 				// TODO: token.get(NamedEntityTagAnnotation.class);
 				String ne = "";
@@ -70,5 +75,15 @@ public class JStanfordAnnotator {
 		}
 
 		return sentences;
+	}
+
+	private String replaceJunk(String t) {
+		if(t.toUpperCase().equals("-LRB-")) return "(";
+		if(t.toUpperCase().equals("-RRB-")) return ")";
+		if(t.toUpperCase().equals("-LSB-")) return "[";
+		if(t.toUpperCase().equals("-RSB-")) return "]";
+		if(t.toUpperCase().equals("-LCB-")) return "{";
+		if(t.toUpperCase().equals("-RCB-")) return "}";
+		return t;
 	}
 }
