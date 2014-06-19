@@ -1,7 +1,7 @@
 package dhg.nlp.tag.hmm
 
 import scala.annotation.tailrec
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j.{ StrictLogging => Logging }
 import dhg.nlp.freq.CondFreqDist
 import dhg.nlp.tag.TagDict
 import dhg.nlp.tag.TagDict.OptionalTagDict

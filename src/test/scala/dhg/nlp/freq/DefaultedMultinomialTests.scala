@@ -5,8 +5,8 @@ import org.junit._
 import dhg.nlp.util.CollectionUtils._
 import dhg.util.CollectionUtil._
 import dhg.util.TestUtil._
-import breeze.stats.random.MersenneTwister
 import breeze.stats.distributions.RandBasis
+import org.apache.commons.math3.random.MersenneTwister
 
 class DefaultedMultinomialTests {
 

@@ -1,6 +1,6 @@
 package dhg.nlp.tag.hmm.support
 
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j.{ StrictLogging => Logging }
 
 import dhg.nlp.freq.CondFreqDist
 import dhg.nlp.freq.CountsTransformer

@@ -4,7 +4,7 @@ import org.junit.Assert._
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j.{ StrictLogging => Logging }
 
 import dhg.nlp.tag._
 import dhg.nlp.tag.hmm.support._

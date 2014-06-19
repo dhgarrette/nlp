@@ -7,10 +7,10 @@ import org.junit.Test
 import breeze.stats.distributions.Multinomial
 import breeze.linalg.Counter
 import dhg.nlp.freq.DefaultedMultinomial
-import breeze.stats.random.MersenneTwister
 import breeze.stats.distributions.RandBasis
 import dhg.nlp.freq._
 import dhg.util.CollectionUtil._
+import org.apache.commons.math3.random.MersenneTwister
 
 class NgramTests {
 

@@ -22,15 +22,15 @@ class DirichletSampler[T](dirichlet: Dirichlet[Counter[T, Double], T]) {
 
 object DirichletSampler {
 
-  def apply[T](labels: Iterable[T], pseudocounts: T => Double)(implicit rand: RandBasis = Rand): DirichletSampler[T] = {
+  def apply[T](labels: Iterable[T], pseudocounts: T => Double)(implicit rand: RandBasis): DirichletSampler[T] = {
     new DirichletSampler(new Dirichlet(Counter(labels.mapTo(pseudocounts)))(implicitly, rand, implicitly))
   }
 
-  def apply[T](pseudocounts: Map[T, Double])(implicit rand: RandBasis = Rand): DirichletSampler[T] = {
+  def apply[T](pseudocounts: Map[T, Double])(implicit rand: RandBasis): DirichletSampler[T] = {
     new DirichletSampler(new Dirichlet(Counter(pseudocounts))(implicitly, rand, implicitly))
   }
 
-  def apply[T](multinomial: DefaultedMultinomial[T])(implicit rand: RandBasis = Rand): DirichletSampler[T] = {
+  def apply[T](multinomial: DefaultedMultinomial[T])(implicit rand: RandBasis): DirichletSampler[T] = {
     DirichletSampler(multinomial.counts)(rand)
   }
 
@@ -50,18 +50,18 @@ class UglyDirichletSampler[T](labels: IndexedSeq[T], dirichlet: Dirichlet[DenseV
 
 object UglyDirichletSampler {
 
-  def apply[T](labels: IndexedSeq[T], pseudocounts: T => Double)(implicit rand: RandBasis = Rand): UglyDirichletSampler[T] = {
+  def apply[T](labels: IndexedSeq[T], pseudocounts: T => Double)(implicit rand: RandBasis): UglyDirichletSampler[T] = {
     val arr = labels.map(pseudocounts).toArray
     new UglyDirichletSampler(labels, new Dirichlet(DenseVector(arr)))
   }
 
-  def apply[T](pseudocounts: Map[T, Double])(implicit rand: RandBasis = Rand): UglyDirichletSampler[T] = {
+  def apply[T](pseudocounts: Map[T, Double])(implicit rand: RandBasis): UglyDirichletSampler[T] = {
     val (labels, values) = pseudocounts.toVector.unzip
     val arr = values.toArray
     new UglyDirichletSampler(labels, new Dirichlet(DenseVector(arr)))
   }
 
-  def apply[T](multinomial: DefaultedMultinomial[T])(implicit rand: RandBasis = Rand): UglyDirichletSampler[T] = {
+  def apply[T](multinomial: DefaultedMultinomial[T])(implicit rand: RandBasis): UglyDirichletSampler[T] = {
     UglyDirichletSampler(multinomial.counts)(rand)
   }
 
