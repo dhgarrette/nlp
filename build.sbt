@@ -4,7 +4,7 @@ version := "1.0.0-SNAPSHOT"
 
 organization := "dhg"
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
 resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
@@ -13,6 +13,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "dhg" %% "scala-util" % "1.0.0-SNAPSHOT",
   "edu.stanford.nlp" % "stanford-corenlp" % "3.2.0", 
   "org.joda" % "joda-convert" % "1.2",
   "org.scalanlp" % "breeze_2.11" % "0.8",
