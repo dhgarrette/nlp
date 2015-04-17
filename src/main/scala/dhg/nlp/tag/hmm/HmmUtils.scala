@@ -4,7 +4,7 @@ import dhg.nlp.freq.CondFreqDist
 import dhg.nlp.tag.TagDict.OptionalTagDict
 import dhg.nlp.tag.TagUtils._
 import dhg.nlp.util.CollectionUtils._
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scalaz._
 import Scalaz._
 

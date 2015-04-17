@@ -2,7 +2,7 @@ package dhg.nlp.tag
 
 import dhg.nlp.tag.TagDict._
 import dhg.nlp.util.CollectionUtils._
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 /**
  * TagDict base trait.  Exists only for use as a facade to make a TD appear

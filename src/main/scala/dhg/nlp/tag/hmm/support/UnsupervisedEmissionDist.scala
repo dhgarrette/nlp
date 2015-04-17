@@ -7,7 +7,7 @@ import dhg.nlp.freq.CountsTransformer
 import dhg.nlp.freq.DefaultedCondFreqCounts
 import dhg.nlp.freq.DefaultedMultinomial
 import dhg.nlp.tag.TagDict
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scalaz._
 import scalaz.Scalaz._
 

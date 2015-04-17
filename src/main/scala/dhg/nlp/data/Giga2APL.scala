@@ -2,10 +2,7 @@ package dhg.nlp.data
 
 import scala.collection.generic.CanBuildFrom
 import scala.collection.GenTraversableLike
-import dhg.util.CollectionUtil._
-import dhg.util.FileUtil._
-import dhg.util.Arm._
-import dhg.util.CollectionUtil.KeepDelimiter._
+import dhg.util._
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream

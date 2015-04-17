@@ -9,7 +9,7 @@ import breeze.linalg.Counter
 import dhg.nlp.freq.DefaultedMultinomial
 import breeze.stats.distributions.RandBasis
 import dhg.nlp.freq._
-import dhg.util.CollectionUtil._
+import dhg.util._
 import org.apache.commons.math3.random.MersenneTwister
 
 class NgramTests {

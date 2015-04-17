@@ -9,8 +9,8 @@ import com.typesafe.scalalogging.slf4j.{ StrictLogging => Logging }
 import dhg.nlp.tag._
 import dhg.nlp.tag.hmm.support._
 import dhg.nlp.tag.support._
-import dhg.util.CollectionUtil._
-import dhg.util.FileUtil._
+import dhg.util._
+import dhg.util._
 import dhg.nlp.freq._
 
 class UnsupervisedEmHmmTaggerTrainerTests extends Logging {

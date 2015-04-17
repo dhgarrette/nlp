@@ -1,7 +1,7 @@
 package dhg.nlp.classify
 
 import scala.collection.mutable.{ Map => MMap }
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scala.collection.mutable.{ Map => MMap }
 
 trait ClassifierEvaluator[T, L] {

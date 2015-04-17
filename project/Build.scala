@@ -3,9 +3,8 @@ import Keys._
 
 object CcgBuild extends Build {
 
-  lazy val main = Project("ccg", file(".")) dependsOn(scalautil)
-
-  lazy val scalautil = Project("scala-util", file("scala-util"))
+  lazy val main = Project(id = "nlp", base = file(".")) dependsOn(ccg)
+  
+  lazy val ccg = Project("ccg", file("ccg"))
 
 }
-

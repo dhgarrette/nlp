@@ -2,7 +2,7 @@ package dhg.nlp.tag.hmm
 
 import dhg.nlp.freq.CondFreqDist
 import dhg.nlp.tag.SupervisedTaggerTrainer
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 /**
  * Factory for training a Hidden Markov Model tagger directly from labeled data.

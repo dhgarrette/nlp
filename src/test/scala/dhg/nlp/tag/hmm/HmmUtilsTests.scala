@@ -3,8 +3,8 @@ package dhg.nlp.tag.hmm
 import org.junit.Test
 
 import dhg.nlp.tag._
-import dhg.util.CollectionUtil._
-import dhg.util.FileUtil._
+import dhg.util._
+import dhg.util._
 
 class HmmUtilsTests {
 

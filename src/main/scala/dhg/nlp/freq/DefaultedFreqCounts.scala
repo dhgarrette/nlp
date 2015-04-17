@@ -1,6 +1,6 @@
 package dhg.nlp.freq
 
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scalaz._
 import scalaz.Scalaz._
 import breeze.stats.distributions.RandBasis

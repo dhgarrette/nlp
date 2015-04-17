@@ -3,7 +3,7 @@ package dhg.nlp.freq
 import scala.collection.{ Map => CMap }
 import scala.collection.breakOut
 import scala.util.Random
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scalaz.Scalaz._
 import breeze.stats.distributions.RandBasis
 import breeze.stats.distributions.Rand

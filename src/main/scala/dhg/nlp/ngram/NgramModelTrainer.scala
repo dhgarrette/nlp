@@ -2,7 +2,7 @@ package dhg.nlp.ngram
 
 import scala.annotation.tailrec
 import scala.collection.generic.CanBuildFrom
-import dhg.util.CollectionUtil._
+import dhg.util._
 import dhg.nlp.freq.CondCountsTransformer
 import dhg.nlp.freq.PassthroughCondCountsTransformer
 import dhg.nlp.freq.DefaultedMultinomial

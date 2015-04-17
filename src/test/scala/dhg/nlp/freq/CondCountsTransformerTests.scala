@@ -2,9 +2,9 @@ package dhg.nlp.freq
 
 import org.junit.Assert._
 import org.junit._
-import dhg.util.Pattern.{ -> }
+import dhg.util.{ -> }
 import dhg.nlp.util.CollectionUtils._
-import dhg.util.CollectionUtil._
+import dhg.util._
 import dhg.util.TestUtil._
 
 class CondCountsTransformerTests {

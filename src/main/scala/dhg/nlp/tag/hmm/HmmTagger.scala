@@ -6,8 +6,8 @@ import dhg.nlp.tag.SimpleTagDict
 import dhg.nlp.tag.TagDict.OptionalTagDict
 import dhg.nlp.tag.Tagger
 import dhg.nlp.tag.hmm.HmmUtils.addDistributionsToRawSequences
-import dhg.util.CollectionUtil._
-import dhg.util.Pattern._
+import dhg.util._
+import dhg.util._
 
 /**
  * Hidden Markov Model for tagging.

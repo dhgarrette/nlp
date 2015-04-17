@@ -7,12 +7,9 @@ import dhg.nlp.tag.TagDict
 import dhg.nlp.tag.TagDict.OptionalTagDict
 import dhg.nlp.tag.TagUtils._
 import dhg.nlp.util.CollectionUtils._
-import dhg.util.CollectionUtil._
-import dhg.util.Pattern._
+import dhg.util._
 import scalaz._
 import Scalaz._
-import dhg.util.math.LogDouble
-import dhg.util.math.NumUtil._
 
 /**
  * Factory for training a Hidden Markov Model (HMM) tagger using the

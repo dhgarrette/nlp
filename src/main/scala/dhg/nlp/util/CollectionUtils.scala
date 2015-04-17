@@ -9,7 +9,7 @@ import scala.collection.TraversableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 object CollectionUtils {
 

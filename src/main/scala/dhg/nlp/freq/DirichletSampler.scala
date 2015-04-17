@@ -4,7 +4,7 @@ import breeze.linalg.Counter
 import breeze.stats.distributions.Dirichlet
 import breeze.stats.distributions.Rand
 import breeze.stats.distributions.RandBasis
-import dhg.util.CollectionUtil._
+import dhg.util._
 import breeze.linalg.DenseVector
 import scala.collection.breakOut
 

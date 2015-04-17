@@ -7,8 +7,8 @@ import dhg.nlp.freq.CondFreqDist
 import dhg.nlp.tag.SimpleTagDict
 import dhg.nlp.tag.SimpleWeightedTagDict
 import dhg.nlp.tag.TagDict
-import dhg.util.CollectionUtil._
-import dhg.util.FileUtil._
+import dhg.util._
+import dhg.util._
 
 /**
  * Factory for creating a tag dictionary (mapping from symbols to valid tags)

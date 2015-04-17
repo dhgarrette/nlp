@@ -7,7 +7,7 @@ import dhg.nlp.freq.DefaultedMultinomial
 import dhg.nlp.freq.PassthroughCondCountsTransformer
 import dhg.nlp.tag.OptionalTagDict
 import dhg.nlp.tag.TagDict
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 /**
  *

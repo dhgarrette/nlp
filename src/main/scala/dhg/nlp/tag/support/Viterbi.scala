@@ -6,8 +6,8 @@ import dhg.nlp.tag.OptionalTagDict
 import dhg.nlp.tag.SimpleTagDict
 import dhg.nlp.tag.TagDict.OptionalTagDict
 import dhg.nlp.tag.Tagger
-import dhg.util.CollectionUtil._
-import dhg.util.Pattern._
+import dhg.util._
+import dhg.util._
 
 /**
  * A generic implementation of the Viterbi algorithm for finding the most

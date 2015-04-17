@@ -5,7 +5,7 @@ import org.junit._
 import dhg.util.TestUtil._
 import dhg.nlp.tag.TagDict._
 import dhg.nlp.util.CollectionUtils._
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 class TagDictTests {
 

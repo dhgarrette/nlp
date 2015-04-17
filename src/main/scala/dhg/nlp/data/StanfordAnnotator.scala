@@ -2,7 +2,7 @@ package dhg.nlp.data
 
 import scala.collection.JavaConverters._
 import dhg.nlp.data.AnnotatedData._
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 class StanfordAnnotator(
   posModelLocation: String = "stanford-corenlp-models/pos-tagger/english-left3words-distsim.tagger",

@@ -1,7 +1,7 @@
 package dhg.nlp.tag
 
 import dhg.nlp.tag.hmm.HmmUtils
-import dhg.util.CollectionUtil._
+import dhg.util._
 
 /**
  * Tag sequences of symbols.

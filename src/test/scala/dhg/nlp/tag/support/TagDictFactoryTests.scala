@@ -5,7 +5,7 @@ import org.junit.Test
 
 import dhg.nlp.tag._
 import dhg.nlp.util.CollectionUtils._
-import dhg.util.CollectionUtil._
+import dhg.util._
 import dhg.nlp.freq._
 import dhg.util.TestUtil._
 

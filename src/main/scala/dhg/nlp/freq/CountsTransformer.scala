@@ -3,7 +3,7 @@ package dhg.nlp.freq
 import scala.collection.{ Map => CMap }
 import scala.collection.breakOut
 
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scalaz.Scalaz._
 
 /**

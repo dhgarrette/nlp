@@ -2,7 +2,7 @@ package dhg.nlp.tag
 
 import scala.collection.mutable.Buffer
 
-import dhg.util.CollectionUtil._
+import dhg.util._
 import scalaz._
 import Scalaz._
 
