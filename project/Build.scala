@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-object CcgBuild extends Build {
+object NlpBuild extends Build {
 
   lazy val main = Project(id = "nlp", base = file(".")) dependsOn(ccg)
   
