@@ -13,6 +13,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "dhg" %% "scala-util" % "1.0.0-SNAPSHOT",
   "edu.stanford.nlp" % "stanford-corenlp" % "3.2.0", 
   "org.joda" % "joda-convert" % "1.2",
   "org.scalanlp" % "breeze_2.11" % "0.8",
