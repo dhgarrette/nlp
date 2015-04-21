@@ -1,6 +1,6 @@
 name := "nlp"
 
-version := "1.0.0-SNAPSHOT"
+version := "0.0.2-SNAPSHOT"
 
 organization := "dhg"
 
@@ -13,11 +13,11 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "dhg" %% "scala-util" % "1.0.0-SNAPSHOT",
+  "dhg" %% "scala-util" % "0.0.2-SNAPSHOT",
   "edu.stanford.nlp" % "stanford-corenlp" % "3.2.0", 
   "org.joda" % "joda-convert" % "1.2",
-  "org.scalanlp" % "breeze_2.11" % "0.8",
-  "org.scalanlp" % "breeze-natives_2.11" % "0.8",
+  "org.scalanlp" % "breeze_2.11" % "0.11.2",
+  "org.scalanlp" % "breeze-natives_2.11" % "0.11.2",
   "com.github.fommil.netlib" % "core" % "1.1",
   "junit" % "junit" % "4.10" % "test",
   "com.novocode" % "junit-interface" % "0.8" % "test->default") //switch to ScalaTest at some point...
