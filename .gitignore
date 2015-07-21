@@ -15,6 +15,8 @@ project/plugins/project/
 .project
 .classpath
 .cache
+.cache-main
+.cache-tests
 .settings/
 
 scala-util
